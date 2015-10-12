@@ -1,0 +1,63 @@
+2 - Physical Networking
+
+    Linking Computers
+        Already saw this at one level in previous notes
+        Breadboard computer sent all its IO to the laptop
+        Traditionally done using a serial links
+            Link is RS232
+                Transmit Pin connected to Recieve Pin
+                Recieve Pin connected to Transmit Pin
+                Ground Pin connected to Ground Pin
+                Tends to be used for point-to-point links
+                Serial transfer
+                Both ends need to be configured the same
+                Asynchronous - Doesn't have to wait to send data
+                Sends from the least significant bit (right-most binary character)
+                Uses +15V for 0 and -15V for 1
+            Within a serial terminal program
+        
+    Serial vs Parallel
+        Saw previously how CPU transfers memory to and from memory
+        Transferred in 8-bit chunks - 8 separate wires
+        Alternative is to send them serially, or one by one
+        Most networks work serially
+            Needs fewer wires for the same bit width
+            Less of a bottleneck
+            God damn speed of light laws of physics bullshit
+            Hardware needs to know about the formatting
+                First bit?
+                Number of bits?
+                How fast are they being sent?
+        Shift registers essentially convert from parallel to serial and back again
+
+    Sending multiple characters
+        Sending an A over RS232
+            Sends binary 65, 01000001
+            RS232 sends it like 10000010
+            If we need to send 2 A's, we need a defined start and end point
+            If we don't have that, we can send entirely different numbers, and therefore entirely different messages
+            As well as sending the first bit of the message, RS232 also sends a first-er bit, a 0. Always.
+                Then sends a final stop bit after the messages, which is always a 1
+                The line remains at 1 if no characters are being transmitted
+                Sometimes this doesn't quite work and we get a framing error
+
+    Duplex
+        RS232 is full duplex
+            Computer can send and recieve at the same time
+            Doesn't have to wait for other computer to finish before you start
+            Half duplex is when only one thing can talk at a time
+                eg WiFi, early Ethernet
+
+    Modulation/Demodulation
+        We haven't discussed how bits go along the wire
+        RS232 uses voltages, but that only works for short distances
+        Continuously oscillating signals can go much farther
+        Comm systems tend to use a continuous oscillatinf signal as a data carrier
+        Various types
+            Amplitude (AM)
+            Frequency (FM)
+            Phase-Shift
+        Some methods can modulate more than one signal
+        Hardware based modulators/demodulators interpret the signal
+            Called modems (ah!)
+        

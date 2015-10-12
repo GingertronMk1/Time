@@ -1,0 +1,77 @@
+(G51CSF) 1 - Introduction to the Computer
+
+    How a simple computer is built
+        Main building blocks & how they fit together
+        At this level, all the abstractions we're used to go a bit wonky
+        We like to have perfect models
+            The world, for better or worse, ain't perfect
+        3 main things
+            CPU, or Central Processing Unit
+            RAM, or Random-Access Memory
+            ROM, or Read-Only Memory
+            All connected by a shitload of wires
+        Coding at this low level SUCKS MASSIVE HAIRY BALLS
+
+    The CPU
+        The bit that computes
+        Executes instructions one by one
+        In order, therefore time is a factor
+            A CPU requires a clock to work
+            Every tick of the clock is one instruction being executed
+        Requires instructions to do and data to do stuff with
+        Represented as binary numbers
+        Need to be fetched/stored
+            From memory
+        Von Neumann model
+            A shared memory for program and data
+
+    Clock
+        The computer's 'heartbeat'
+        This is what is meant by the clock speed
+        DOESN'T NECESSARILY CORRESPOND TO THE SPEED
+            One instruction set may take many cycles to do something
+
+    Data bus
+        Instructions are fetched from memory to CPU via the data bus
+        Usually fetches more than one bit at a time
+            8,16,32,64 bits are common
+            Not necessarily related to the bit count of a CPU
+        Bidirectional depending on whether the CPU is reading or writing
+
+    Memory
+        Data bus allows a chink of data to be transferred
+        But a computer needs to access lots of data
+        each piece of data is given a unique address
+        CPU specifies which piece of data it wants by providing the address on the address bus (surprise!)
+        Address Bus
+            Carries the address for the piece of memory in binary
+            The number of address bus lines determines how much memory the CPU can access
+        RAM
+            You can get any piece of data you want
+            Read/Write Access
+            Volatile - wiped if no power
+            How to get our program onto it?
+        ROM
+            Random-access again
+            Can only be read
+            Either pre-filled with values or programmable with a special programmer
+                Programmer burns out fuses to get correct bit pattern
+            Can't be modified, so make sure you get it right
+        We have both RAM and ROM so we can store values and have programs
+
+    Address decoding
+        CPU only has one address bus and one data bus
+        How to fit both ROM and RAM in?
+            Connect data bus to both
+            Set it such that if the CPU asks for a certain address it points to one or the other
+
+    Control Bus
+        Carris control signals that tells the rest of the system what the CPU is doing
+            Read/Write: is it reading/writing memory
+            Address Stroke: is the address bus valid?
+            Data Stroke: is the data bus valid?
+
+    I/O
+        I/O depends on the processor
+        68000, it's part of the memory address
+        x86, it's its own thing

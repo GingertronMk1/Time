@@ -1,0 +1,114 @@
+5 - Collisions and Reliability
+
+    Introduction
+        Started to look at how networks can be built using a shared medium
+        We need to be able to ensure only one computer is communicating at a time
+        The approach taken depends on the architecture of the network
+
+    Bus Networks
+        We spent some time considering these
+        Packets go to all machines simultaneously
+        This implementation rules out a token passing approach
+
+    Time division multiplexing
+        A controller synchronises machines to communicate in fixed time slots
+        Each machine gets a fixed amount of bandwidth from the whole medium
+            This is great for multitenancy
+            But not so much for bandwidth efficiency
+                Machines have to wait their turn
+        Variants are used upstream for DOCSIS and PON standard
+        Both assume asymmetric traffic
+            ie that the user will download more than they send
+        All traffic goes via the head end
+        Logically a star network, but implemented as a bus
+
+    Eventual Packet Delivery
+        The aim is to get a packet from one machine to another without collisions
+            Eventually
+        The key to alternate approaches is to accept that it might not get there first time
+            Accept that collisions will occur and be able to recover
+
+    Aloha
+        One of the first networks
+        Development started in 1968, became operational in 1971
+        Designed to connect terminals across Hawaii to the University's computer system
+        Went on to inspire Ethernet, GPRS, satellite communication
+        There was, however, a problem
+            Hawaii is a series of islands
+            Bit tricky to use cables (not anymore, thanks Dad!)
+            2 radio frequencies were allocated
+                One for transmission
+                One for recieving
+        Menehune
+            All comms went through a computer called a Menehune
+            One radio channel going from Menehune to all computers
+            Multiplexing packets isn't a problem, since there's only ever one device transmitting
+            All devices would hear the packets and ignore those not for them
+            But what about when clients wanted to send to the Menehune?
+                There was another radio frequency for client-Menehune transmission
+                Any client can transmit at any time
+                We need to avoid packet collision
+                Clients had no reciever for this signal, so no carrier sense
+                    So Menehune sent a reply to the client when it sucessfully recieved a packet
+                    An acknowledgement packet, or Ack
+                    If there's no Ack after a period of time, the client would resend
+                    And resend and resend until it got an Ack
+                    This also copes with random RF noise as well as packet collisions
+                    Just as with a token ring, there's an acknowledgement of receipt
+                    Thus, the channel can be considered as reliable
+
+    Ethernet
+        Does it provide a reliable network?
+        Can we be sure a packet will be delivered intact?
+        Ethernet borrows heavily from Aloha
+        But there's no explicit acknowledgement of frame reciept
+        Rather uses CSMA/CD algorithm
+        CSMA stands for Carrier Sense Multiple Access
+            Ethernet can listen to the bus to see if anything else is transmitting
+            If it is, wait until the line is clear
+            Then get transmitting sharpish like
+        Packet collision
+            Collision can still hapen if 2+ computers are waiting to send
+            Both start transmitting as soon as the other stops
+        CD stands for Collision Detection
+            If the data on the wire doesn't match what we sent, there's been a collision
+            We don't need an acknowledgement to know
+            The packet gets resent using exponential back off
+                A mechanism to delay the packet resent to avoid further collisions
+                Card has a maximum delay before resending, d
+                The packet is resent after a random delay less than d
+                If the packet collides again, d is doubled and the packet resent in some random time below the new d
+                This repeats until the packet sends correctly
+                Eventually d becomes such that the probability of collision is tiny
+        Is it reliable then?
+            No
+            It knwos the packet was sent correctly
+            But not if the package was recieved
+            So it's not reliable
+            However, software on top of it can make it reliable
+        Switches
+            Ethernet tends to be a switched network
+            This removes almost all possibility of collisions
+            Packets get recieved by the switch and forwarded out on the correct port
+            This is known as a 'Store and Forward' approach
+            If two packets arrive at the same time, the switch can sequence their retransmission to the destination
+            Switching can also provide full-duplex communication
+            Ethernet now acts like a star network
+
+        Wi-Fi
+            Based on Ethernet and works similarly
+            But uses a different mechanism to detect collisions
+            Has a reciever so can sense collisions
+            But has to cope with the 'hidden node problem'
+                Devices may be too far away from one another for carrier sense to work
+            CSMA/CA
+                Carrier Sense Multiple Access with Collision Avoidance
+                Used on WiFi and Apple LocalTalk
+                    LocalTalk was a wired bus networks
+                Still carrier sensed
+                Sends out a small pilot packet first to reserve the bus
+                If there's no collision, it sends its message
+                On Wi-Fi, the packet doesn't get sent if the message is very small
+                    The device sends a Request to Send packet
+                    The base station sends a Clear to Send packet to avoid the hidden node problem
+                    Both RTS and CTS packets reserve the bus

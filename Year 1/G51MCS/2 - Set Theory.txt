@@ -1,0 +1,148 @@
+(G51MCS) 1 - Set Theory
+
+Bob John
+
+    Why and What
+        Why?
+            Computers do stuff with data structures
+                Lists
+                    Trees
+                    Files
+
+            Sets make it easier to add to/take from these collections
+            Models of software rely on SET THEORY and LOGIC
+
+        What?
+            A collection of things
+            We can describe a set by listing stuff in it
+                Letters = {a,b,c,d,...,x,y,z}
+                N = {0,1,2,3,...}
+
+            The order doesn't matter
+            Defining a set is like defining an array, just with braces not brackets
+                Alternately, we can define a set by a condition
+                    X = {x|x%3=0}
+                    Notts = {s|s is a student at UoN}
+                        Where | is called a constraint bar
+
+            A set has no duplicate elements
+                Something is either a member of a set or it isn't. It cannot be a member twice.
+
+            2 sets are equal ONLY IF THEY HAVE THE SAME ELEMENTS
+                If 2 sets have the same elements they are equal
+                If 2 sets are equal they have the same elements
+
+            2 standard sets
+                Natural Numbers = {0,1,2,3,...}
+                Integers = {...,-3,-2,-1,0,1,2,3,...}
+                Subranges are certain parts within a set
+                    a..b = {x|x is within Integers and a≤x≤b}
+                    e.g. 5..10 = {5,6,7,8,9,10}
+
+    Set Operation
+        2 sets
+            A = {a,b,c,d,e}
+            B = {d,e,f,g}
+
+        Union, ∪
+            A ∪ B = {a,b,c,d,e,f,g}
+            A set with all elements of A and B
+            A OR B
+
+        Intersection, ∩
+            A ∩ B = {d,e}
+            A set containing only elements that are in A and B
+            A AND B
+            Works with as many sets as you want
+
+        Subtraction, \
+            A\B = {a,b,c}
+            A set containing the elements in A that aren't in B
+
+    Venn Diagrams
+        The middle bit is the intersection
+        The whole diagram is the union
+        
+    Size or Cardinality
+        For a set S the cardinality is |S| (modulus of S, for the maths geeks)
+        A = {a,b,c,d,e}
+            |A| = 5
+
+        B = {d,e,f,g}
+            |B| = 4
+
+        The Empty Set is defined by either E = {} or E = (phi)
+
+    Excercise
+        S = {1,3,5,7,9}
+        T = {5,6,7,8,9,10}
+            S ∪ T = {1,3,5,6,7,8,9,10}
+            S ∩ T = {5,7,9}
+            S\T = {1,3}
+            T\S = {6,8,10}
+            |S| = 5
+            |T| = 6
+
+    Subset, ⊂
+        A set X is only a subset of Y if AND ONLY IF every member of X is also a member of Y
+        4..8 ⊂ {x|x is a member of N and x ≤ 10}
+        
+    Example
+        Let's put together a payroll system
+        A systems analyst looks for natural sets that occur
+        We may treat certain sets of workers differently
+        WORKERS the set of all workers in the company
+        This set may be categorised into subsets, MANUAL and ADMIN
+        What relationship is there between these subsets?
+            MANUAL ∪ ADMIN = WORKERS
+        There are at least twice as many manual workers as admin
+            |MANUAL| ≥ 2|ADMIN|
+
+    Set Comprehension
+        Predicates
+            A predicate is a property or properties
+                A = {x:N|x ≤ 3}
+                Therefore, A = {0,1,2,3}
+            We can go further
+                b = {x:N| 1≤x≤50·2x}
+                b is a set of the first 50 even numbers
+                Alternately, we can write it as b = {x:1...50·2x}
+
+        Examples
+            C = {y:N|y≤5}
+                C = {0,1,2,3,4,5}
+            D = {y:N|y≤5·y+3}
+                D = {3,4,5,6,7,8}
+            E = {t:1...10·t^2}
+                E = {1,4,9,16,25,36,49,64,81,100}
+
+    Cartesian Product, aka Tuples
+        Pairs of values can be created by taking the product of 2 sets, say X and Y
+        XxY = {(x,y)|x:X and Y:Y}
+        If X = {1,2} and Y = {a,b,c}, we get
+            XxY = {(1,a),(1,b),(1,c),(2,a),(2,b),(2,c)}
+            The order matters: (1,a) IS DIFFERENT TO (a,1)
+        Consider a set of people and their heights. The set NAMExHEIGHT is a set of all possible
+        pairs of values
+            We can extend to a triple, eg the set NAMExHEIGHTxWEIGHT, which would be
+            (name, height, weight)
+        |AxB| = |A| x |B|
+
+    Power Set
+        For any given set X we can make a set of ALL subsets of X
+            This is called the power set of X and is denoted by PX
+            eg P{a,b} = {{},{a},{b},{a,b}}
+                Cardinality of a power set is equal to 2^n, where n is the cardinality of the set
+
+    Universal and Complement
+        The Universal set is the set of all elements in a particular world or problem
+            Usuall denoted by X
+        The complement of a set P can be denoted by P^c and is all elements in X but not in P
+
+    Symmetric Difference
+        The set of elements that belong to A or B, but not both
+        Don't bother beyond that
+
+    De Morgans Laws
+        (A ∩ B)^c = A^c ∪ B^c
+        (A ∪ B)^c = A^c ∩ B^c

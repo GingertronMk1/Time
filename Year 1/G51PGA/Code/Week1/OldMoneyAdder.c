@@ -13,8 +13,8 @@ int main(){
 };
 
 void printSumPSP(
-     int xPounds, int xShillings, int xPennies,
-     int yPounds, int yShillings, int yPennies){
+    int xPounds, int xShillings, int xPennies,
+    int yPounds, int yShillings, int yPennies){
     int xnewPence = (xPounds*240) + (xShillings*12) + xPennies; //converts from PSP to pennies
     int ynewPence = (yPounds*240) + (yShillings*12) + yPennies;
     int newPrice = xnewPence + ynewPence; //adds penny values together

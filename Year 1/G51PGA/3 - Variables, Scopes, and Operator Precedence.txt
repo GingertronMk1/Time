@@ -1,0 +1,50 @@
+3 - Variables, Scopes, and Operator Precedence
+
+    Printf
+        Print formatted
+        Takes one or more parameters
+            A string of text to print
+            A series of values to interpolate into that string
+        Regular characters are printed as normal
+        Special characters
+            Interpolation strings
+                %d, %f, %s
+                    Double, float, string
+                    Strings interpolated need to be in quotation marks
+                Possible to specify print length by adding a number after the %
+                    Doesn't truncate longer strings
+            Escaping characters
+                \
+        There's a wikipedia page, or it's on page 3 of the unix manual
+
+    Variables and Scopes
+        Variables have scope
+            This means they can only be accessed from certain parts of a program
+        Thus far, we've only looked at local variables
+            Ones that exist only within the functions they're declared in
+                Not accessible to funcitons called from that function
+            Their values aren't carried to the next time the function runs
+                Created when the function runs, destroyed when it stops
+        You can have global variables
+            Ones that are available to the whole program
+            These aren't limited to one function
+            They're defined at the top level of a program, before main
+            Some people consider them to be bad practice, along with gotos
+
+    Parameters
+        These allow us to pass values from one function to another
+        Work similarly to local variables
+            Scope is limited to that function
+        Value gets assigned when the program's called
+        Value can be changed exactly like a variable
+        The original calling value cannot be changed
+            The variable in the function is a separate copy
+
+    Return values
+        Functions can return values as well as take in parameters
+        This uses the return statement, which finishes the function and retrns to the calling
+            routine
+
+    Operators and Precedence
+        
+

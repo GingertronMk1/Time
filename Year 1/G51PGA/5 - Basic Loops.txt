@@ -1,0 +1,88 @@
+5 - Basic Loops
+
+    Loops
+        Do statements several times until some condition is met
+        while, do while, for
+
+    Why loop?
+        Largely for interactive
+        Waiting for input/instructions from a user
+
+    The nasty way
+        Mimic what the CPU is actually up to
+        Use the goto instruction
+        Tells C to use a specific point in the program
+        DO NOT EVER USE
+
+    While
+        This is probably the simplest loop
+        Two parts
+            The conditional (the test)
+            A statement to execute
+                A code block counts as one statement
+        While the conditional evaluates as true, execute statements
+
+    How while works
+        First, the condition is evaluated
+            If false, the statement is skipped
+            If true, the statement is executed
+        The condition is evaluated again
+            And again
+            And again
+            niaga dnA
+
+    Character counting redux
+        We can use a while loop to implement this
+            User getchar() to read characters
+            While the character's not the end of file (EOF)
+            Increment some variable for each character we encounter
+            Optionally, we can use an if to distinguish non-spaces
+        We can modify this code to count lines
+            Ask if it's a new line character (\n)
+
+    Word counting
+        Words separated by space, tab, or linefeed
+            But there may be more than one of these
+        Therefore we can't just increment the counter when we find one
+        That would count spaces, not words
+        We need to think about this logically
+        We start off in 'not in a word' state
+            When we encounter a letter, we enter the 'in word' state
+            We'll stay in this state until we find another non-letter
+            Whereupon we'll change back to 'not in a word'
+        We can count words by counting transitions between states
+            We may not have a final transition
+        How do we model state?
+        Easy
+            We store it in a variable
+            If the variable contains one value (say 0) then we're not in a word
+            If it contains another (say 1) then we are in a word
+            We'll use 0 and 1 to represent the states
+            We should give them a name, for readability's sake
+            So we'll give em a name
+                Say OUTWORD and INWORD
+            We only want to name the values, so a variable's a bit pointless
+        Initialise variable to OUTWORD
+        If we find a letter
+            And we're in OUTWORD, we switch to INWORD
+            And we're in INWORD, we stay there
+        If we find a space
+            And we're in OUTWORD, we stay there
+            And we're in INWORD, we switch to OUTWORD
+
+    #define
+        The C preprocessor lets us do this using the #define directive
+            #define OUTWORD 0
+            #define INWORD 1
+        The preprocessor replaces all occurence of the name with the literal value
+        The C compiler only ever sees the value
+            This therefore has no negative effect on runtime
+
+    do-while Loop
+            do{
+                one statement;
+                two statement;
+                red statement;
+                blu statement;
+            } while(condition);
+        Differs from a while loop in that the condition is checked after the loop's run once

@@ -1,0 +1,145 @@
+2 - The Internet
+
+    The hell is it?
+        A network of networks
+        ARPANET etc
+        Made such that universities could share resources
+        Network
+            A group of computers connected such that they can communicate with each other
+        Network of Networks
+            A group of networks connected such that they can communicate with each other
+            Heterogeneous networks, ones that aren't the same
+            Internetwork, or internet (ah!)
+
+    Switching
+        Circuit switching
+            A circuit between 2 machines that allows communication
+        Packet switching
+            Network comms broken into small packets
+            Sent interleaved with other packets down a single set of wires
+            Better network utilisation than circuit switching
+        
+    Networking Warning
+        Shit gets tricky
+        You don't need to understand it to use them
+        Abstraction is vital
+            Lets us use it without having to concern yourself with the inner workings
+        
+    OSI Network Layer Model
+        A conceptual model
+        Seven layers, like a series of envelopes
+        Networks don't actually quite fit this (that whole imperfect universe again)
+        Still handy, like
+        Used: layer 2 switch, layer 3 switch
+        Each layer abstracts the layer below it, so we don't have to look too deep
+            
+    Protocols
+        Describe how comms happen
+            Order bits are sent in
+            What bits mean
+        Required such that computers at both ends can figure out what's being sent
+            There is no guaranteeing what kind of computer's at the other end
+        Not complex, but has to be precise
+        
+    TCP/IP
+        This is what the internet is built on
+        Kinda sorta fits the OSI thing
+        Again, abstracts lower levels
+
+    Layers
+        1: Physical
+            How the bits get turned into electrical signals and sent off
+            Can be a shared medium or point-to-point
+            eg Ethernet, WiFi, Serial
+        2: Data Link
+            How the data is formatted on the wire
+            Into frames
+                These don't leave the LAN
+            Tells us who that packet's for, its size, etc.
+            eg Ethernet/WiFi, PPP, SLIP
+        3: Network
+            Lower layers only refer to the physical network the machine's on
+            This layer forwards packets between networks
+            Doesn't know anything other than the data you're trying to send and where you're trying to send it
+                Does its best to get the data there. If it can't, it doesn't
+            We'll probably never go below this level in CSF
+            All the physical stuff is hidden behind abstractions
+            eg IPv4, IPv6
+        4: Transport
+            End-to-end communication
+            Ensures reliability, flow control and multiplexing
+            eg TCP, UDP
+        5: Session
+            Managing a session between end-user applications processes
+            Not really used in TCP/IP stacks
+            eg SPDDY, SOCKS, NetBIOS
+        6: Presentation
+            How the data gets presented to the application
+            eg HTML, CSS, GIF, JPG, MP3
+        7: Application
+            The user interface
+            In TCP/IP, the protocols used between applications
+            eg HTTP, POP3, IMAP
+
+    Addressing
+        Networks need to identify where to send data
+        Each computer gets an address
+        This address must -uniquely- identify the machine
+        Ethernet uses a 56-bit MAC address (2^56 possible addresses)
+        IP uses its own address scheme
+            IPv4 defines an address as 4 bytes, usually in dotted decimal format
+            Should give us 4 billion devices
+                We've run out ಠ_ಠ
+            IPv6 should up the space to 128 bits
+                That's a whole lot of addresses
+                Addresses tend to be written hexadecimally, rather than x.x.x.x
+            Designed to let you identify what network an address is on
+            IPv4 did this using classes of addresses
+                A: 16.7m addresses per class
+                B: 65536 addresses per class
+                C: 256 addresses per class
+                D: used for multicast
+                E: reserved
+            You don't get to pick an IP address, it's allocatd by a standards body
+            Configuration goes 2 ways:
+                Configurable: you specify the IP address
+                Dynamic: Computer does it by itself
+        Layer 2 addresses
+            3 Ways addresses can be assigned
+                Static: fixed by the manufacturer
+                Configurable: user can decide
+                Dynamic: computer works out its own address
+            Packets get sent to all computers on a network
+                Hardware filters out packets not meant for your address
+        Address Resolution
+            Computer needs to know whether an IP address is on tis local network
+            This requires some way of converting an IP address to a MAC address
+                ARP - Address Resolution Protocol
+        Naming
+            IP addresses (particularly IPv6) aren't very memorable for humans
+            There are various options of converting to a human-readable format
+                Static text files
+                The Internet uses something called the Domain Name System (DNS)
+                A distributed hierarchical system that can map names to IP (amongst other things)
+            Domains follow a fixed format: onething.twothing,redthing,bluthing
+                Works from right to left, so we have top-level domains: .uk, .com, .net
+                    Below which there are other domains
+                    Below which there are other domains
+                    Below which there are other domains
+                    Below which there are other domains
+                    Below which there are other domains
+                    And so on...
+                Each domain has servers associated with it that con be queried to match names to IP
+                addresses
+                    Or can point you to a server that knows the answer
+                    There are 13 servers that you can start from
+            3 types of DNS server
+                Authoritative: hold the answer to a query
+                Recursive: will search for you to get the answer
+                Caching: stores the answer to respond quicker
+
+    Classless interdomain routing
+        When they came up with IP, they didn't think the internet would get so damn big
+        CIR aimed to slow the rapid growth of routing tables
+        Allows a variable number of bits to be used to identify the network
+        Generally written as an IP address followed by the number of bits that identify the network

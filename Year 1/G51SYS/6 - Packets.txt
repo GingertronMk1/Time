@@ -1,0 +1,106 @@
+6 - Packets
+
+    Introduction
+        We've talked about how data's split into packets
+        This allows it to be multiplexed onto the network with data from other machines
+        But how, exactly, is it split into packets? And what do they look like?
+
+    Size
+        How big is a packet
+        Too little and the network is carrying mostly the metadata
+        Too large and what's the point of putting data into them?
+
+    Latency
+        The time taken for a packet to get between computers
+        Related to the speed, or bandwidth, of a network but not the same
+        We can have high-speed networks with high latency
+            Once the packets start arriving, the data comes in very quickly
+            But that initial packet takes ages, relatively speaking
+        Low latency can be more important than high speed, particularly for interactive applications
+        One factor determining latency is the time the previous packet takes to send
+        The packet is the unit of transmission on a network
+        The next packet can't be sent until the current one's finihsed sending
+        As packet size increases, so does this length of time
+            The potential delay before the next sending can happen increases
+
+    How an Ethernet packet looks
+        8 bytes of preamble
+            64 bits of alternating 1s and 0s
+            This allows the reciever to lock on to the packet
+        6 bytes of the destination address, 6 bytes of the source address
+            The 48-but MAC addresses of the respective machines
+            Special MAC addresses can be used to designate a broadcast packet
+                These are sent to all machines
+        2 bytes of the frame type
+            Just a number that tells us what's in the packet
+            Type numbers are standardised to that equipment from different vendors can interoperate
+        46-1500 bytes of actual data
+            Literally just the bits you want to send across the network
+            No size field despite a variable packet length
+            How do we know how big the packet is?
+                The ethernet line is silent after a packet's sent
+                If a carrier disappears it must be the end of the packet
+                    You are required to transmit 96 bits of idle line between packets
+        4 bytes of error correction
+            CRC, the Cyclic Redundancy Check
+            A number created from the packet
+            Reciever regenerates the same number
+                If the numbers don't match, the packet must have been corrupted
+            This enables error detection
+
+    IP Packets
+        Are similar to Ethernet packets
+        Again, have a header associated with data
+        The whole packet (including headers) can be variable size up to 65535 bytes
+        But they have to be carried inside other packets, such as internet
+        In reality, the size of the carrying packet usually defines the packet size
+        On Ethernet, IP packet maximum size is usually 1500 bytes
+        Maximum IP packet size is known as the Maximum Transmission Unit
+
+    Fragmentation
+        When fragmented, the data in an IP packet is split into chunks
+        Each chunk is a bultiple of 8 bytes long
+        These new chunks are sent as IP packets across the other network
+        ID firle dused to identify the packet
+        Fragmentation offset used to specify where the data goes
+        Reciever puts the fragments back together to recreate the original packet
+
+    Path MTU Discovery
+        IPv6 takes a different approach
+        Doesn't allow packets to be fragmented
+        Rather, it finds out what the largest packet size allowed between the machines
+        It then uses this as the MTU for sending packets
+
+    Reliability
+        IP is not a reliable network protocol
+        It's classed as a best-effort network
+        Higher level protocols are built on top of it to provide a reliable connection
+            This isn't always desirable, as it can increase latency
+
+    TCP, Transmission Control Protocol
+        TCP is the main protocol used on the internet to provide reliable, end-to-end, virtual connection
+        Connection-oriented protocol
+        Connection is explicitly opened and closed between two machines
+        Allows multiple connections between 2 machines
+        Introduces the concept of a port
+        Connection is made between a source port on one machine and a destination point on another
+        It's built entirely on top of IP with its own 20 byte header
+        Needs to solve several problems
+            Out-of-order delivery
+                IP doesn't guarantee that packets will arrive in the order they're sent in
+                TCP solves this problem by giving every packet a sequence number
+                It can reorder the packets into the right order based on the sequence number
+            Packet loss
+                IP doesn't guarantee that packets will be recieved
+                TCP does it by retransmitting lost packets
+                If no Acknowledgement is recieved after a certain time period, the packet gets resent
+                It will repeat this until the connection dies or it recieves the ACK
+                How long should it wait before retransmission?
+                This depends on thow much traffic is on the internet at that point between the machines
+                TCP monitors the time between packet sent and receipt of the ACK
+                Adjusts the timeout accordingly
+
+    Windowing
+        The problem with the adaptive timeout is that the sender has to wait for the ACK before sending anything else
+        So TCP sends a number of packets up to a certain window
+            When it gets the first ACK back, it knows it can send more

@@ -1,0 +1,94 @@
+4 - Logical Operators and Conditionals
+
+    C Hints
+        End statements with semicolons
+        Compile early and often
+        Declare things before they're used
+        All programs have a main() and almost certainly a #include <stdio.h>
+
+    Logical Operators
+        We've seen the basic maths operators
+        There are also relational and equality operators
+            These allow you to compare 2 values
+            Return TRUE or FALSE
+        List
+            !   Not
+            >   Greater than
+            >=  Greater than or equal to
+            <   Less than
+            <=  Less than or equal to
+            ==  Equal to
+            !=  Not equal to
+        C doesn't have a specific separate boolean data type
+            It treats logicals as integers
+                Representing FALSE as 0
+                TRUE as any other integer
+
+    Conditionals
+        Allow us to change the program flow
+        IF
+            Is used to express a decision
+            If the condition is true, execute the next statement
+            If it's false, don't
+                if(conditional)
+                    statement;
+            Keyboard Input
+                You can use if to test if a key is pressed on a keyboard
+                Use getchar() to read key
+                    int getchar()
+                Returns the character code of the key pressed
+                Or -1 if end of file (hence returns an int)
+                There is a problem
+                    UNIX only returns keyboard input when the return button's pressed
+                    So we also have to hit return before we see our keypress
+                getchar() returns the ASCII character code that corresponds to the letter
+                    C has a trick so we don't have to remember them
+                    If we put the character in single quotes, eg 'A', the compiler interprets it as the ASCII code
+            Blocks
+                Only being able to execute one statement is limiting
+                So we can use braces, {}, to put many statements into one
+                    This is called a block
+                It's a sensible thing to do even if there's only one statement after the if
+                    if(conditional){
+                        one statement;
+                        two statement;
+                        red statement;
+                        blu statement;
+                    };
+        ELSE
+            if(conditional){
+                one statement;
+                two statement;
+            } else {
+                red statement;
+                blu statement;
+            };
+            We can chain these
+                if(conditional){
+                    one statement;
+                } else if(conditional) {
+                    two statement;
+                } else if(conditional) {
+                    red statement;
+                } else {
+                    blu statement;
+                };
+
+    Combining Conditionals
+        if(conditional)
+        if(conditional){
+            statement;
+        };
+        Probably a better idea to nest if statements using braces
+            if(conditional){
+                if(conditional){
+                statement;
+                };
+            };
+        Sometimes we want to combine conditionals in a slightly more elegant way
+        We use boolean algebra
+            &&  means AND
+            ||  means OR
+            !   means NOT
+        C does a thing called lazy evaluation
+            It evaluates the left hand side, then (if necessary) the right
