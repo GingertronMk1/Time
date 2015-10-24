@@ -1,0 +1,74 @@
+6 - For Loops and Arrays
+
+    C's Special Increments and Decrement Operators
+        We have to use i = i + 1 often in for loops
+        These are so common we have special instructions for them
+        C provides 2 increment functions
+            Pre-increment (++i)
+            Post-increment (i++)
+        The difference between them is to do with the result of the calculation
+            Pre-increment returns the new value as the result
+            Post-increment returns the old value as the result
+        The same applies for decrementing
+
+    For Loops
+        We know why loops are useful
+        They're often used to count through a sequence of characters
+        Structure
+            Start at one value
+            Know the end value
+            Count up regularly
+
+                for(initial value; end condition; increment){
+                    statement;
+                }
+
+        They work similarly to a while loop
+       
+                initial value;
+                while(end condition){
+                    statement;
+                    increment;
+                }
+
+        Expressions are optional
+        Semi-colons aren't
+        Escaping
+            C provides a way of breaking out of a loop early
+            Including infinite loops
+            Uses the break instruction
+            Almost always used with a conditional
+
+    Arrays
+        How would we store the temperatures for a week?
+            Multiple variables; one for each day?
+            This does work, but it's a mess
+            The data are related
+            It would therefore be nicer if we could store them together
+        C lets us do this with arrays
+        A data structure that stores several variables of the same type
+        Has a fixed size specified at compile time, N
+        Individual values are accessed using a numeric index
+            From 0 (the first element) to N-1 (the last element)
+        C uses [] operators to signify an array
+        Created like a normal variable with the [] after the name
+            
+            int values[42] //creates an array of 42 ints
+
+        Accessing Array Items
+            Each array item has a numeric index
+            To access an item, the index is put in square brackets after the array name
+            These can be used just like any other variable
+            This functionality is very useful in loops
+        Arrays can be created anywhere variables can
+            Local arrays are local to functions
+            Global arrays are accessible anywhere
+        Like variables the initial value of an item in a local array is unknown
+            The initial values for global arrays are zero
+            We can assign values into them
+            We list them using {...}
+        The only place we can initialise an array is when we're first declaring it
+            We can't declare an empty array and then populate it after the fact
+        C assumes you as the programmer know what you're doing
+            It performs no checking when accessing arrays
+            It only keeps track of where the array starts in memory

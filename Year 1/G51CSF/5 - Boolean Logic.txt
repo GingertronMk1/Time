@@ -1,0 +1,82 @@
+5 - Boolean Logic
+
+    Introduction
+        We started by building a computer
+        Circuits were carrying digital signals
+        Either on, 1, or off, 0
+        Digital signals used to represent binary numbers
+        Binary numbers used to represent information
+        Today, we'll get to understanding how to manipulate these digital signals
+
+    Logic Circuits
+        Can build circuits that process these digital sigals
+        Simple ones have one output
+        If we need more than one output, we can consider it as two functions with the same set of inputs
+        There are only a limited number of logic inputs you can define
+            With one input there's only four logic functions
+                Constant 0
+                A
+                NOT A
+                Constant 1
+            With two inputs there are 16 possibilities
+                Constant 0  0
+                AND         A & B
+                A AND NOT B A & ~B
+                A           A
+                NOT A AND B ~A & B
+                B           B
+                XOR         ~A & B | A & ~B
+                OR          A | B
+                NOR         ~(A | B)
+                Equivalence A & B | ~A & ~B
+                NOT B       ~B
+                IF B THEN A A | ~B
+                NOT A       ~A
+                NAND        ~(A & B)
+                Constant 1  1
+                2 useful ones of these
+                    AND: only provides 1 if both inputs are 1
+                    OR: provides 1 if either input is 1
+            Generalization: with n inputs there are 4^n possible truth tables
+            Every boolean function can be expressed as a combination of AND, OR, and NOT
+            This is called that circuit's canonical representation (seen above tabbed)
+            AND, OR, and NOT have their own symbols that can be used to write logic equations
+            Similar to how we write mathematical equations
+
+    Logic Equations
+        We often need to write these down
+        Different disciplines use different operators
+        AND - A&B
+        OR - A|B
+        NOT - ~A
+        Precedence
+            Operators have precedence
+            NOT binds most tightly
+            Then AND
+            Finally OR
+            So A | B & C is equivalent to A | (B & C)
+
+    Logic Gates
+        An electronic circuit representing a logic function is called a gate
+        So with electronic circuits that represent AND, OR, and NOT, we can combine them to build any logic function as a circuit to process signals in a computer
+
+    Boolean Algebra
+        There exists a set of algebraic rules for logic functions
+        et out by George Bool in 'A Calculus of Logic'
+        Allows us to reason about logic functions and work with them
+        Also tells us we can build everything out of NAND gates
+        Given a set of NAND gates, we can design any nogic circuit we want
+        We can get programmable logic gates that are just series of NAND gates
+            Easier to design using AND, OR, and NOT gates
+            As it's the canonical representation
+            And let the computer convert it into NAND gates
+
+    NOT from NAND
+        NAND: Two 1s makes a 0, and two 0s makes a 1
+        So we can just connect one source to both inputs
+
+    AND from NAND
+        Anything inverted twice is itself again. I think that makes sense
+        So we can put a NOT gate after the NAND gate
+            And of course we can build a NOT gate from a NAND gate
+            Hence we can build an AND gate from two NAND gates

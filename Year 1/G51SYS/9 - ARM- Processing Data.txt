@@ -1,0 +1,50 @@
+9 - ARM: Processing Data
+
+    LDR
+        Two operands: register and address
+        Places the 32-bit value stored at address in the register
+        Not to be confused with ADR
+            LDR gets the value stored, ADR the address
+        Can be suffixed to form LDRB which loads an 8-bit byte
+
+    Load/Store Architecture
+        ARM is this kind of CPU
+        Means that memory can only be read/written by load and store (LDR and STR) operations
+        Other CPUs will let other instructions access memory as well
+        ARM separates data processing instructions from memory access
+
+    STR
+        The exact same as LDR except stores instead of reads
+
+    Data Processing Instructions
+        Only operate on registers
+        Common maths and logic operations
+        Either two or three operands
+            Destination register then one or two source registers
+        Last source register can optionally be an immediate value (a number)
+        Usually of the form
+            ADD Rd, Rn, Op2
+            Destination is Rd
+            Both Rd and Rn must be registers (can be the same)
+            Op2 can be an immediate value or another register (which can be shifted)
+
+    Immediate Values
+        Every instruction is 32-bits wide in ARM
+        This includes the immediate value and the bits used to describe the instruction
+        Ends up with only 12 bits available for the immediate value
+            Immediate values are encoded as an 8-bit value (0-255) and a 4-bit rotation value
+            Rotation shifts the bits around the 32-bits of the register
+
+    Conditional Branch
+        Branch as per B only if the condition is true
+            What condition?
+        There's a thing called the CPSR (Current Program Status Register)
+        The condition is based on the state of the CPSR
+        Certain instructions can set flags on the CPSR depending on their results
+            The instruction requires an 'S' suffix 
+            Apart from TST, TEQ, CMP, and CMN
+
+    CMP
+        Operands: 2 source registers
+        Calculates Rm-Rn and updates status registers
+        If registers are equal, Z flag is set in CPSR

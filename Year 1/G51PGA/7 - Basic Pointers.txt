@@ -1,0 +1,61 @@
+7 - Basic Pointers
+
+    Overview
+        Call by value
+            Details of how function parameters work
+        The need for multiple returns
+        Pointers
+            Variables, addresses, and pointers
+        Multiple returns
+            Using these concepts to return multiple values
+
+    Functions and Parameters
+        We've seen a few times that functions can take parameters
+        To call (run) a function, we write its name and pass in variables
+        When a function is called, a completely new variable is created for each parameter
+        Functions can alter the value of this local parameter variable
+        But because it only contains a copy, it doesn't affect the original
+            Even if it has the same name
+        Call by value is the name for how the parameter gets passed/copied into the function
+
+    Return values
+        Functions can return a single value
+            Using the return keyword
+        The return value is copied and passed back to the original calling statement
+            The original function call
+        The calling function can, and may or may not, do something with it
+        Multiple returns?
+            For example, solving a quadratic equation
+            How would we write a function that returns both roots?
+            We could get around it by writing two functions
+                One returning the +ve root, and another for the -ve root
+            That would end up calculating the same thing twice
+                Not good for efficiency
+            So we use pointers
+
+    Pointers
+        Internally, C knows where the value of each variable is stored in memory
+        When accessed, it looks up the value from the memory location
+        But we can also do this manually if we know the location (or address)
+        We call variables that contain the memory address of another variable a pointer
+        Defined using an asterisk (*) when declaring the variable
+            int *p
+            This creates a pointer variable 'p' which points to an integer
+            A pointer to an int
+            We can assign a value to p just the same as any other variable
+                This sets where p points to
+            To access the value to which p points, we need to put a * before it
+            We need to set the variable to point to something
+                Almost always another variable
+            Do this by using the address-of operator, &
+                So &x gets the address ofthe variable x
+                And p=&x sets p to point to the address of x
+                Types should match: int pointers should point to ints, etc
+
+    Multiple 'returns' using pointers
+        So far we've been passing values into parameters of functions
+        We've now seen that pointers can hold the address of other variables
+            Pointers can be used to change other variables
+            Importantly, addresses are integers
+        So if we pass the function the addresses of several variables we can change these variables
+            Spoofing multiple returns

@@ -1,0 +1,138 @@
+8 - Basic Strings and Files
+
+    Overview
+        Character arrays
+            What they are and how to use them
+        Strings
+            Strings and their relationship to pointers
+            Manipulating strings using pointers
+        Keyboard input
+            More sophisticated keyboard input using scanf
+        Files
+            Basic operations for reading and writing files
+
+    Character Arrays
+        A fixed array of characters
+            char text[16]
+        Hold a set of individual characters
+            char text[16] = {'h','e','l','l','o','_','w','o','r','l','d',\0]
+            \0 denotes a null character (ASCII 0)
+                Ending a character array with this tells C the array is finished
+                And to treat everything up to there as a string
+        C provides a special shortcut syntax
+            char text[16] = {"hello_world"}
+            char text[16] = "hello_world"
+            The quotation marks tell C to append a \0
+            Be very careful about including termination characters
+        Aside
+            Increment two variables in a for loop by separating them with a comma
+
+    Strings
+        Arrays and pointers are very closely linked in C
+            The name of an array is actually a pointer to the first element
+        Each element of an int array is an int variable
+        We can set a pointer to point at an array element (of the matching type)
+            And set pointers to point to arrays
+        Difference being that array names are constants
+        C strings are sequences of chars terminated by '\0'
+            Accessed by a pointer to the first character
+            Space is created for a new string using a character array
+            The characters can then be accessed either an an array, or by pointers
+
+    Defining strings
+        Two ways of doing this in C
+            An array initialised with the string
+                char str[] = "Hello World"
+            As a pointer to the string
+                char *str = "Hello World"
+        Aside
+            We can modify the contents of the first one, but not the second
+
+    Fixed length strings?
+        Right now we're using fixed length arrays to hold strings
+            We need to make sure the size of the char array is sufficient to store the string
+        This seems like a major limitation
+            What is the string might get longer?
+            We'll cover this later
+
+    Keyboard Input
+        How would we read a multi-digit number from the keyboard
+            Read a character using getchar()
+            Convert character to a number
+            Multiply be ten and add the new character
+        But we tend to do it a lot so C provides a library function to do it
+            scanf()
+            Unlike getchar(), it attempts to understand input
+            We need to tell it what to read
+                Uses the same syntax as printf(), with the same kinds of conversion characters
+            Hence it's a function that needs to be able to change multiple characters
+                So it works using pointers
+
+    scanf()
+        Takes two things
+            A string telling it what to look for
+            For each input field, a pointer to some memory to store a value of that type
+            This pointer needs to be of the corresponding type
+        scanf() then reads characters and converts them into whatever's required
+            Converts input to chars, ints, floats, doubles, etc...
+            For strings, it stops looking when there's a space
+                Any number of spaces counts as one to scanf()
+                There's a special syntax to make it look for a new line
+                scanf("%[^\n])
+                    This means scan anything that's not a new line
+        How it works
+            If it can't process the input (the type you specified wasn't what it got)
+                scanf() can't return a value so the memory you point to will be left unchanged
+                So how do you tell if its scanned?
+            scanf() returns a value in the normal way
+                With a return statement
+                It returns the number of arguments it recieves
+
+    Files in C
+        So far we've looked at reading input from the keyboard and printing output to the screen
+        C also provides library functions to read from and write to the file system
+        C's basic file I/O is very simple
+        Uses similar functions to what we're used to, preceded with an f
+            fprintf(), fscanf(), fgetc(), etc
+            The ones we've seen so far are actually just specific versions of these more general functions
+            The keyboard and screen are treated as special files opened when main() starts
+        We need to specify which filt to read/write to
+            We have to open a file to start using it, and close it to finish
+        File I/O is based around a new variable type: FILE
+            Or more commonly, a pointer to it
+        This is an example of a user-defined type
+        Defined by stdio.h
+            Technically part of the C library, not the language
+        We'll see how to define our own types later
+
+    Opening a FILE
+        We have fopen() to open files
+            FILE *fopen(char, path, mode,
+        The name of the file to open is given by the string path
+        The mode string specifies how to open a file
+            r is for reading
+            r+ is the same as r except for reading and writing
+            w is open for writing; if the file exists, empty it, otherwise create a new empty file
+            w+ is the same as w except for reading and writing
+            a is append; open for writing only; if file exists, open it otherwise create a new empty file
+            a+ is the same as a except for reading and writing
+        Returns a pointer to FILE
+        Can't open a non-existant file for reading
+            So returns NULL if that's the case
+            NULL being a special symbol defined in stdio.h
+    
+    Closing a FILE
+        We need to close a FILE when we're done with it
+            fclose(fp)
+        C uses what's called buffered I/O
+            Data's not written to the file straight away
+            If you don't close a file, any data written to it may be lost
+        We can use fflush() to force data to be written before the file is closed
+
+    Writing to a FILE
+        Write to a file using fprintf()
+            int fprintf(FILE *fp, char, *format...)
+
+    Readong from a file
+        An equivalent to scanf
+            int fscanf(FILE *fp, char, format...)

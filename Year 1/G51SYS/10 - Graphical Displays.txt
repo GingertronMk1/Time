@@ -1,0 +1,145 @@
+10 - Graphical Displays
+
+    Introduction
+        Early computers had limited ability to communicate with their operators
+        These days computers can produce rich graphical displays
+        High-resolution, rich colour
+        We're going to look at how a computer display works
+
+    Cathode ray Tube
+        Today, computer displays are most likely to be some kind of LCD
+        Graphical displays were initially built around a Cathode Ray Tube
+            Just like TVs of the time
+        Display standards are still built around the way a CRT works
+        So we've to understand how a CRT created an image
+            Thermal electrons are fired out of an emitter
+            High-voltage panels at the top, bottom, left, and right moved the electron around
+            The electron struck a phospherescent coating on a glass screen
+            This screen emitted light of different frequencies (and so colours) depending on the energy of the electron
+            This system only ever creates a single dot
+            But due to persistence of vision, we perceive an image
+                It also helps that phosphor decays to black
+        Image gets redrawn repeatedly and builds up over a short period of time
+        If this period gets too long, we can start to see the image being built
+        Two approaches are used to create the image
+            Vector displays
+                In which you just move the dot around to build an image
+            Raster displays
+
+    Vector Displays
+        Computer directly comtrols where the spot is
+        This allows you to produce very sharp lines and curves
+        The slower you move, the brighter the image
+        The more complex the image is, the longer it can take to draw
+            So it starts to flicker
+        How do you build complex images (filled shapes, pictures, etc.)?
+
+    Raster, or Bitmap, Displays
+        Works exactly like a TV
+        Scans the screen from top-left to bottom-right in a series of discrete parallel lines
+        At the end of a line, it flies back from the right to the left of the next line
+        Then refreshes the screen, when it flies back to the top of the screen
+        The refresh rate is the number of times per second the screen gets redrawn
+        The image is formed by altering the intensity of the electron beam as it scans each line
+        THe beam needs to turn off during the flyback period otherwise you'd be able to see the lines on screen
+        We need to be able to synchronise the scans of the CRT with the image data
+            This is done using synchronisation pulses sent to the display
+        On a computer, each line's drawn one after the other
+        All the computer needs to do is modulate the intensity of the electron beam
+            And generate the correct sync pulses
+            And the image will then be drawn on screen
+        
+    Computer Raster Displays
+        Image is broken into vertical lines and horizontal chunks
+        The resulting chunks are called picture elements or pixels
+        You can represent each pixel as a single bit - 0 is off, 1 is on
+        You can then draw patterns by outputting the right bits at the right time
+
+    Resolution
+        How many pixels do we need?
+        This depends on various factors
+            Some set by the technology or standards of the time
+            The more pixels we generate the faster we've to send them out
+            This is called the pixel clock rate
+                Too high and we can reach the limitations of the electronics
+            Memory usage is also a concern
+        Also controls how realistic the image looks
+        More pixels allows for more detail
+            Nyquist's theorem
+                You only need to store up to twice the maximum resolvable detail
+        Resolving power of the eye
+            Angular resolution, so depends on how far away the display is
+            'Retina' displays
+
+    Aliasing
+        Problem with breaking the image up into discrete samples
+        If the resolution is too low, artefacts from the sampling system can be seen in the display
+        This is called 'Aliasing'
+        The best known example of this is the staircase effect on diagonal lines
+        
+    Generating the display
+        The image is represented as a series of bits, one for each pixel
+        But how do we send this to the display?
+        We could get the CPU to alter the output at precisely the right time
+        But the CPU can't do any computation if it's constantly updating the display
+            Except during the blanking periods when the CRT is flying back
+        The alternative is to store the image in memory as a set of bytes
+            And to have dedicated hardware to read those bytes from memory
+            Shuffle the individual bits out one by one
+            Then read the next byte
+            The CPU can then alter bytes as necessary to update the display
+
+    Video Memory
+        Problem: only one device can read/write memory at a time
+        Can't have CPU and video hardware doing it at the same time
+        Need to synchronise memory accesses soonly one thing is accessing at a time
+        There are several approaches to the issue
+            Dedicated video memory
+                Only accessed by video hardware
+                CPU allowed acces when video not required (like in the blanking period)
+            Interleaved access
+                Let the video hardware access it when the CPU is guaranteed not to be
+                You do need faster memory
+            Dual-ported RAM
+                Special memory hardware that allows two or more devices to access it at the same
+                    time
+        The exact representation depends on the hardware design
+        Could be very simple, eg just the bits in a block in memory
+        Or it could be more complex
+            Allowing the display to be formed by placing layers on top of each other
+        Could have a fixed location, or allow the CPU/OS to define where in memory it is
+        
+    Drawing into memory
+        Assuming a straightforward layout of the bits for the pixels, it's easy to draw a pixel
+            We multiply the y-coordinate by the stride
+                The stride is the width of the screen, in bytes
+            Add on the x coordinate divided by 8
+            This gives the offset to the byte containing the pixel you want to use
+            X coordinate modulo 8 gives you the bit for that pixel
+
+    Colour and greyscale
+        We can easily expand this approach to greyscale and colour images
+        Just use more bits
+            Using 8 bits per pixel allows us to specify 256 different graduations of intensity
+            Using more than one colour channel (usually 3) we can specify any colour
+            The hardware gets a bit more complex, but the principle's the same
+
+    Modern displays
+        On an LCD/OLED, the image is always visible rather than being built up from a moving dot
+        The screen is still refreshed regularly
+        LCD monitors are still usually driven the same way as a CRT via VGA, etc
+        LCD hardware converts the signal into the necessary format to drive an LCD panel
+
+    Memory usage
+        The display takes up a significant amount of memory
+        Take the iPad Pro - 2732x2048 RGB display
+            Needs 16MB per screen
+            This adds up very quickly - even with today's level of available memory
+        Previously it wasn't unusual for the display standard of a computer to need more memory than
+            was available
+            So they had to come up with workarounds
+            One approach was to assume that the screen would only display text
+            So, only store the ASCII character codes in memory
+            Assuming 8x8 characters with an 80x25 character display
+            This would let you store the equivalent of 640x480 in 2K of memory
+
