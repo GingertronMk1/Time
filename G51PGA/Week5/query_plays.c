@@ -135,7 +135,7 @@ void exit_usage() {
             "where command is one of\n"
             "\n"
             "    p <userid>  prints plays, optionally limited to user.\n"
-            "    c <userid>  counts plays, optionally limited to user.\n");
+            "    c <userid>  counts plays, optionally limited to user.\n\n");
     exit(1);
 }
 
