@@ -5,7 +5,7 @@ int upcase(char *text, int length);
 
 int main() {
     char text[80];
-    printf("Please enter your text below:\n");      //TODO: function BNP()
+    printf("Please enter your text below:\n");
     scanf("%80[^\n]", text);
     int length = strlen(text);
     upcase(text, length);
@@ -20,8 +20,8 @@ int upcase(char *text, int length){
                 if(x > strlen(lowaz)){              //if we've incremented through the lowaz and found nothing,
                     printf("Error:  Non-English character\n");  //there's a non-english character, so fail condition
                     return 1;
-                } else if (text[i] == lowaz[x]){            //comparing the text to each character in the alphabet
-                    *text[i] = upaz[x];              //replacing lower case with upper case
+                } else if (text[i] == lowaz[x] || text[i] == upaz[x]){            //comparing the text to each character in the alphabet
+                    text[i] = upaz[x];              //replacing lower case with upper case
                     break;
                 };
             };

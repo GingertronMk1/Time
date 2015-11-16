@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
         3.  the name of file containing plaintext or ciphertext
         4.  the name of an output file. */
 
-    char plaintext[1024];
+    /*char plaintext[1024];
     char *choose = argv[1];
     char *pass = argv[2];
     char vs[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZBCDEFGHIJKLMNOPQRSTUVWXYZACDEFGHIJKLMNOPQRSTUVWXYZABDEFGHIJKLMNOPQRSTUVWXYZABCEFGHIJKLMNOPQRSTUVWXYZABCDFGHIJKLMNOPQRSTUVWXYZABCDEGHIJKLMNOPQRSTUVWXYZABCDEFHIJKLMNOPQRSTUVWXYZABCDEFGIJKLMNOPQRSTUVWXYZABCDEFGHJKLMNOPQRSTUVWXYZABCDEFGHIKLMNOPQRSTUVWXYZABCDEFGHIJLMNOPQRSTUVWXYZABCDEFGHIJKMNOPQRSTUVWXYZABCDEFGHIJKLNOPQRSTUVWXYZABCDEFGHIJKLMOPQRSTUVWXYZABCDEFGHIJKLMNPQRSTUVWXYZABCDEFGHIJKLMNOQRSTUVWXYZABCDEFGHIJKLMNOPRSTUVWXYZABCDEFGHIJKLMNOPQSTUVWXYZABCDEFGHIJKLMNOPQRTUVWXYZABCDEFGHIJKLMNOPQRSUVWXYZABCDEFGHIJKLMNOPQRSTVWXYZABCDEFGHIJKLMNOPQRSTUWXYZABCDEFGHIJKLMNOPQRSTUVXYZABCDEFGHIJKLMNOPQRSTUVWYZABCDEFGHIJKLMNOPQRSTUVWXZABCDEFGHIJKLMNOPQRSTUVWXY";
@@ -26,9 +26,11 @@ int main(int argc, char *argv[]) {
     int passlength = strlen(pass);
     char key[textlength];
     upcase(plaintext, textlength);
-    upcase(pass, passlength);
+    upcase(pass, passlength); */
 
-    if(textlength > passlength){                    //if the length of the text is greater than the pass
+    printf("I don't know how to make this work\n");
+
+    /*if(textlength > passlength){                    //if the length of the text is greater than the pass
         for(int i = 0; i < textlength; i++){
             int inc = i;
             if(inc > passlength){
@@ -50,7 +52,7 @@ int main(int argc, char *argv[]) {
         decrypt(plaintext, pass, textlength, passlength, vs);
     } else {
         printf("Please input e for encrypt or d for decrypt.\n");
-    };
+    }; */
 };
 
 void encrypt(char *text, char *pass, int n, int m, char *vs){
