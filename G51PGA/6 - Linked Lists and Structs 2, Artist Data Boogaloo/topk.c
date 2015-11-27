@@ -140,14 +140,14 @@ void exit_usage() {
 }
 
 /**
-*
-*
-*
-*  HERE BEGINS THE CODE WRITTEN FOR CW-B2
-*
-*
-*
-*/
+ *
+ *
+ *
+ *  HERE BEGINS THE CODE WRITTEN FOR CW-B2
+ *
+ *
+ *
+ */
 
 #define PLAYCOUNT 0
 #define ARTISTID 1
@@ -298,7 +298,7 @@ struct artist *merge_artists(struct artist *x, struct artist *y, int criterion){
                 x = y;
                 y = tmp;
             }
-        } else if(criterion == ARTISTID){
+        } else if(criterion == ARTISTID){       //Sort By Artist ID
             if(x->artist_id > y->artist_id){
                 tmp = x;
                 x = y;
@@ -369,6 +369,7 @@ struct artist *shorten_list(struct artist *list, int howmany){
     for(int i = 1; i < howmany; i++){
         list = list->next;
     }
+    free_artists(list->next->next);
     list->next = NULL;
     return head->next;
 }
@@ -404,26 +405,26 @@ void update_counts_actual(){
 }
 
 int main(int argc, char **argv){
+    //*
     //test_sorting_and_printing();
     //test_updating_counts();
     //update_counts_actual();
+    //*/
     if(argc == 4){                //If we've actually been given arguments, then do the printing/counting
-        int k = atoi(argv[1]);
-        printf("k recognised\n");
-        char artistdatafile[80];
-        char playdatafile[80];
-        strcpy(artistdatafile, argv[2]);
-        strcpy(playdatafile, argv[3]);
-        printf("Files: %s %s\n", artistdatafile, playdatafile);
-        struct artist *artists = read_artists(artistdatafile);
-        struct play *plays = read_plays(playdatafile);
-        printf("Files read\n");
+        char artist_file[80];
+        strcpy(artist_file, argv[2]);
+        printf("Artist file recognized: %s\n", artist_file);
+        char play_file[80];
+        strcpy(play_file, argv[3]);
+        printf("Play file recognized: %s\n", play_file);
+        struct artist *artists = read_artists(artist_file);
+        printf("Artists read\n");
+        struct play *plays = read_plays(play_file);
+        printf("Plays read\n");
         struct artist *updated = update_counts(artists, plays);
+        free_plays(plays);
         printf("Counts updated\n");
-        struct artist *sorted = sort_artists(updated, PLAYCOUNT);
-        printf("Sorted\n");
-        struct artist *truncated = shorten_list(sorted, k);
-        print_artists(truncated);
+        print_artists(shorten_list(sort_artists(updated, PLAYCOUNT), atoi(argv[1])));
         free_artists(updated);
     } else {
         printf("Error: expected 3 arguments after the program name: the number of plays to print, and the two files from which to take data.\n");
