@@ -172,14 +172,17 @@ struct artist *create_artist(int artist_id, char artist_name[NAMELEN], int playc
 }
 
 struct artist *read_artists(char *fname){       //TASK 1)b)
-    int artist_id, playcount;      //declaring variables for storage of these things
+    int artist_id;      //declaring variables for storage of these things
+    char tmp_artist_name[NAMELEN];
     char artist_name[NAMELEN];
     FILE *playdata = fopen(fname, "r"); //opening textfile read-only
     struct artist *root = create_artist(0," ",0);     //creating an empty struct to act as the head of the list
     struct artist *walker = root;     //creating a struct that will walk through the list, creating each new struct as the loop loops
+    int readartistscounter = 0;
     if(playdata != NULL){                   //assuming the file isn't just NULL
-        while(fscanf(playdata, "%d\t%65[^\t\n]\n", &artist_id, artist_name) != EOF){     //while not at end of file
-            struct artist *new = create_artist(artist_id, artist_name, 0);      //creating new struct
+        while(fscanf(playdata, "%d\t%64[^\t\n]\n", &artist_id, tmp_artist_name) == 2){     //while not at end of file
+            printf("%d, %d\n", ++readartistscounter, artist_id);
+            struct artist *new = create_artist(artist_id, strcpy(artist_name, tmp_artist_name), 0);      //creating new struct
             walker->next = new;
             walker = new;           //walking through list
         }
@@ -397,19 +400,20 @@ void test_updating_counts(){
 }
 
 void update_counts_actual(){
-    struct artist *test_artists = read_artists("artist_data.txt");
-    struct play *test_plays = read_plays("user_artist_data.txt");
-    struct artist *test_updated = update_counts(test_artists, test_plays);
-    print_artists(sort_artists(test_updated, PLAYCOUNT));
-    free_artists(test_updated);
-}
+    struct artist *test_artists = read_artists("real_artists.txt");
+    struct play *test_plays = read_plays("real_plays.txt");
+    printf("Files read\n");
+/*    struct artist *test_updated = update_counts(test_artists, test_plays);
+    free_plays(test_plays);
+    struct artist *sorted = sort_artists(test_updated, PLAYCOUNT);
+    print_artists(shorten_list(sorted, 10));
+    free_artists(test_artists);
+*/}
 
 int main(int argc, char **argv){
-    //*
-    //test_sorting_and_printing();
     //test_updating_counts();
-    //update_counts_actual();
-    //*/
+    update_counts_actual();
+    /*
     if(argc == 4){                //If we've actually been given arguments, then do the printing/counting
         char artist_file[80];
         strcpy(artist_file, argv[2]);
@@ -429,4 +433,5 @@ int main(int argc, char **argv){
     } else {
         printf("Error: expected 3 arguments after the program name: the number of plays to print, and the two files from which to take data.\n");
     }
+    /*/
 }

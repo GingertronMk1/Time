@@ -1,0 +1,51 @@
+///
+//(A&&!0&&!1&&!2) || (B&&!0&&!1&&2) || (C&&!0&&1&&!2) || (D&&!0&&1&&2) || 
+// (E&&0&&!1&&!2) || (F&&0&&!1&&2) || (G&&0&&1&&!2) || (H&&0&&1&&2)
+
+CHIP Mux8Way {
+    IN a, b, c, d, e, f, g, h, sel[3];
+    OUT out;
+
+    PARTS:
+    Not(in=sel[0],out=notZero);
+    Not(in=sel[1],out=notOne);
+    Not(in=sel[2],out=notTwo);
+
+    And(a=a,b=notZero,out=aNotZero);
+    And(a=notOne,b=notTwo,out=notOneNotTwo);
+    And(a=aNotZero,b=notOneNotTwo,out=aSection);
+
+    And(a=b,b=notZero,out=bNotZero);
+    And(a=notOne,b=sel[2],out=notOneTwo);
+    And(a=bNotZero,b=notOneTwo,out=bSection);
+
+    And(a=c,b=notZero,out=cNotZero);
+    And(a=sel[1],b=notTwo,out=oneNotTwo);
+    And(a=cNotZero,b=oneNotTwo,out=cSection);
+
+    And(a=d,b=notZero,out=dNotZero);
+    And(a=sel[1],b=sel[2],out=oneTwo);
+    And(a=dNotZero,b=oneTwo,out=dSection);
+
+    And(a=e,b=sel[0],out=eZero);
+    And(a=eZero,b=notOneNotTwo,out=eSection);
+
+    And(a=f,b=sel[0],out=fZero);
+    And(a=fZero,b=notOneTwo,out=fSection);
+
+    And(a=g,b=sel[0],out=gZero);
+    And(a=gZero,b=oneNotTwo,out=gSection);
+
+    And(a=h,b=sel[0],out=hZero);
+    And(a=hZero,b=oneTwo,out=hSection);
+
+    Or(a=aSection,b=bSection,out=abSections);
+    Or(a=cSection,b=dSection,out=cdSections);
+    Or(a=eSection,b=fSection,out=efSections);
+    Or(a=gSection,b=hSection,out=ghSections);
+
+    Or(a=abSections,b=cdSections,out=adSections);
+    Or(a=efSections,b=ghSections,out=ehSections);
+
+    Or(a=adSections,b=ehSections,out=out);
+}
