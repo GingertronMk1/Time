@@ -19,26 +19,48 @@
 
 #define kQUOTEPORT      1717
 #define kMULTIQUOTEPORT 1818
-#define QUOTELEN 256
+#define BUFSIZE 512
+#define WAITING 0
+#define SENTQUOTE 1
+#define ANOTHER 3
+#define NO 4
 
-struct quote *createQuote(char line[QUOTELEN]);
-struct quote *addQuote(struct quote *new, struct quote *head);
-struct quote *readQuotes(char *filename);
+struct quote *createQuote(char line[BUFSIZE]);                 //Creates a new struct quote
+struct quote *addQuote(struct quote *new, struct quote *head);      //Adds a new quote to a linked list
+struct quote *readQuotes(char *filename);       //Reads a text file of quotes into a linked list
 int countList(struct quote *head);
-char[QUOTELEN] randomQuote(int n, struct quote *head);
-
-
+struct quote quoteN(int n, struct quote *head);
+void answers(char filename[BUFSIZE], int count);
+void printQuote(char filename[BUFSIZE], int count);
 
 struct quote {          //Defining the struct type 'quote'
-    char line[QUOTELEN];
+    char line[BUFSIZE];
     struct quote *next;
+};
+
+int main(int argc, const char * argv[]){
+    char filename[BUFSIZE];
+    strcpy(filename, argv[1]);
+    printQuote(filename, 0);
+    return 0;
 }
 
-struct quote *createQuote(char line[QUOTELEN]){                 //Creates a new struct quote
+/*
+ *
+ *
+ *   Quote file reading stuff
+ *
+ *
+ */
+
+struct quote *createQuote(char line[BUFSIZE]){                 //Creates a new struct quote
     struct quote *a = (struct quote *)malloc(sizeof(struct quote));
     if(a != NULL){
-        a->line = line;
+        strcpy(a->line, line);
         a->next = NULL;
+        return a;
+    } else {
+        return NULL;
     }
 }
 
@@ -52,12 +74,12 @@ struct quote *addQuote(struct quote *new, struct quote *head){      //Adds a new
 }
 
 struct quote *readQuotes(char *filename){       //Reads a text file of quotes into a linked list
-    char quote[QUOTELEN];
-    char line
-    file quoteFile = fopen(file_name, "r");
+    char quote[BUFSIZE];
+    char line;
+    FILE *quoteFile = fopen(filename, "r");
     struct quote *tmp = malloc(sizeof(struct quote));
     if(quoteFile != NULL){
-        while(fscanf(quoteFile, "%s\n", quote)){
+        while(fgets(quote,BUFSIZE,quoteFile) != NULL){
             struct quote *new = createQuote(quote);
             tmp = addQuote(new,tmp);
             tmp = new;
@@ -79,30 +101,61 @@ int countList(struct quote *head){          //Counts the number of elements in a
             count++;
             q = q->next;
         }
+        return count-1;
     } else {
         printf("List Error\n");
+        return 0;
     }
 }
 
-char[QUOTELEN] randomQuote(int n, struct quote *head){
-    double random = (double)rand()/(double)RAND_MAX;
-    int quoteNumber = n*random;
+struct quote quoteN(int n, struct quote *head){
     if(head != NULL){
         struct quote *q = head;
         int count = 0;
-        for(int count = 0; count < quoteNumber; count++){
+        for(int count = 0; count < n; count++){
             q = q->next;
         }
-        return q->quote;
+        return *q;
     } else {
         printf("List Error in generating random quote\n");
+        return *head;
     }
 }
 
-int main(int argc, const char * argv[])
-{
-    struct quote quotes = readQuotes("Quotes.txt");
-    int quoteCount = countList(quotes);
-    printf("%s\n", randomQuote(quoteCount, quotes);
-    return 0;
+void answers(char filename[BUFSIZE], int count){
+    char answer[BUFSIZE];
+    scanf("%s", answer);
+    char another[] = "ANOTHER";
+    char close[] = "CLOSE";
+    if(strcmp(answer,another) == 0){
+        printf("\n");
+        printQuote(filename, ++count);
+    } else if(strcmp(answer,close) == 0){
+        printf("Bye!\n");
+    } else {
+        printf("Error, try again!\n");
+        answers(filename, count);
+    }
 }
+
+void printQuote(char filename[BUFSIZE], int count){
+    struct quote *quotes = readQuotes(filename);
+    int quoteCount = countList(quotes);
+    if(quoteCount > count){
+        struct quote nthQuote = quoteN(count,quotes);
+        printf("%s\n", nthQuote.line);
+        printf("Would you like ANOTHER or should I CLOSE?\n");
+        answers(filename, count);
+    } else {
+        count = 0;
+        printQuote(filename, count);
+    }
+}
+
+/*
+*
+*
+*       NETWORK STUFF STARTS HERE
+*
+*
+*/
