@@ -16,10 +16,12 @@
 #include <errno.h>
 #include <pthread.h>
 #include <sys/socket.h>
+#include <math.h>
+#include <time.h>
 
 #define kQUOTEPORT      1717
 #define kMULTIQUOTEPORT 1818
-#define BUFSIZE 512
+#define BUFSIZE 128
 #define WAITING 0
 #define SENTQUOTE 1
 #define ANOTHER 3
@@ -30,8 +32,8 @@ struct quote *addQuote(struct quote *new, struct quote *head);      //Adds a new
 struct quote *readQuotes(char *filename);       //Reads a text file of quotes into a linked list
 int countList(struct quote *head);
 struct quote quoteN(int n, struct quote *head);
-void answers(char filename[BUFSIZE], int count);
-void printQuote(char filename[BUFSIZE], int count);
+void responses(char filename[BUFSIZE]);
+void printQuote(char filename[BUFSIZE]);
 
 struct quote {          //Defining the struct type 'quote'
     char line[BUFSIZE];
@@ -39,10 +41,13 @@ struct quote {          //Defining the struct type 'quote'
 };
 
 int main(int argc, const char * argv[]){
+    /*
     char filename[BUFSIZE];
     strcpy(filename, argv[1]);
     printQuote(filename, 0);
     return 0;
+    */
+
 }
 
 /*
@@ -111,7 +116,8 @@ int countList(struct quote *head){          //Counts the number of elements in a
 struct quote quoteN(int n, struct quote *head){
     if(head != NULL){
         struct quote *q = head;
-        int count = 0;
+        srand(time(NULL));
+        n = cos(rand()) * n;
         for(int count = 0; count < n; count++){
             q = q->next;
         }
@@ -122,7 +128,7 @@ struct quote quoteN(int n, struct quote *head){
     }
 }
 
-void answers(char filename[BUFSIZE], int count){
+void responses(char filename[BUFSIZE]){
     char answer[BUFSIZE];
     scanf("%s", answer);
     char another[] = "ANOTHER";
@@ -134,24 +140,18 @@ void answers(char filename[BUFSIZE], int count){
         printf("Bye!\n");
     } else {
         printf("Error, try again!\n");
-        answers(filename, count);
+        responses(filename);
     }
 }
 
-void printQuote(char filename[BUFSIZE], int count){
+void printQuote(char filename[BUFSIZE]){
     struct quote *quotes = readQuotes(filename);
     int quoteCount = countList(quotes);
-    if(quoteCount > count){
-        struct quote nthQuote = quoteN(count,quotes);
-        printf("%s\n", nthQuote.line);
-        printf("Would you like ANOTHER or should I CLOSE?\n");
-        answers(filename, count);
-    } else {
-        count = 0;
-        printQuote(filename, count);
-    }
+    struct quote nthQuote = quoteN(count,quotes);
+    printf("%s\n", nthQuote.line);
+    printf("Would you like ANOTHER or should I CLOSE?\n");
+    responses(filename);
 }
-
 /*
 *
 *
@@ -159,3 +159,5 @@ void printQuote(char filename[BUFSIZE], int count){
 *
 *
 */
+
+
