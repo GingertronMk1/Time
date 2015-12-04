@@ -1,8 +1,9 @@
 //
-//  QuoteServer
+//  main.c
+//  KnockKnockServer
 //
-//  Created by <insert name>
-//  Username: <inser username>
+//  Created by Steven Bagley on 12/11/2015.
+//  Copyright © 2015 Steven Bagley. All rights reserved.
 //
 
 #include <stdio.h>
@@ -21,44 +22,90 @@
 
 #define kQUOTEPORT      1717
 #define kMULTIQUOTEPORT 1818
-#define BUFSIZE 128
+#define NETBUFSIZE 12
 #define WAITING 0
-#define SENTQUOTE 1
+#define SENTKNOCKKNOCK 1
+#define SENTCLUE 2
 #define ANOTHER 3
-#define NO 4
+#define BYE 4
+#define BUFSIZE 512
 
-struct quote *createQuote(char line[BUFSIZE]);                 //Creates a new struct quote
-struct quote *addQuote(struct quote *new, struct quote *head);      //Adds a new quote to a linked list
-struct quote *readQuotes(char *filename);       //Reads a text file of quotes into a linked list
-int countList(struct quote *head);
-struct quote quoteN(int n, struct quote *head);
-void responses(char filename[BUFSIZE]);
-void printQuote(char filename[BUFSIZE]);
-
-struct quote {          //Defining the struct type 'quote'
+struct quote {
     char line[BUFSIZE];
     struct quote *next;
 };
 
-int main(int argc, const char * argv[]){
-    /*
-    char filename[BUFSIZE];
-    strcpy(filename, argv[1]);
-    printQuote(filename, 0);
-    return 0;
-    */
+void ServerConnection(int fd, char *filename);
+struct quote *createQuote(char line[BUFSIZE]);
+struct quote *readQuotesFromFile(char *filename);
+int countLinkedList(struct quote *head);
+struct quote *randomQuote(int listLength, struct quote *head);
+struct quote randomQuoteFromFile(char *filename);
 
+int main(int argc, const char * argv[])
+{
+    int serverSocket, clientConnection;
+    struct sockaddr_in server;
+    struct sockaddr_in client;
+    unsigned int alen;
+
+    printf("Listening for connections on port %d\n", kQUOTEPORT);
+    
+    serverSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    memset(&server, 0, sizeof(server));
+    server.sin_family = AF_INET;
+    server.sin_port = htons(kQUOTEPORT);
+    server.sin_addr.s_addr = INADDR_ANY;
+    char quoteFile[BUFSIZE];
+    printf("Scanning quote file name\n");
+    sscanf(argv[1], "%s", quoteFile);
+    printf("%s\n", quoteFile);
+    
+    /* bind socket */
+    if((bind(serverSocket, (struct sockaddr*)&server, sizeof(server)) < 0))
+    {
+        printf("bind() failed -- %d\n", errno);
+        return 1; /* Error */
+    }
+    
+    /* Mark the connection as listening */
+    if(listen(serverSocket, 15) < 0)
+    {
+        fprintf(stderr, "Failed to listen()\n");
+        return 2;
+    }
+    
+    while(1)
+    {
+        alen = sizeof(client);
+        clientConnection = accept(serverSocket, (struct sockaddr*)&client, &alen);
+        if(clientConnection < 0)
+        {
+            fprintf(stderr, "Accept failed -- %d %d\n", clientConnection, errno);
+            return 3;
+        }
+        
+        printf("Connection from %x port %d...\n", ntohl(client.sin_addr.s_addr), ntohs(client.sin_port));
+        
+        /* Handle connection */
+        ServerConnection(clientConnection, quoteFile);
+        
+        close(clientConnection);
+    }
+    
+    return 0;
 }
 
 /*
- *
- *
- *   Quote file reading stuff
- *
- *
- */
+   *
+   *
+   *        QUOTE READING/PARSING CODE
+   *
+   *
+   */
 
-struct quote *createQuote(char line[BUFSIZE]){                 //Creates a new struct quote
+struct quote *createQuote(char line[BUFSIZE]){
     struct quote *a = (struct quote *)malloc(sizeof(struct quote));
     if(a != NULL){
         strcpy(a->line, line);
@@ -69,95 +116,77 @@ struct quote *createQuote(char line[BUFSIZE]){                 //Creates a new s
     }
 }
 
-struct quote *addQuote(struct quote *new, struct quote *head){      //Adds a new quote to a linked list
-    if(new != NULL){
-        new->next = head;
-        return new;
-    } else {
-        return head;
-    }
-}
-
-struct quote *readQuotes(char *filename){       //Reads a text file of quotes into a linked list
-    char quote[BUFSIZE];
-    char line;
+struct quote *readQuotesFromFile(char *filename){
+    char line[BUFSIZE];
     FILE *quoteFile = fopen(filename, "r");
     struct quote *tmp = malloc(sizeof(struct quote));
     if(quoteFile != NULL){
-        while(fgets(quote,BUFSIZE,quoteFile) != NULL){
-            struct quote *new = createQuote(quote);
-            tmp = addQuote(new,tmp);
+        while(fgets(line,BUFSIZE,quoteFile) != NULL){
+            struct quote *new = createQuote(line);
+            new->next = tmp;
             tmp = new;
         };
         fclose(quoteFile);
         return tmp;
     } else {
         fclose(quoteFile);
-        printf("File Error\n");
-        exit(1);
+        printf("Error reading file\n");
+        return NULL;
     }
 }
 
-int countList(struct quote *head){          //Counts the number of elements in a linked list of quotes
+int countLinkedList(struct quote *head){
     if(head != NULL){
         struct quote *q = head;
-        int count = 0;
+        int n = 0;
         while(q != NULL){
-            count++;
+            n++;
             q = q->next;
-        }
-        return count-1;
+        };
+        return n;
     } else {
-        printf("List Error\n");
+        printf("Error: linked list is NULL\n");
         return 0;
     }
 }
 
-struct quote quoteN(int n, struct quote *head){
+struct quote *randomQuote(int listLength, struct quote *head){
     if(head != NULL){
         struct quote *q = head;
         srand(time(NULL));
-        n = cos(rand()) * n;
-        for(int count = 0; count < n; count++){
+        int randomNumber = fabs(cos(rand())) * listLength;
+        for(int i = 0; i < randomNumber; i++){
             q = q->next;
         }
-        return *q;
+        return q;
     } else {
-        printf("List Error in generating random quote\n");
-        return *head;
+        printf("Error selecting random quote: list empty\n");
+        return NULL;
     }
 }
 
-void responses(char filename[BUFSIZE]){
-    char answer[BUFSIZE];
-    scanf("%s", answer);
-    char another[] = "ANOTHER";
-    char close[] = "CLOSE";
-    if(strcmp(answer,another) == 0){
-        printf("\n");
-        printQuote(filename, ++count);
-    } else if(strcmp(answer,close) == 0){
-        printf("Bye!\n");
-    } else {
-        printf("Error, try again!\n");
-        responses(filename);
-    }
+struct quote randomQuoteFromFile(char *filename){
+    struct quote *list = readQuotesFromFile(filename);
+    int numberOfQuotes = countLinkedList(list);
+    struct quote *random = randomQuote(numberOfQuotes, list);
+    return *random;
 }
 
-void printQuote(char filename[BUFSIZE]){
-    struct quote *quotes = readQuotes(filename);
-    int quoteCount = countList(quotes);
-    struct quote nthQuote = quoteN(count,quotes);
-    printf("%s\n", nthQuote.line);
-    printf("Would you like ANOTHER or should I CLOSE?\n");
-    responses(filename);
-}
 /*
-*
-*
-*       NETWORK STUFF STARTS HERE
-*
-*
-*/
+   *
+   *
+   *        NETWORK CODE
+   *
+   *
+   *
+   */
 
-
+void ServerConnection(int fd, char *filename)
+{
+    char outBuffer[BUFSIZE];
+    char inputBuffer[BUFSIZE];
+    ssize_t n;
+    
+    sprintf(outBuffer, "Today's Quote:\t%s\r\n", randomQuoteFromFile(filename).line);
+    write(fd, outBuffer, strlen(outBuffer));
+}

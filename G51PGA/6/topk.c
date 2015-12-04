@@ -71,18 +71,15 @@ void print_plays(struct play *p){
 struct play *read_plays(char *file_name){
     int user_id, artist_id, playcount;      //declaring variables for storage of these things
     FILE *playdata = fopen(file_name, "r"); //opening textfile read-only
-    struct play *root = create_play(0,0,0);     //creating an empty struct to act as the head of the list
-    struct play *walker = root;     //creating a struct that will walk through the list, creating each new struct as the loop loops
+    struct play *tmp = create_play(0,0,0);     //creating an empty struct to act as the head of the list
     if(playdata != NULL){                   //assuming the file isn't just NULL
         while(fscanf(playdata, "%d %d %d\n", &user_id, &artist_id, &playcount) != EOF){     //while not at end of file
             struct play *new = create_play(user_id, artist_id, playcount);      //creating new struct
-            walker = add_play(new, walker);
-            walker = new;           //walking through list
+            new->next = tmp;
+            tmp = new;           //walking through list
         }
         fclose(playdata);   //Close the file
-        walker->next = NULL;      //so we have a NULL pointer at the end of the list for our other functions
-        root = root->next;  //so the head doesn't just point to an all-zero struct
-        return root;
+        return tmp;
     } else {
         fclose(playdata);
         printf("File error\n");
@@ -175,20 +172,17 @@ struct artist *read_artists(char *fname){       //TASK 1)b)
     int artist_id;      //declaring variables for storage of these things
     char artist_name[NAMELEN];
     FILE *playdata = fopen(fname, "r"); //opening textfile read-only
-    struct artist *root = create_artist(0," ",0);     //creating an empty struct to act as the head of the list
-    struct artist *walker = root;     //creating a struct that will walk through the list, creating each new struct as the loop loops
+    struct artist *tmp = create_artist(0," ",0);     //creating an empty struct to act as the head of the list
     char lines[BUFSIZE];
     if(playdata != NULL){                   //assuming the file isn't just NULL
         while(fgets(lines,BUFSIZE,playdata) != NULL){     //while not at end of file
             sscanf(lines, "%d\t%64[^\t\n]\n", &artist_id, artist_name);
             struct artist *new = create_artist(artist_id, artist_name, 0);      //creating new struct
-            walker->next = new;
-            walker = new;           //walking through list
+            new->next = tmp;
+            tmp = new;           //walking through list
         }
         fclose(playdata);   //Close the file
-        walker->next = NULL;      //so we have a NULL pointer at the end of the list for our other functions
-        root = root->next;  //so the head doesn't just point to an all-zero struct
-        return root;
+        return tmp;;
     } else {
         fclose(playdata);
         printf("File error\n");
@@ -368,7 +362,7 @@ struct artist *update_counts(struct artist *a, struct play *p){         //TASK 2
 struct artist *shorten_list(struct artist *list, int howmany){
     struct artist *head = create_artist(0," ",0);
     head->next = list;
-    for(int i = 1; i < howmany; i++){
+    for(int i = 1; i < howmany && list->next != NULL; i++){
         list = list->next;
     }
     free_artists(list->next->next);
@@ -376,42 +370,7 @@ struct artist *shorten_list(struct artist *list, int howmany){
     return head->next;
 }
 
-void test_sorting_and_printing(){
-    struct artist *test_artists = read_artists("test_artists.txt");
-    struct play *test_plays = read_plays("test_plays.txt");
-    struct artist *id_artists = sort_artists(test_artists,ARTISTID);
-    struct play *plays_by_count = sort_plays(test_plays);
-    printf("Artists By Artist ID\n");
-    print_artists(id_artists);
-    printf("\nPlays By Artist ID\n");
-    print_plays(plays_by_count);
-    printf("\n");
-    free_artists(id_artists);
-    free_plays(plays_by_count);
-}
-
-void test_updating_counts(){
-    struct artist *test_artists = read_artists("test_artists.txt");
-    printf("Artists done!\n");
-    struct play *test_plays = read_plays("test_plays.txt");
-    printf("Plays done!\n");
-    struct artist *test_updated = update_counts(test_artists, test_plays);
-    print_artists(test_updated);
-    free_artists(test_updated);
-}
-
-void update_counts_actual(){
-    struct artist *test_artists = read_artists("artist_data.txt");
-    struct play *test_plays = read_plays("user_artist_data.txt");
-    struct artist *test_updated = update_counts(test_artists, test_plays);
-    free_plays(test_plays);
-    struct artist *sorted = sort_artists(test_updated, PLAYCOUNT);
-    print_artists(shorten_list(sorted, 10));
-}
-
 int main(int argc, char **argv){
-    //test_updating_counts();
-    //update_counts_actual();
     if(argc == 4){                //If we've actually been given arguments, then do the printing/counting
         char artist_file[80];
         strcpy(artist_file, argv[2]);
