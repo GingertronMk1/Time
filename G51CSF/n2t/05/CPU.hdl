@@ -40,13 +40,13 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
-        Not(in=instruction[15], out=Ainstruction);
-        Not(in=Ainstruction, out=Cinstruction);
+        Not(in=instruction[15], out=aInstruction);
+        Not(in=aInstruction, out=cInstruction);
 
-        And(a=Cinstruction, b=instruction[5], out=ALUtoA);
+        And(a=cInstruction, b=instruction[5], out=ALUtoA);
         Mux16(a=instruction, b=ALUout, sel=ALUtoA, out=Aregin);
 
-        Or(a=Ainstruction, b=ALUtoA, out=loadA);    // load A if A-inst or C-inst&dest to A-reg
+        Or(a=aInstruction, b=ALUtoA, out=loadA);    // load A if A-inst or C-inst&dest to A-reg
         ARegister(in=Aregin, load=loadA, out=Aout);
 
         // A or M?
@@ -58,13 +58,13 @@ CHIP CPU {
         no=instruction[6], out=ALUout, zr=ZRout, ng=NGout);
 
         // From the ALU to the D-Register
-        And(a=Cinstruction, b=instruction[4], out=loadD);
+        And(a=cInstruction, b=instruction[4], out=loadD);
         DRegister(in=ALUout, load=loadD, out=Dout);    // load the D register from ALU
 
         // The memory-writing bit
         Or16(a=false, b=Aout, out[0..14]=addressM);
         Or16(a=false, b=ALUout, out=outM);
-        And(a=Cinstruction, b=instruction[3], out=writeM);
+        And(a=cInstruction, b=instruction[3], out=writeM);
 
         And(a=ZRout, b=instruction[1], out=jeq);    // is zero and jump if zero
         And(a=NGout, b=instruction[2], out=jlt);    // is neg and jump if neg
@@ -73,7 +73,7 @@ CHIP CPU {
         And(a=positive, b=instruction[0], out=jgt); // is pos and jump if pos
         Or(a=jeq, b=jlt, out=jle);
         Or(a=jle, b=jgt, out=jumpToA);              // load PC if cond met and jump if cond
-        And(a=Cinstruction, b=jumpToA, out=PCload); // Only jump if C instruction
+        And(a=cInstruction, b=jumpToA, out=PCload); // Only jump if C instruction
         Not(in=PCload, out=PCinc);                  // only inc if not load
         PC(in=Aout, inc=PCinc, load=PCload, reset=reset, out[0..14]=pc);
 }
