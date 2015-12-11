@@ -1,9 +1,8 @@
 //
-//  main.c
-//  KnockKnockServer
+//  QuoteServer
 //
-//  Created by Steven Bagley on 12/11/2015.
-//  Copyright © 2015 Steven Bagley. All rights reserved.
+//  Created by Jack Ellis
+//  Username: psyje5
 //
 
 #include <stdio.h>
@@ -41,9 +40,9 @@ struct quote *readQuotesFromFile(char *filename);
 int countLinkedList(struct quote *head);
 struct quote *randomQuote(int listLength, struct quote *head);
 struct quote randomQuoteFromFile(char *filename);
+void printAllQuotes(struct quote *head);
 
-int main(int argc, const char * argv[])
-{
+int main(int argc, const char * argv[]){
     int serverSocket, clientConnection;
     struct sockaddr_in server;
     struct sockaddr_in client;
@@ -59,7 +58,12 @@ int main(int argc, const char * argv[])
     server.sin_addr.s_addr = INADDR_ANY;
     char quoteFile[BUFSIZE];
     printf("Scanning quote file name\n");
-    sscanf(argv[1], "%s", quoteFile);
+    if(argc == 2){
+        sscanf(argv[1], "%s", quoteFile);
+    } else {
+        printf("No quote file given: falling back to default: Quotes.txt\n");
+        strcpy(quoteFile, "Quotes.txt");
+    };
     printf("%s\n", quoteFile);
     
     /* bind socket */
@@ -143,7 +147,7 @@ int countLinkedList(struct quote *head){
             n++;
             q = q->next;
         };
-        return n;
+        return n-1;
     } else {
         printf("Error: linked list is NULL\n");
         return 0;
@@ -172,6 +176,15 @@ struct quote randomQuoteFromFile(char *filename){
     return *random;
 }
 
+void printAllQuotes(struct quote *head){
+    struct quote *q = head;
+    int counter = 0;
+    while(q != NULL){
+        printf("%d:\t%s\n", counter++, q->line);
+        q = q->next;
+    }
+}
+
 /*
    *
    *
@@ -181,8 +194,7 @@ struct quote randomQuoteFromFile(char *filename){
    *
    */
 
-void ServerConnection(int fd, char *filename)
-{
+void ServerConnection(int fd, char *filename){
     char outBuffer[BUFSIZE];
     char inputBuffer[BUFSIZE];
     ssize_t n;

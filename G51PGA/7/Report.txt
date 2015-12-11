@@ -1,0 +1,55 @@
+GENERIC LISTS
+
+add_elt takes two variables: the head of the current linked list and a void, val.
+If this void val is NULL, it returns the head.
+Else, it creates a new generic struct, struct *new, sets its value to val and its next pointer to the current head
+It then returns this new struct, as it is the head of the linked list now
+
+free_list first generates a temporary struct, then (provided the head of the list isn't NULL), sets it equal to each element in the list in turn
+This means that that place in memory gets accessed by two pointers
+So now the list pointer can be moved onto the next struct in the list
+The temp pointer is now used to free the memory to which it points
+    In both the value in the struct, and the memory allocated to the struct itself
+
+read_list reads a file line-by-line (after checking the file is not null)
+The second argument passes a function that takes characters as an argument
+    This function is used to parse, so you can have many functions for many types of ways the data is encoded on the textfile
+    So you could have (using examples from earlier courseworks) parse_plays or parse_artists, for example
+
+The merge sort algorithm takes a list, and splits it into two recursively until you're left with the single elements
+It then compares pairs of elements, sorting them
+It does this recursively too, so you have two sorted pairs that are then merged and sorted into a list of size 4
+And so on until you get a fully sorted list
+
+sort() takes two arguments, the head of a list and a comparing function.
+It splits the linked list whose head is represented by *x (provided it can be split) into two
+It then recursively runs itself on both of these new lists.
+comp can be any comparing function, so the function sort is generic and can be applied to any generic linked list
+An example of comp could be
+
+    int comp(void *a, void *b){
+        if(a > b) {
+            return 1;
+        } else if(a < b) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+
+
+BINARY SEARCH
+
+create_index creates an array of artist structs.
+It is given the head of a linked list and a number, n, which represents the number of artists to index
+It allocates memory for the array using a malloc().
+Providing neither the memory allocated or the element are NULL, it puts the pointer to the val of a struct as that array element
+
+register_fan takes an artist struct and a play struct
+Providing neither are NULL, the overall play count for the artist is incremented by the value of the playcount in the play
+And adds to the artist linked list 'fans' that play
+
+The function similarity takes two arguments, both artist structs
+It then breaks these down to their respective 'fan' linked lists
+Provided both lists aren't NULL, it takes the total fans shared by each artist and divides by the total number of fans of each

@@ -134,7 +134,6 @@ void ServerConnection(int fd)
             {
                 sprintf(outBuffer, "You're supposed to say \"%s who?\"! Try again. Knock! Knock!\r\n", clues[joke]);
             }
-
         }
         else if(state == ANOTHER)
         {
