@@ -1,0 +1,264 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>A_Star</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-02-10"><meta name="DC.source" content="A_Star.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Matlab Basics</a></li><li><a href="#3">define the problem via GUI</a></li><li><a href="#4">add the starting node as the first node (root node) in QUEUE</a></li><li><a href="#5">Start the search</a></li><li><a href="#6">Output / plot your route</a></li><li><a href="#7">Your Coursework 1 report</a></li></ul></div><pre class="codeinput"><span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% A* ALGORITHM Demo</span>
+<span class="comment">% 04-26-2005    Copyright 2009-2010 The MathWorks, Inc.</span>
+<span class="comment">% 15-01-2016    Rong Qu</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+</pre><h2>Matlab Basics<a name="2"></a></h2><pre class="codeinput"><span class="comment">%{
+</span><span class="comment">    % "MATLAB Overview" @ MathWorks
+</span><span class="comment">    % "Writing a Matlab Program" @ MathWorks
+</span><span class="comment">    % Choose your working folder, where all Astar files are saved
+</span><span class="comment">    % Understand step-by-step the source code, and start working on Coursework 1
+</span><span class="comment">%}</span>
+</pre><h2>define the problem via GUI<a name="3"></a></h2><pre class="codeinput">problem();
+
+<span class="comment">% OBSTACLE: [X val, Y val]</span>
+OBSTACLE = [];
+k = 1;
+<span class="keyword">for</span> i = 1 : MAX_X
+    <span class="keyword">for</span> j = 1 : MAX_Y
+        <span class="keyword">if</span>(MAP(i, j) == -1)
+            OBSTACLE(k, 1) = i;
+            OBSTACLE(k, 2) = j;
+            k = k + 1;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+OBST_COUNT = size(OBSTACLE, 1);
+OBST_COUNT = OBST_COUNT + 1;
+OBSTACLE(OBST_COUNT, :) = [xStart, yStart];
+</pre><img vspace="5" hspace="5" src="A_Star_01.png" alt=""> <h2>add the starting node as the first node (root node) in QUEUE<a name="4"></a></h2><p>QUEUE: [0/1, X val, Y val, Parent X val, Parent Y val, h(n), g(n), f(n)]</p><pre class="codeinput">xNode = xStart;
+yNode = yStart;
+QUEUE = [];
+QUEUE_COUNT = 1;
+NoPath = 1; <span class="comment">% assume there exists a path</span>
+path_cost = 0; <span class="comment">% cost g(n): start node to the current node n</span>
+goal_distance = distance(xNode, yNode, xTarget, yTarget); <span class="comment">% cost h(n): heuristic cost of n</span>
+QUEUE(QUEUE_COUNT, :) = insert(xNode, yNode, xNode, yNode, path_cost, goal_distance, goal_distance);
+QUEUE(QUEUE_COUNT, 1) = 0; <span class="comment">% What does this do?</span>
+</pre><h2>Start the search<a name="5"></a></h2><pre class="codeinput"><span class="keyword">while</span>((xNode ~= xTarget || yNode ~= yTarget) &amp;&amp; NoPath == 1)
+
+    <span class="comment">% expand the current node to obtain child nodes</span>
+    exp = expand(xNode, yNode, path_cost, xTarget, yTarget, OBSTACLE, MAX_X, MAX_Y);
+    exp_count  = size(exp, 1);
+    <span class="comment">% Update QUEUE with child nodes; exp: [X val, Y val, h(n), g(n), f(n)]</span>
+    <span class="keyword">for</span> i = 1 : exp_count
+        flag = 0;
+        <span class="keyword">for</span> j = 1 : QUEUE_COUNT
+            <span class="keyword">if</span>(exp(i, 1) == QUEUE(j, 2) &amp;&amp; exp(i, 2) == QUEUE(j, 3))
+                QUEUE(j, 8) = min(QUEUE(j, 8), exp(i, 5));
+                <span class="keyword">if</span> QUEUE(j, 8) == exp(i, 5)
+                    <span class="comment">% update parents, g(n) and h(n)</span>
+                    QUEUE(j, 4) = xNode;
+                    QUEUE(j, 5) = yNode;
+                    QUEUE(j, 6) = exp(i, 3);
+                    QUEUE(j, 7) = exp(i, 4);
+                <span class="keyword">end</span>; <span class="comment">% end of minimum f(n) check</span>
+                flag = 1;
+            <span class="keyword">end</span>;
+        <span class="keyword">end</span>;
+        <span class="keyword">if</span> flag == 0
+            QUEUE_COUNT = QUEUE_COUNT + 1;
+            QUEUE(QUEUE_COUNT, :) = insert(exp(i, 1), exp(i, 2), xNode, yNode, exp(i, 3), exp(i, 4), exp(i, 5));
+        <span class="keyword">end</span>; <span class="comment">% end of insert new element into QUEUE</span>
+    <span class="keyword">end</span>;
+
+    <span class="comment">% A*: find the node in QUEUE with the smallest f(n), returned by min_fn</span>
+    index_min_node = min_fn(QUEUE, QUEUE_COUNT);
+    <span class="keyword">if</span> (index_min_node ~= -1)
+        <span class="comment">% set current node (xNode, yNode) to the node with minimum f(n)</span>
+        xNode = QUEUE(index_min_node, 2);
+        yNode = QUEUE(index_min_node, 3);
+        path_cost = QUEUE(index_min_node, 6); <span class="comment">% cost g(n)</span>
+        <span class="comment">% move the node to OBSTACLE</span>
+        OBST_COUNT = OBST_COUNT + 1;
+        OBSTACLE(OBST_COUNT, 1) = xNode;
+        OBSTACLE(OBST_COUNT, 2) = yNode;
+        QUEUE(index_min_node, 1) = 0;
+    <span class="keyword">else</span>
+        NoPath = 0; <span class="comment">% there is no path!</span>
+    <span class="keyword">end</span>;
+<span class="keyword">end</span>;
+</pre><h2>Output / plot your route<a name="6"></a></h2><pre class="codeinput">result();
+</pre><img vspace="5" hspace="5" src="A_Star_02.png" alt=""> <h2>Your Coursework 1 report<a name="7"></a></h2><pre class="codeinput"><span class="comment">%{
+</span><span class="comment">    % You could either
+</span><span class="comment">    % 1. Simply comparess a. all your program files and b. coursework report, or
+</span><span class="comment">    % 2. Compress a. published code, and b. coursework report
+</span><span class="comment">    % How to publish: "Writing a Matlab Program" @ MathWorks
+</span><span class="comment">    %
+</span><span class="comment">%}</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A* ALGORITHM Demo
+% 04-26-2005    Copyright 2009-2010 The MathWorks, Inc.
+% 15-01-2016    Rong Qu
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Matlab Basics
+%{
+    % "MATLAB Overview" @ MathWorks
+    % "Writing a Matlab Program" @ MathWorks
+    % Choose your working folder, where all Astar files are saved
+    % Understand step-by-step the source code, and start working on Coursework 1
+%}
+
+
+%% define the problem via GUI
+problem();
+
+% OBSTACLE: [X val, Y val]
+OBSTACLE = [];
+k = 1;
+for i = 1 : MAX_X
+    for j = 1 : MAX_Y
+        if(MAP(i, j) == -1)
+            OBSTACLE(k, 1) = i;
+            OBSTACLE(k, 2) = j;
+            k = k + 1;
+        end
+    end
+end
+OBST_COUNT = size(OBSTACLE, 1);
+OBST_COUNT = OBST_COUNT + 1;
+OBSTACLE(OBST_COUNT, :) = [xStart, yStart];
+
+%% add the starting node as the first node (root node) in QUEUE
+% QUEUE: [0/1, X val, Y val, Parent X val, Parent Y val, h(n), g(n), f(n)]
+xNode = xStart;
+yNode = yStart;
+QUEUE = [];
+QUEUE_COUNT = 1;
+NoPath = 1; % assume there exists a path
+path_cost = 0; % cost g(n): start node to the current node n
+goal_distance = distance(xNode, yNode, xTarget, yTarget); % cost h(n): heuristic cost of n
+QUEUE(QUEUE_COUNT, :) = insert(xNode, yNode, xNode, yNode, path_cost, goal_distance, goal_distance);
+QUEUE(QUEUE_COUNT, 1) = 0; % What does this do?
+
+%% Start the search
+while((xNode ~= xTarget || yNode ~= yTarget) && NoPath == 1)
+    
+    % expand the current node to obtain child nodes
+    exp = expand(xNode, yNode, path_cost, xTarget, yTarget, OBSTACLE, MAX_X, MAX_Y);
+    exp_count  = size(exp, 1);
+    % Update QUEUE with child nodes; exp: [X val, Y val, h(n), g(n), f(n)]
+    for i = 1 : exp_count
+        flag = 0;
+        for j = 1 : QUEUE_COUNT
+            if(exp(i, 1) == QUEUE(j, 2) && exp(i, 2) == QUEUE(j, 3))
+                QUEUE(j, 8) = min(QUEUE(j, 8), exp(i, 5));
+                if QUEUE(j, 8) == exp(i, 5)
+                    % update parents, g(n) and h(n)
+                    QUEUE(j, 4) = xNode;
+                    QUEUE(j, 5) = yNode;
+                    QUEUE(j, 6) = exp(i, 3);
+                    QUEUE(j, 7) = exp(i, 4);
+                end; % end of minimum f(n) check
+                flag = 1;
+            end;
+        end;
+        if flag == 0
+            QUEUE_COUNT = QUEUE_COUNT + 1;
+            QUEUE(QUEUE_COUNT, :) = insert(exp(i, 1), exp(i, 2), xNode, yNode, exp(i, 3), exp(i, 4), exp(i, 5));
+        end; % end of insert new element into QUEUE
+    end;
+ 
+    % A*: find the node in QUEUE with the smallest f(n), returned by min_fn
+    index_min_node = min_fn(QUEUE, QUEUE_COUNT);
+    if (index_min_node ~= -1)
+        % set current node (xNode, yNode) to the node with minimum f(n)
+        xNode = QUEUE(index_min_node, 2);
+        yNode = QUEUE(index_min_node, 3);
+        path_cost = QUEUE(index_min_node, 6); % cost g(n)
+        % move the node to OBSTACLE
+        OBST_COUNT = OBST_COUNT + 1;
+        OBSTACLE(OBST_COUNT, 1) = xNode;
+        OBSTACLE(OBST_COUNT, 2) = yNode;
+        QUEUE(index_min_node, 1) = 0;
+    else
+        NoPath = 0; % there is no path!
+    end;
+end;
+
+%% Output / plot your route
+result();
+
+
+%% Your Coursework 1 report
+%{
+    % You could either
+    % 1. Simply comparess a. all your program files and b. coursework report, or
+    % 2. Compress a. published code, and b. coursework report
+    % How to publish: "Writing a Matlab Program" @ MathWorks
+    % 
+%}
+
+##### SOURCE END #####
+--></body></html>
