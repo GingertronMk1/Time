@@ -1,0 +1,17 @@
+Entities
+    Artist
+    CD
+    Track
+
+Attributes
+    Name -> Artist
+    Title -> Track
+    Runtime -> Track
+    Price -> CD
+    Genre -> CD
+    Number Of Tracks -> CD
+
+Relationship
+    Artist PRODUCES CD
+    CD CONTAINS Track
+

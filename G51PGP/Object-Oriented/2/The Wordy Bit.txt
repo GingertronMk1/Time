@@ -1,0 +1,3 @@
+1.a.    I will need a JFrame with which to hold everything
+                    some JPanels to hold the layouts for the ColorLabels
+                    and some ColorLabels
