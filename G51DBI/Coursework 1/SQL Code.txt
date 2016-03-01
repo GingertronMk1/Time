@@ -24,3 +24,9 @@ CREATE TABLE Track (
     CONSTRAINT pk_track PRIMARY KEY (trackID),
     CONSTRAINT fk_track_cd FOREIGN KEY (cdID REFERENCES CD (cdID),
 );
+
+INSERT INTO Artist (artName) VALUES ("");
+
+SELECT artID FROM Artist WHERE artName = "";
+
+INSERT INTO CD (artID, cdName, cdPrice, cdGenre) VALUES (1, "", 9.99, "");
