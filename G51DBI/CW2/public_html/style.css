@@ -1,0 +1,92 @@
+* {
+    font-family:sans-serif;
+    margin:auto;
+    padding:auto;
+}
+#main {
+    position: absolute;
+    left: 0%;
+    top: 30px;
+    right: 0%;
+    height: 60px;
+    background-color: rgba(247,247,247,0.5);
+    z-index: 2;
+    border-top: 1px solid rgba(116,116,116,0.2);
+    border-bottom: 1px solid rgba(116,116,116,0.2);
+}
+#header {
+    position: relative;
+    top: 10px;
+    width: 300px;
+    height: 45px;
+    left: 50%;
+    margin-left: -150px;
+    margin-top: -6px;
+    padding: auto;
+    z-index: 3;
+    font-size: 24px;
+}
+.mainheader {
+    position: absolute;
+    height: 100%;
+    top: 25%;
+    cursor: pointer;
+    text-align: center;
+}
+#headerhome {
+    left:-50%;
+}
+#headerartists {
+    left: 0%;
+}
+#headeralbums {
+    right: 0%;
+}
+#headertracks {
+    right: -50%;
+}
+.underliner {
+    position: absolute;
+    opacity: 0;
+    height: 2px;
+    background-color: rgb(116,116,116);
+    bottom: -1px;
+    width: 100%
+}
+.mainheader:hover .underliner {
+    opacity: 1;
+}
+#logo {
+    position: absolute;
+    border-radius: 12vh;
+    width: 100px;
+    height: 100px;
+    left: 50%;
+    margin-left: -50px;
+    top: 50%;
+    margin-top: -50px;
+    z-index: 5;
+    background-color: rgba(255,255,255,0);
+}
+#logopic {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    left: 50%;
+    top: 50%;
+    margin: -45px -50px;
+}
+a {
+    background-color:transparent; 
+    text-decoration:none;
+    color:black;
+}
+#welcomemessage {
+    position: absolute;
+    width: 300px;
+    height: 200px;
+    left: 50%;
+    top: 55%;
+    margin: -100px -150px;
+    text-align: center;
+}
