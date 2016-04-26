@@ -7,28 +7,28 @@
         <div id="main">
             <div id="header">
                 <div class="mainheader" id="headerhome">
-                    <a href="index.html">
+                    <a href="index.php">
                         Home
                     </a>
                     <div class="underliner">
                     </div>
                 </div>
                 <div class="mainheader" id="headerartists">
-                    <a href="artistspage.html">
+                    <a href="artistspage.php">
                         Artists
                     </a>
                     <div class="underliner">
                     </div>
                 </div>
                 <div class="mainheader" id="headeralbums">
-                    <a href="albumspage.html">
+                    <a href="albumspage.php">
                         Albums
                     </a>
                     <div class="underliner">
                     </div>
                 </div>
                 <div class="mainheader" id="headertracks">
-                    <a href="trackspage.html">
+                    <a href="trackspage.php">
                         Tracks
                     </a>
                     <div class="underliner">
@@ -37,6 +37,6 @@
                 <div id="logo">
                 </div>
             </div>
-        </div>      
+        </div>
     </body>
 </html>

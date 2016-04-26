@@ -77,16 +77,34 @@
     margin: -45px -50px;
 }
 a {
-    background-color:transparent; 
+    background-color:transparent;
     text-decoration:none;
     color:black;
 }
-#welcomemessage {
-    position: absolute;
-    width: 300px;
-    height: 200px;
+.pagecenter {
+    position: relative;
+    width: 500px;
+    height: 100%;
     left: 50%;
-    top: 55%;
-    margin: -100px -150px;
+    top: 200px;
+    margin-left:-250px;
     text-align: center;
+}
+
+th {
+  background-color: rgba(127,127,127,0.5);
+  border-bottom: 1px solid rgba(0,0,0,1);
+}
+
+tr.whitebackground {
+  background-color: rgba(0,0,0,0.2);
+}
+
+tr.blackground {
+  background-color: rgba(127,127,127,0.2)
+}
+
+.idinput {
+  opacity: 0;
+  cursor: default;
 }

@@ -1,0 +1,2 @@
+PHP doesn't want to parse %20 characters as spaces
+The whole thing fucks up if there are apostrophes in names of things
