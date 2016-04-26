@@ -43,20 +43,22 @@
             <?php
             include '../BackPHP/db.php';
             $albumID = $_GET['id'];
-            $artistNameQuery = 'SELECT artName FROM Artist';
             printf("<tr><td>Album Artist:</td><td><select name='newartist'>");
-            if($result = $conn->query($artistNameQuery)) {
+            if($result = $conn->query('SELECT artName FROM Artist ORDER BY artID ASC')) {
               while($artistName = $result->fetch_row()) {
                 $artistNameDecoded = urldecode($artistName[0]);
                 printf("<option value = '%s'>%s</option>", $artistName[0], $artistNameDecoded);
               };
             };
+            $cdQuery = "SELECT * FROM CD WHERE(cdID=" . $albumID .");";
+            $albumInfo = return_array($conn, $cdQuery);
             printf("</select></td></tr>
-            <tr><td>Album Name:</td><td><input type='text' name='newname'></td></tr>
-            <tr><td>Album Price:</td><td><input type='text' name='newprice'></td></tr>
-            <tr><td>Album Genre:</td><td><input type='text' name='newgenre'></td></tr>
-            <tr><td>Number of Tracks:</td><td><input type='text' name='newtrackno'></td></tr>
-            <tr><input type='text' name='id' class='idinput' value=$s></tr>", $albumID)
+            <tr><td>Album Name:</td><td><input type='text' name='newname' value='%s'></td></tr>
+            <tr><td>Album Price:</td><td><input type='text' name='newprice' value='%s'></td></tr>
+            <tr><td>Album Genre:</td><td><input type='text' name='newgenre' value='%s'></td></tr>
+            <tr><td>Number of Tracks:</td><td><input type='text' name='newtrackno' value='%s'></td></tr>
+            <tr><input type='text' name='id' class='idinput' value=%s></tr>",
+            urldecode($albumInfo[2]), $albumInfo[3], $albumInfo[4], $albumInfo[5], $albumID);
             ?>
           </table>
             <input type='Submit' value='Update'>

@@ -11,4 +11,12 @@ $db_name = 'psyje5';
 
 $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
 if($conn->connect_errno) echo "Failed to connect to database";
+
+function return_array($connection, $query) {
+  if($result = $connection->query($query)) {
+    return $result->fetch_row();
+  } else {
+    printf("Something's gone wonky<br>");
+  }
+}
 ?>
