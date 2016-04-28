@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="mainheader" id="headeralbums">
-                    <a href="albumspage.php">
+                    <a href="albumspage.php?artID=0">
                         Albums
                     </a>
                     <div class="underliner">
@@ -35,6 +35,7 @@
                     </div>
                 </div>
                 <div id="logo">
+                  <img id="vinylpic" src="vinyl.png"></img>
                 </div>
             </div>
         </div>
@@ -46,7 +47,7 @@
 							printf("<table border='0'>");
 							printf("<tr>");
 							$fields = $result->fetch_fields();
-							printf("<th>ID</th><th>Name</th><th>Actions</th></tr>");
+							printf("<th>ID</th><th>Name</th><th class='actioncol'>Actions</th></tr>");
 							$x = 0;
 							while($artist = $result->fetch_row()) {
 								$x++;
@@ -54,8 +55,9 @@
 								echo "<tr class='$class'>";
 								$artID = $artist[0];
 								$artName = urldecode($artist[1]);
-								$artURL = "'Updating/artist.php?id=" . $artID . "&name=" . urlencode($artName) . "'";
-								printf("<td>%s</td><td>%s</td><td><a href=%s'>Edit</a></td>", $artID, $artName, $artURL);
+								$artURL = "'Updating/artist.php?id=" . $artID . "'";
+                $cdURL = "albumspage.php?artID=" . $artID;
+								printf("<td>%s</td><td>%s</td><td class='actioncol'><a href=%s>Edit</a> | <a href=%s>Albums</a></td>", $artID, $artName, $artURL, $cdURL);
 							}
 							printf("</table>");
 						}

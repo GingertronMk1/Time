@@ -13,17 +13,16 @@ if($result = $conn->query($getartID)) {
 
 $newCDName = urlencode($_GET["newname"]);
 $newCDPrice = $_GET["newprice"];
-$newCDGenre = $_GET["newgenre"];
+$newCDGenre = urlencode($_GET["newgenre"]);
 $newCDTrackNo = $_GET["newtrackno"];
-
 $cdID = $_GET["id"];
 
-$sql = "UPDATE CD(artID,cdName,cdPrice,cdGenre,cdTracks) VALUES (?,?,?,?,?) WHERE(cdID=" . $cdID . ");";
+$sql = "UPDATE CD SET artID= " . $newartID . ", cdName='" . $newCDName . "', cdPrice=" . $newCDPrice . ", cdGenre='" . $newCDGenre . "', cdTracks=" . $newCDTrackNo . " WHERE(cdID=" . $cdID . ");";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param('sssss', $newartID, $newCDName, $newCDPrice, $newCDGenre, $newCDTrackNo);
+$stmt->bind_param('isdsi', $newartID, $newCDName, $newCDPrice, $newCDGenre, $newCDTrackNo);
 $result = $stmt->execute();
 if($result) {
-  header("Location: ../albumspage.php");
+  header("Location: ../albumspage.php?artID=0");
 } else {
   echo "Error adding album: " . mysqli_error($conn) . " " . $newArtName . " " . $newartID . " " . $newCDName . " " . $newCDPrice . " " . $newCDGenre . " " . $newCDTrackNo ;
   printf("<br><a href='../albumspage'>Click here to return to list of albums</a>");

@@ -35,11 +35,22 @@
                     </div>
                 </div>
                 <div id="logo">
+                  <img id="vinylpic" src="vinyl.png"></img>
                 </div>
             </div>
         </div>
         <div class="pagecenter" id="welcomemessage">
-            Welcome to the Record Record!
+            Welcome to the Record Record!<br><br>
+            <?php
+            include 'BackPHP/db.php';
+            $trackCount = return_array($conn, "SELECT COUNT(DISTINCT trackID) FROM Track");
+            $cdCount = return_array($conn, "SELECT COUNT(DISTINCT cdID) FROM CD");
+            $artCount = return_array($conn, "SELECT COUNT(DISTINCT artID) FROM Artist");
+            printf("<p>You currently have %s songs</p>
+            <p>By %s artists</p>
+            <p>Across %s albums</p>",
+            $trackCount[0], $artCount[0], $cdCount[0]);
+             ?>
         </div>
     </body>
 </html>

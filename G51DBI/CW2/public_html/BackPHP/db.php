@@ -1,6 +1,7 @@
 <?php
 //Provide more information if something's wrong with the code
 error_reporting(-1);
+//mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 ini_set('display_errors', 'On');
 
 //Settings to connect to the db

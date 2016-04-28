@@ -34,7 +34,7 @@
     text-align: center;
 }
 #headerhome {
-    left:-50%;
+    left:-35%;
 }
 #headerartists {
     left: 0%;
@@ -43,7 +43,7 @@
     right: 0%;
 }
 #headertracks {
-    right: -50%;
+    right: -35%;
 }
 .underliner {
     position: absolute;
@@ -68,7 +68,7 @@
     z-index: 5;
     background-color: rgba(255,255,255,0);
 }
-#logopic {
+#vinylpic {
     position: absolute;
     width: 100px;
     height: 100px;
@@ -96,6 +96,11 @@ th {
   border-bottom: 1px solid rgba(0,0,0,1);
 }
 
+tr {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 tr.whitebackground {
   background-color: rgba(0,0,0,0.2);
 }
@@ -107,4 +112,18 @@ tr.blackground {
 .idinput {
   opacity: 0;
   cursor: default;
+}
+
+table {
+  table-layout: auto;
+}
+
+.deletewarning {
+  opacity: 0;
+  z-index: -500;
+}
+
+.deletebutton:hover ~ .deletewarning {
+  opacity: 1;
+  z-index: 500;
 }

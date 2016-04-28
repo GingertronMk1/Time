@@ -40,30 +40,37 @@
                 </div>
             </div>
         </div>
-        <form action="../BackPHP/newalbum.php" name="albumform" class="pagecenter" onsubmit="return validateAlbumForm()">
+        <form action="../BackPHP/updatetrack.php" name="trackform" class="pagecenter" onsubmit="return validateTrackForm()">
           <table class='inputtable'>
             <?php
             include '../BackPHP/db.php';
-            $artID = $_GET["artID"];
-            $artistNameQuery = 'SELECT artName FROM Artist';
-            printf("<tr><td>Album Artist:</td><td><select name='newartist'>");
-            if($result = $conn->query('SELECT * FROM Artist')) {
-              while($artistName = $result->fetch_row()) {
-                if($artID == $artistName[0]) {
-                  printf("<option selected value ='%s'>%s</option>", $artistName[1], urldecode($artistName[1]));
+            $ID = $_GET['id'];
+            $trackQuery = "SELECT * FROM Track WHERE(trackID=" . $ID .");";
+            $trackInfo = return_array($conn, $trackQuery);
+            printf("<tr><td>Album:</td><td><select name='newalbum'>");
+            if($result = $conn->query('SELECT * FROM CD')) {
+              while($albumName = $result->fetch_row()) {
+                if($trackInfo[1] == $albumName[0]) {
+                  printf("<option selected value ='%s'>%s</option>", $albumName[2], urldecode($albumName[2]));
                 } else {
-                printf("<option value ='%s'>%s</option>", $artistName[1], urldecode($artistName[1]));
+                printf("<option value ='%s'>%s</option>", $albumName[2], urldecode($albumName[2]));
               }
             }
             };
             printf("</select></td></tr>
-            <tr><td>Album Name:</td><td><input type='text' name='newname'></td></tr>
-            <tr><td>Album Price:</td><td><input type='text' name='newprice'required></td></tr>
-            <tr><td>Album Genre:</td><td><input type='text' name='newgenre'required></td></tr>
-            <tr><td>Number of Tracks:</td><td><input type='text' name='newtrackno'></td></tr>");
+            <tr><td>Track Name:</td><td><input type='text' name='newname' value='%s'></td></tr>
+            <tr><td>Track Length (s):</td><td><input type='text' name='newlength' value='%s'></td></tr>
+            <tr><input type='text' name='id' class='idinput' value=%s></tr>",
+            urldecode($trackInfo[2]), $trackInfo[3], $ID);
+            //printf("<br>TrackID: %s<br>cdID: %s<br>TrackName: %s<br>TrackLength: %s<br>", $trackInfo[0], $trackInfo[1], $trackInfo[2], $trackInfo[3]);
             ?>
           </table>
-            <input type='Submit' value='Add'>
+            <input type='Submit' value='Update'>
+            <?php
+            //printf("<a class='fakebutton' href='../BackPHP/deleteartist.php?id=%s'>Delete</a>", $_GET["id"]);
+            $deleteURL = "../BackPHP/deletetrack.php?id=" . $_GET["id"];
+            printf("<a class='deletebutton' href=%s><input type='button'value='Delete'/></a>", $deleteURL);
+            ?>
         </form>
     </body>
 </html>
