@@ -21,14 +21,14 @@
                     </div>
                 </div>
                 <div class="mainheader" id="headeralbums">
-                    <a href="albumspage.php">
+                    <a href="albumspage.php?artID=0">
                         Albums
                     </a>
                     <div class="underliner">
                     </div>
                 </div>
                 <div class="mainheader" id="headertracks">
-                    <a href="trackspage.php">
+                    <a href="trackspage.php?albumID=0">
                         Tracks
                     </a>
                     <div class="underliner">

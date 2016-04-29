@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="mainheader" id="headertracks">
-                    <a href="trackspage.php">
+                    <a href="trackspage.php?albumID=0">
                         Tracks
                     </a>
                     <div class="underliner">
@@ -63,7 +63,7 @@
 						}
 				 ?>
          <br>
-				 <a href="Adding/artist.php">Add a new Artist</a>
+				 <a href="Adding/artist.php"><button>Add a new Artist</button></a>
 			 </div>
     </body>
 </html>

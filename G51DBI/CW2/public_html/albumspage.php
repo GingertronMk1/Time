@@ -68,7 +68,7 @@
   								printf("<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td class='actioncol'><a href=%s'>Edit</a> | <a href=%s>Tracks</a></td>", $cdID, $artName, $cdName, $cdPrice, $cdGenre, $cdTracks, $cdURL, $tracksURL);
   							}
   							printf("</table>
-       				 <br><a href='Adding/album.php?artID=" . $artistID . "'>Add a new Album</a>");
+       				 <br><a href='Adding/album.php?artID=" . $artistID . "'><button>Add a new Album</button></a>");
   						}
   				 ?>
   			 </div>
