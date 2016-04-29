@@ -1,56 +1,53 @@
 <html>
     <head>
         <title>The Record Record</title>
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="../style.css">
     </head>
     <body>
         <div id="main">
             <div id="header">
                 <div class="mainheader" id="headerhome">
-                    <a href="index.php">
+                    <a href="../index.php">
                         Home
                     </a>
                     <div class="underliner">
                     </div>
                 </div>
                 <div class="mainheader" id="headerartists">
-                    <a href="artistspage.php">
+                    <a href="../artistspage.php">
                         Artists
                     </a>
                     <div class="underliner">
                     </div>
                 </div>
                 <div class="mainheader" id="headeralbums">
-                    <a href="albumspage.php?artID=0">
+                    <a href="../albumspage.php?artID=0">
                         Albums
                     </a>
                     <div class="underliner">
                     </div>
                 </div>
                 <div class="mainheader" id="headertracks">
-                    <a href="trackspage.php?albumID=0">
+                    <a href="../trackspage.php?albumID=0">
                         Tracks
                     </a>
                     <div class="underliner">
                     </div>
                 </div>
                 <div id="logo">
-                  <img id="vinylpic" src="vinyl.png"></img>
+                  <img id="vinylpic" src="../vinyl.png"></img>
                 </div>
             </div>
         </div>
         <div class="pagecenter">
-          <form action="/Searches/trackspage.php">
+          <form action="trackspage.php">
             <input type="search" name="q" placeholder="Search Tracks by Name..."></input>
             <input type="Submit" value="Search">
           </form>
   				<?php
-  						include 'BackPHP/db.php';
-              if($albumID = $_GET["albumID"]) {
-                $query = "SELECT * FROM CD INNER JOIN Track ON CD.cdID = Track.cdID WHERE(CD.cdID = " . $albumID .  ");";
-              } else {
-                $query = 'SELECT * FROM CD INNER JOIN Track ON CD.cdID = Track.cdID ;';
-              }
+  						include '../BackPHP/db.php';
+              $searchTerm = "'%" . urlencode($_GET["q"]) . "%'";
+              $query = "SELECT * FROM CD INNER JOIN Track ON CD.cdID = Track.cdID WHERE trackTitle LIKE " . $searchTerm . ";";
   						if ($result = $conn->query($query)) {
   							printf("<table>");
   							printf("<tr>");
@@ -68,10 +65,10 @@
                   $trackName = urldecode($track[8]);
                   $trackLength = $track[9];
                   $trackURL = "'/Updating/track.php?id=" . $trackID . "'";
-  								printf("<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td><a href=%s>Edit</a></td>", $trackID, $cdName, $trackName, $trackLength, $trackURL);
+  								printf("<td>%s</td><td>%s</td><td>%s</td><td>%s</td><td><a href=../%s>Edit</a></td>", $trackID, $cdName, $trackName, $trackLength, $trackURL);
   							}
   							printf("</table>
-       				 <br><a href='Adding/track.php?albumID=" . $albumID ."'><button>Add a new Track</button></a>");
+       				 <br><a href='Adding/track.php?albumID=0'><button>Add a new Track</button></a>");
   						}
   				 ?>
   			 </div>

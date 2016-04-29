@@ -1,3 +1,6 @@
+//There would only be the one function in here, but document.getElementsByTagName()
+//doesn't want to play ball
+
 function validateArtistForm() {
   var fields = ["newname"];
   console.log(fields);

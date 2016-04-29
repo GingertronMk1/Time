@@ -94,6 +94,9 @@ a {
 th {
   background-color: rgba(127,127,127,0.5);
   border-bottom: 1px solid rgba(0,0,0,1);
+  height: 40px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 tr {
@@ -102,20 +105,22 @@ tr {
 }
 
 tr.whitebackground {
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0,0,0,0.1);
 }
 
-tr.blackground {
-  background-color: rgba(127,127,127,0.2)
+tr.greybackground {
+  background-color: rgba(0,0,0,0.3)
 }
 
 .idinput {
   opacity: 0;
   cursor: default;
+  z-index: -500;
 }
 
 table {
   table-layout: auto;
+  border: 0;
 }
 
 .deletewarning {
