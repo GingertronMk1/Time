@@ -45,10 +45,10 @@
           <?php
           include '../BackPHP/db.php';
           $artistInfo = return_array($conn, "SELECT * FROM Artist WHERE(artID = " . $_GET["id"] . ");");
-          $artistName = urldecode($artistInfo[1]);
-          printf("<input type='text' name='newname' value='%s'>
+          $artistName = '"' . urldecode($artistInfo[1]) . '"';
+          printf("<input type='text' name='newname' value=" . $artistName . ">
           <br><br>
-          <input type='text' name='id' class='idinput' value=%s>", $artistName, $_GET["id"]);
+          <input type='text' name='id' class='idinput' value=%s>", $_GET["id"]);
           ?>
           <br>
           <input type="submit" text="Update">

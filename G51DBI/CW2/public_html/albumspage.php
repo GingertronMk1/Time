@@ -52,9 +52,7 @@
                 $query = 'SELECT * FROM Artist INNER JOIN CD ON Artist.artID = CD.artID';
               };
   						if ($result = $conn->query($query)) {
-  							printf("<table>");
-  							printf("<tr>");
-  							printf("<th>ID</th><th>Artist</th><th>Name</th><th>Price</th><th>Genre</th><th>Tracks</th><th class='actioncol'>Actions</th></tr>");
+  							printf("<table><tr><th>ID</th><th>Artist</th><th>Name</th><th>Price</th><th>Genre</th><th>Tracks</th><th class='actioncol'>Actions</th></tr>");
   							$x = 0;
   							while($CD = $result->fetch_row()) {
   								$x++;

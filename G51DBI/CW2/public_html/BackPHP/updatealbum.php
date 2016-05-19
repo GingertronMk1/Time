@@ -6,15 +6,15 @@ $newArtName = $_GET["newartist"];
 $getartID = "SELECT artID FROM Artist WHERE(artName='" . $newArtName . "');";
 if($result = $conn->query($getartID)) {
   $newartIDArr = $result->fetch_row();
-  $newartID = $newartIDArr[0];
+  $newartID = urlencode($newartIDArr[0]);
 } else {
   echo "Couldn't find artist";
 }
 
 $newCDName = urlencode($_GET["newname"]);
-$newCDPrice = $_GET["newprice"];
+$newCDPrice = urlencode($_GET["newprice"]);
 $newCDGenre = urlencode($_GET["newgenre"]);
-$newCDTrackNo = $_GET["newtrackno"];
+$newCDTrackNo = urlencode($_GET["newtrackno"]);
 $cdID = $_GET["id"];
 
 $sql = "UPDATE CD SET artID= " . $newartID . ", cdName='" . $newCDName . "', cdPrice=" . $newCDPrice . ", cdGenre='" . $newCDGenre . "', cdTracks=" . $newCDTrackNo . " WHERE(cdID=" . $cdID . ");";

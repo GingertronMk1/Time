@@ -6,14 +6,14 @@ $newCDName = $_GET["newalbum"];
 $getCDID = "SELECT artID FROM CD WHERE(cdName='" . $newCDName . "');";
 if($result = $conn->query($getCDID)) {
   $newCDIDArr = $result->fetch_row();
-  $newCDID = $newCDIDArr[0];
+  $newCDID = urlencode($newCDIDArr[0]);
 } else {
   echo "Couldn't find album";
 }
 
 $newTrackName = urlencode($_GET["newname"]);
-$newTrackLength = $_GET["newlength"];
-$trackID = $_GET["id"];
+$newTrackLength = urlencode($_GET["newlength"]);
+$trackID = urlencode($_GET["id"]);
 
 
 $sql = "UPDATE Track SET cdID=". $newCDID . ", trackTitle='" . $newTrackName . "', trackLength=" . $newTrackLength . " WHERE(trackID=" . $trackID . ");";

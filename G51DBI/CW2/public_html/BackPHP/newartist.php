@@ -1,7 +1,7 @@
 <?php
 include 'db.php';   //Includes the database connection
 
-$newArtName = $_GET["newname"];
+$newArtName = urlencode($_GET["newname"]);
 
 $sql = "INSERT INTO Artist (artName) VALUES ('" . $newArtName . "');";
 

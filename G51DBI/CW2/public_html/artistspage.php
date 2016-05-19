@@ -48,10 +48,8 @@
 						include 'BackPHP/db.php';
 						$query = 'SELECT * FROM Artist ORDER BY `artID`';
 						if ($result = $conn->query($query)) {
-							printf("<table>");
-							printf("<tr>");
+							printf("<table><tr><th>ID</th><th>Name</th><th class='actioncol'>Actions</th></tr>");
 							$fields = $result->fetch_fields();
-							printf("<th>ID</th><th>Name</th><th class='actioncol'>Actions</th></tr>");
 							$x = 0;
 							while($artist = $result->fetch_row()) {
 								$x++;

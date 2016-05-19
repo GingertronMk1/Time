@@ -52,9 +52,7 @@
                 $query = 'SELECT * FROM CD INNER JOIN Track ON CD.cdID = Track.cdID ;';
               }
   						if ($result = $conn->query($query)) {
-  							printf("<table>");
-  							printf("<tr>");
-  							printf("<th>ID</th><th>Album</th><th>Name</th><th>Length(s)</th><th>Actions</th></tr>");
+  							printf("<table><tr><th>ID</th><th>Album</th><th>Name</th><th>Length(s)</th><th>Actions</th></tr>");
   							$x = 0;
   							while($track = $result->fetch_row()) {
   								$x++;

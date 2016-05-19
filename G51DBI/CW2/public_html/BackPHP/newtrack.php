@@ -6,7 +6,7 @@ $newCDName = $_GET["newalbum"];
 $getCDID = "SELECT cdID FROM CD WHERE(cdName='" . $newCDName . "');";
 if($result = $conn->query($getCDID)) {
   $newCDIDArr = $result->fetch_row();
-  $newCDID = $newCDIDArr[0];
+  $newCDID = urlencode($newCDIDArr[0]);
 } else {
   echo "Couldn't find album";
 }

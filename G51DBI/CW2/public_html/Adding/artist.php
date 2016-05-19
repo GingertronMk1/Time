@@ -41,7 +41,6 @@
             </div>
         </div>
         <form action="../BackPHP/newartist.php" name="artistform" class="pagecenter" onsubmit="return validateArtistForm()">
-          <b>ADD NEW ARTIST</b><br><br>
           New Artist Name:
           <input type='text' name='newname'>
           <br><br>

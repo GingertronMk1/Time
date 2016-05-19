@@ -58,8 +58,8 @@
             };
             printf("</select></td></tr>
             <tr><td>Album Name:</td><td><input type='text' name='newname'></td></tr>
-            <tr><td>Album Price:</td><td><input type='text' name='newprice'required></td></tr>
-            <tr><td>Album Genre:</td><td><input type='text' name='newgenre'required></td></tr>
+            <tr><td>Album Price:</td><td><input type='text' name='newprice'></td></tr>
+            <tr><td>Album Genre:</td><td><input type='text' name='newgenre'></td></tr>
             <tr><td>Number of Tracks:</td><td><input type='text' name='newtrackno'></td></tr>");
             ?>
           </table>
