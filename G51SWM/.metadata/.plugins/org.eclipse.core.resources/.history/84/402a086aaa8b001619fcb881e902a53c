@@ -1,0 +1,13 @@
+package bike;
+
+public class MountainBike extends Bicycle {
+	private boolean frontSuspension;
+	private boolean backSuspension;
+
+	public MountainBike(int g, int s, boolean f, boolean b) {
+		// TODO Auto-generated constructor stub
+		gear = g;
+		
+	}
+
+}
