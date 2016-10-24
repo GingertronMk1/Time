@@ -121,14 +121,6 @@ public class TileMap {
 					map[row][col] = Integer.parseInt(tokens[col]);
 				}
 			}
-			
-			//for(int col = 0; col < numCols; col++) {
-			//	for(int row = 0; row < numRows; row++) {
-			//	  String line = br.readLine();
-			//	  String[] tokens = line.split(delims);
-			//	  map[row][col] = Integer.parseInt(tokens[col]);
-			//	}
-			//}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -158,7 +150,7 @@ public class TileMap {
 		map[row][col] = index;
 	}
 	public void replace(int i1, int i2) {
-		// replaces something
+		// replaces any instance of i1 at any coordinate with i2
 		for(int row = 0; row < numRows; row++) {
 			for(int col = 0; col < numCols; col++) {
 				if(map[row][col] == i1) map[row][col] = i2;
@@ -222,22 +214,3 @@ public class TileMap {
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,21 @@
+TileMap.java
+
+    The first thing I did was investigate the files recommended in the coursework specification, beginning with
+    TileMap.java. There I found approximately 19 lines of whitespace after the end of the code in the file. I deleted this
+    [Figure 1a, 1b].
+
+    Then I moved to the body of the code. Here I found a comment on a function that was totally useless
+    (replaces one thing with another), and replaced it with a comment that had some value. The function replaced any
+    instance of a particular number on a coordinate with another number, so and coordinate with the value 3 could be set to
+    the value 6. [Figure 2a, 2b].
+
+    I also found a 7-line block of code that was entirely commented out. This appeared to be identical to the code
+    'paragraph' above it, only in a slightly different order. Uncommenting it, and commenting out the section above, it
+    turned out that it was quite important that it be that way around, so I deleted it, and re-un-commented the correct
+    code. [Figure 3a, 3b, 3c]
+
+Keys.java
+
+  
+
+Player.java

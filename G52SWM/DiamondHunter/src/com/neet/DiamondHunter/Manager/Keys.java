@@ -39,7 +39,7 @@ public class Keys {
 		else if(i == KeyEvent.VK_F1) keyState[K8] = b;
 		return 0;
 	}
-	
+
 	public static int update() {
 		for(int i = 0; i < NUM_KEYS; i++) {
 			prevKeyState[i] = keyState[i];
