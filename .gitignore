@@ -3,4 +3,5 @@
 *.doc
 *.docx
 *.DS_Store
-*.txt
+*.metadata
+*.recommenders

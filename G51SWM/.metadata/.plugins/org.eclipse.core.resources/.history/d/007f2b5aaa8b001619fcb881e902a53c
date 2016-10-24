@@ -1,9 +1,0 @@
-package bike;
-
-public class MountainBike {
-
-	public MountainBike() {
-		// TODO Auto-generated constructor stub
-	}
-
-}

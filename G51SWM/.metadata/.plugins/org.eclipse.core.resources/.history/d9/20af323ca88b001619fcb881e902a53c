@@ -1,8 +1,0 @@
-package bike;
-
-public class Main {
-	Bicycle b = new Bicycle();
-	b.setGear(5);
-	b.speedUp(9);
-	system.out.println(b.gear);
-}
