@@ -59,3 +59,18 @@ Entity/Player.java
     This is better as it makes the code shorter, and if the function (which checks if the player is on water) needs
     extending in the future, this makes the process far easier, as you do not then need to repeat the same change four
     times.
+
+CLASS DIAGRAM
+
+First I looked at the Main package. GamePanel is a part of Game, and everything else is a part of GamePanel, so
+GamePanel is an aggregation of game; it cannot function without game. GameStateManager is then an aggregation of
+GamePanel, as it cannot function without it and imports/uses parts of GamePanel. GameState and GameStateManager have a
+bidirectional relationship, as GSM takes parts and functions from GS, and vice-versa.
+
+Everything else in the package GameState inherits GameState, so they're all inheritance relationships.
+
+In Manager, GameStateManager depends on JukeBox (it initializes it, and uses its functions, but JukeBox doesn't do
+        anything with GSM). Data is used only in PlayState and GameOverState, so these are bidirectional relationships. 
+
+Content is only referenced in GameOverState, PauseState, and MenuState; they aggregate it with other things from other classes.
+Hence, aggregation relationships.
