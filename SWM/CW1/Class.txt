@@ -1,0 +1,70 @@
+Entity
+    Animation:          Entity/Entity
+    Diamond:            Entity/Entity
+                        Manager/Content
+                        TileMap/TileMap
+    Entity:             TileMap/Tile
+                        TileMap
+    Item:               Manger/Content
+                        TileMap/TileMap
+    Player:             Manager/Content
+                        JukeBox
+                        TileMap/TileMap
+
+GameState
+    GameOverState:      Main/GamePanel
+                        Manager/Content
+                        Data
+                        GameStateManager
+                        JukeBox
+                        Keys
+    GameState:          Manager/GameStateManager
+    IntroState:         Main/GamePanel
+                        Manager/GameStateManager
+                        Keys
+    MenuState:          Manager/Content
+                        GameStateManager
+                        JukeBox
+                        Keys
+    PauseState:         Manager/Content
+                        GameStateManager
+                        JukeBox
+                        Keys
+    PlayState:          Entity/Diamond
+                        Item
+                        Player
+                        Sparkle
+                        HUD/Hud
+                        Main/GamePanel
+                        Manager/Data
+                        GameStateManager
+                        JukeBox
+                        Keys
+                        TileMap/TileMap
+
+Hud
+    Hud:                Entity/Diamond
+                        Player
+                        Main/GamePanel
+                        Manager/Content
+
+Main
+    Class:              None
+    GamePanel:          Manager/GameStateManager
+                        Keys
+
+Manager
+    Content:            None
+    Data:               None
+    GameStateManager:   GameState/GameOverState
+                        GameState
+                        IntroState
+                        MenuState
+                        PauseState
+                        PlayState
+    JukeBox:            None
+    Keys:               None
+
+TileMap
+    Tile:               None
+    TileMap:            Main/GamePanel
