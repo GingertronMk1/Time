@@ -18,7 +18,7 @@ int main() {
             printf("Hello from the child process %d with pID %d\n", i, getpid());
             break;
         } else if(pid > 0) {
-            printf("Hello from the parent process\n", pid);
+            printf("Hello from the parent process with pID %d\n", pid);
         }
     }
     return 0;
