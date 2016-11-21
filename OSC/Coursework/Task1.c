@@ -60,8 +60,20 @@ int main()
 {
     generateJobs();
     printJobs();
-    int n, burstTime[NUMBER_OF_JOBS], waitTime[NUMBER_OF_JOBS], turnAroundTime[NUMBER_OF_JOBS], avgTurnAroundTime, avgResponseTime;
 
+    printf("FCFS:\n");
+    int n = 0, startTime = 0, endTime = 0, avgResponseTimeSum = 0, avgTurnaroundTimeSum = 0;
+    for (n; n < NUMBER_OF_JOBS; n++) {
+        printf("JOB ID = %d, Start Time: %d, ", n, startTime);
+        avgResponseTimeSum += startTime;
+        startTime += aiJobs[n][BURST_TIME];
+        endTime += aiJobs[n][BURST_TIME];
+        avgTurnaroundTimeSum += endTime;
+        printf("End Time: %d\n", endTime);
+    };
+    double avgResponseTime = (double)avgResponseTimeSum / NUMBER_OF_JOBS;
+    double avgTurnaroundTime = (double)avgTurnaroundTimeSum / NUMBER_OF_JOBS;
+    printf("Average Response Time: %g\nAverage Turnaround Time: %g\n", avgResponseTime, avgTurnaroundTime);
 
     return 0;
 }
