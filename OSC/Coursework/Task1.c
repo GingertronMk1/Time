@@ -60,6 +60,8 @@ int main()
 {
     generateJobs();
     printJobs();
+    int n, burstTime[NUMBER_OF_JOBS], waitTime[NUMBER_OF_JOBS], turnAroundTime[NUMBER_OF_JOBS], avgTurnAroundTime, avgResponseTime;
+
 
     return 0;
 }
