@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <sys/time.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define NUMBER_OF_JOBS 10
 #define JOB_INDEX 0
@@ -54,14 +56,51 @@ void simulateJob(int iTime)
     } while(iDifference < iTime);
 }
 
+void sortJobs () {
+    printf("\nSorting by priority\n");
+    int i, j, swap[1][4];
+    for (i = 0; i < NUMBER_OF_JOBS; i++) {
+        for (j = i+1; j < NUMBER_OF_JOBS; j++) {
+            if (aiJobs[i][PRIORITY] > aiJobs[j][PRIORITY]) {
+                memcpy(swap[0], aiJobs[i], sizeof(aiJobs[i]));
+                memcpy(aiJobs[i], aiJobs[j], sizeof(aiJobs[j]));
+                memcpy(aiJobs[j], swap[0], sizeof(swap[0]));
+            }
+        }
+    }
+}
 
+void roundRobin() {
+    int timeSlice = 25;
+    int i;
+    int time, initialTime;
+    int firstWithPriority = 0;
+    int flag = 0;
+    int processesRemaining = NUMBER_OF_JOBS;
+    printf("\n\n");
+    for (i = 0, time = 0; processesRemaining != 0;) {
+        if(aiJobs[i][REMAINING_TIME] > 0) {
+            if (aiJobs[i][REMAINING_TIME] <= timeSlice) {
+                time += aiJobs[i][REMAINING_TIME];
+                aiJobs[i][REMAINING_TIME] = 0;
+                flag = 1;
+            } else {
+                aiJobs[i][REMAINING_TIME] -= timeSlice;
+                time += timeSlice;
+            }
+            if (flag == 1) {
+                processesRemaining--;
+            }
+        }
+    }
+}
 
 int main()
 {
     generateJobs();
     printJobs();
-
+    sortJobs();
+    printJobs();
+    roundRobin();
     return 0;
 }
-
-
