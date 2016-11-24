@@ -1,103 +1,77 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include </usr/include/semaphore.h>
-
-// for sleep
+#include <semaphore.h>
 #include <unistd.h>
+#include <string.h>
 
-#define BUFF_SIZE   1000           /* total number of slots */
-#define NP          1           /* total number of producers */
-#define NC          1           /* total number of consumers */
-#define NITERS      1000           /* number of items produced/consumed */
+#define BUF_SIZE    100
+#define NUM_ITEMS   1000
 
-typedef struct {
-    int buf[BUFF_SIZE];   /* shared var */
-    int in;               /* buf[in%BUFF_SIZE] is the first empty slot */
-    int out;              /* buf[out%BUFF_SIZE] is the first full slot */
-    sem_t full;           /* keep track of the number of full spots */
-    sem_t empty;          /* keep track of the number of empty spots */
+char charArray[BUF_SIZE];
 
-} sbuf_t;
-
-sbuf_t shared;
-
+int current_items = 0;
 int counter = 0;
 
-
-void *Producer(void *arg) {
-    int i, item, index;
-
-    index = (int*)&arg;
+sem_t prod_wait;
+sem_t cons_wait;
 
 
-    for (i=0; i < NITERS; i++)
-    {
+int getSemValue(sem_t semaphore) {
+    int semValue;
+    sem_getvalue(&semaphore, &semValue);
+    return semValue;
+}
 
-        /* Produce item */
-        item = i;
-
-        /* Prepare to write item to buf */
-
-        /* If there are no empty slots, wait */
-        sem_wait(&shared.empty);
-        /* If another thread uses the buffer, wait */
-        
-        shared.buf[shared.in] = item;
-        shared.in = (shared.in+1)%BUFF_SIZE;
-        //printf("Producing %d ...\n", item);
-        fflush(stdout);
-        /* Release the buffer */
-        /* Increment the number of full slots */
-        sem_post(&shared.full);
-        printf("iIndex: %d\n", counter++);
-
-        /* Interleave  producer and consumer execution */
-        //if (i % 2 == 1) sleep(1);
+void *producer(void *arg) {
+    int loops;
+    char star = '*';
+    for(loops = 0; loops < NUM_ITEMS ; loops++) {
+        sem_wait(&cons_wait);
+        counter++;
+        current_items++;
+        printf("iIndex: %d\t%s\n", current_items, charArray);
+        sem_post(&prod_wait);
     }
     return NULL;
 }
 
-void *Consumer(void *arg) {
-    int i, item, index;
-
-    index = (int*)&arg;
-    for (i=NITERS; i > 0; i--) {
-        sem_wait(&shared.full);
-        item=i;
-        item=shared.buf[shared.out];
-        shared.out = (shared.out+1)%BUFF_SIZE;
-        //printf("Consuming  %d ...\n", item);
-        fflush(stdout);
-        /* Release the buffer */
-        /* Increment the number of full slots */
-        sem_post(&shared.empty);
-        printf("iIndex: %d\n", counter--);
-
-        /* Interleave  producer and consumer execution */
-        //if (i % 2 == 1) sleep(1);
+void *consumer(void *arg) {
+    int temp, i, loops;
+    char space = ' ';
+    for(loops = 0; loops < NUM_ITEMS ; loops++) {
+        sem_wait(&prod_wait);
+        current_items--;
+        temp = current_items;
+        printf("iIndex: %d\t%s\n", temp, charArray);
+        sem_post(&cons_wait);
     }
     return NULL;
 }
 
 int main() {
-    pthread_t idP, idC;
-    int index;
+    pthread_t producer_thread, consumer_thread_1, consumer_thread_2;
+    int check_prod, check_cons_1, check_cons_2;
 
-    sem_init(&shared.full, 0, 0);
-    sem_init(&shared.empty, 0, BUFF_SIZE);
-    for (index = 0; index < NP; index++)
-    {
-        /* Create a new producer */
-        pthread_create(&idP, NULL, Producer, (void*)&index);
+    sem_init(&prod_wait, 0, 0);
+    sem_init(&cons_wait, 0, BUF_SIZE);
+
+    check_prod = pthread_create(&producer_thread, NULL, producer, NULL);
+    if (check_prod) {
+        printf("Error - pthread returned %d\n", check_prod);
+        return 0;
     }
-    /*create a new Consumer*/
-    for(index=0; index<NC; index++)
-    {
-        pthread_create(&idC, NULL, Consumer, (void*)&index);
+    check_cons_1 = pthread_create(&consumer_thread_1, NULL, consumer, NULL);
+    if (check_cons_1) {
+        printf("Error - pthread returned %d\n", check_cons_1);
+        return 0;
     }
+    pthread_join(producer_thread, NULL);
+    pthread_join(consumer_thread_1, NULL);
 
-
-
-    pthread_exit(NULL);
+    printf("prod_wait: %d\n", getSemValue(prod_wait));
+    printf("cons_wait: %d\n", getSemValue(cons_wait));
+    sem_destroy(&cons_wait);
+    sem_destroy(&prod_wait);
+    return 0;
 }

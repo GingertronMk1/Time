@@ -59,19 +59,15 @@ int main() {
     if (check_prod) {
         printf("Error - pthread returned %d\n", check_prod);
         return 0;
-    } else {
-        printf("Producer thread looks good\n");
     }
     check_cons = pthread_create(&consumer_thread, NULL, consumer, NULL);
     if (check_cons) {
         printf("Error - pthread returned %d\n", check_cons);
         return 0;
-    } else {
-        printf("Consumer thread looks good\n");
     }
+
     pthread_join(producer_thread, NULL);
     pthread_join(consumer_thread, NULL);
-    //pthread_exit(NULL);
     printf("prod_wait: %d\n", getSemValue(prod_wait));
     printf("cons_wait: %d\n", getSemValue(cons_wait));
     sem_destroy(&cons_wait);
