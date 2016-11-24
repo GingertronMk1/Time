@@ -12,12 +12,67 @@
 
 char charArray[BUF_SIZE];
 
+/* JOB CREATION, SIMULATION, DELETION STUFF HERE
+ * BASICALLY REQS 1A, 1B
+ */
+
+int aiJobs[NUMBER_OF_JOBS][4];
+
+void generateJobs()
+{
+    int i;
+    for(i = 0; i < NUMBER_OF_JOBS;i++)
+    {
+        aiJobs[i][JOB_INDEX] = i;
+        aiJobs[i][BURST_TIME] = rand() % 99 + 1;
+        aiJobs[i][REMAINING_TIME] = aiJobs[i][BURST_TIME];
+        aiJobs[i][PRIORITY] = rand()%10;
+    }
+}
+
+void printJob(int iId, int iBurstTime, int iRemainingTime, int iPriority)
+{
+    printf("Id = %d, Burst Time = %d, Remaining Time = %d, Priority = %d\n", iId, iBurstTime, iRemainingTime, iPriority);
+}
+
+void printJobs()
+{
+    int i;
+    printf("JOBS: \n");
+    for(i = 0; i < NUMBER_OF_JOBS; i++)
+        printJob(aiJobs[i][JOB_INDEX], aiJobs[i][BURST_TIME], aiJobs[i][REMAINING_TIME], aiJobs[i][PRIORITY]);
+}
+
+long int getDifferenceInMilliSeconds(struct timeval start, struct timeval end)
+{
+    int iSeconds = end.tv_sec - start.tv_sec;
+    int iUSeconds = end.tv_usec - start.tv_usec;
+    long int mtime = (iSeconds * 1000 + iUSeconds / 1000.0);
+    return mtime;
+}
+
+void simulateJob(int iTime)
+{
+    long int iDifference = 0;
+    struct timeval startTime, currentTime;
+    gettimeofday(&startTime, NULL);
+    do
+    {   
+        gettimeofday(&currentTime, NULL);
+        iDifference = getDifferenceInMilliSeconds(startTime, currentTime);
+    } while(iDifference < iTime);
+}
+
+
+/* SEMAPHORE, PRODUCER, CONSUMER STUFF HERE
+ * BASICALLY REQS 2-4
+ */
+
 int current_items = 0;
 int counter = 0;
 
 sem_t prod_wait;
 sem_t cons_wait;
-
 
 int getSemValue(sem_t semaphore) {
     int semValue;
@@ -64,7 +119,7 @@ int main() {
     pthread_create(&producer_thread, NULL, producer, NULL);
 
     for (i = 0; i < NUM_CONSUMERS; i++) {
-        check_thread = pthread_create(&consumers[i], NULL, consumer, /*(void*)(intptr_t)(i+1)*/NULL);
+        check_thread = pthread_create(&consumers[i], NULL, consumer, NULL);
         if (check_thread) {
             printf("Error - pthread returned %d\n", check_thread);
             return 0;
