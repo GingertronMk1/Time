@@ -9,8 +9,13 @@
 #define BUF_SIZE        100
 #define NUM_ITEMS       1000
 #define NUM_CONSUMERS   5
+#define NUMBER_OF_JOBS 10
+#define JOB_INDEX 0
+#define BURST_TIME 1
+#define REMAINING_TIME 2
+#define PRIORITY 3
 
-char charArray[BUF_SIZE];
+
 
 /* JOB CREATION, SIMULATION, DELETION STUFF HERE
  * BASICALLY REQS 1A, 1B
@@ -67,6 +72,7 @@ void simulateJob(int iTime)
 /* SEMAPHORE, PRODUCER, CONSUMER STUFF HERE
  * BASICALLY REQS 2-4
  */
+char charArray[BUF_SIZE];
 
 int current_items = 0;
 int counter = 0;
@@ -109,6 +115,7 @@ void *consumer(void *arg) {
 }
 
 int main() {
+    /* Thread stuff
     pthread_t producer_thread;
     pthread_t consumers[NUM_CONSUMERS];
     int i, check_thread;
@@ -138,5 +145,25 @@ int main() {
     printf("cons_wait: %d\n", getSemValue(cons_wait));
     sem_destroy(&cons_wait);
     sem_destroy(&prod_wait);
+    */
+
+    /* Scheduling Stuff
+     */
+    generateJobs();
+    printJobs();
+
+    printf("FCFS:\n");
+    int n = 0, startTime = 0, endTime = 0, avgResponseTimeSum = 0, avgTurnaroundTimeSum = 0;
+    for (n; n < NUMBER_OF_JOBS; n++) {
+        printf("JOB ID = %d, Start Time: %d, ", n, startTime);
+        avgResponseTimeSum += startTime;
+        startTime += aiJobs[n][BURST_TIME];
+        endTime += aiJobs[n][BURST_TIME];
+        avgTurnaroundTimeSum += endTime;
+        printf("End Time: %d\n", endTime);
+    };
+    double avgResponseTime = (double)avgResponseTimeSum / NUMBER_OF_JOBS;
+    double avgTurnaroundTime = (double)avgTurnaroundTimeSum / NUMBER_OF_JOBS;
+    printf("Average Response Time: %g\nAverage Turnaround Time: %g\n", avgResponseTime, avgTurnaroundTime);
     return 0;
 }

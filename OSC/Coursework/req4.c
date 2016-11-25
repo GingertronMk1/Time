@@ -25,15 +25,23 @@ int getSemValue(sem_t semaphore) {
     return semValue;
 }
 
+void printSemValues() {
+    printf("P: %d C: %d\n", getSemValue(prod_wait), getSemValue(cons_wait));
+}
+
 void *producer(void *arg) {
     int loops;
     char star = '*';
     for(loops = 0; loops < NUM_ITEMS ; loops++) {
         sem_wait(&cons_wait);
         unsigned int thread_id = pthread_self();
+        if (current_items == BUF_SIZE) {
+            sem_post(&prod_wait);
+        }
         charArray[current_items++] = star;
         counter++;
         printf("Producer tID: %u\tiIndex: %d\t%s\n", thread_id, current_items, charArray);
+        printSemValues();
         sem_post(&prod_wait);
     }
     return NULL;
@@ -45,9 +53,13 @@ void *consumer(void *arg) {
     for(loops = 0; loops < NUM_ITEMS/NUM_CONSUMERS ; loops++) {
         sem_wait(&prod_wait);
         unsigned int thread_id = pthread_self();
+        if (current_items == 0) {
+            sem_post(&cons_wait);
+        }
         charArray[current_items--] = space;
         temp = current_items;
         printf("Consumer tID: %u\tiIndex: %d\t%s\n", thread_id, temp, charArray);
+        printSemValues();
         sem_post(&cons_wait);
     }
     return NULL;

@@ -5,72 +5,72 @@
 #include <unistd.h>
 #include <string.h>
 
-#define BUF_SIZE    100
 #define NUM_ITEMS   1000
 
-char charArray[BUF_SIZE];
-
-int current_items = 0;
+int iIndex = 0;
 int counter = 0;
 
 sem_t prod_wait;
 sem_t cons_wait;
 
-
-int getSemValue(sem_t semaphore) {
-    int semValue;
-    sem_getvalue(&semaphore, &semValue);
-    return semValue;
+void printSemValues() {
+    int prodValue, consValue;
+    sem_getvalue(&prod_wait, &prodValue);
+    sem_getvalue(&cons_wait, &consValue);
+    printf("P: %d C: %d\n", prodValue, consValue);
 }
 
 void *producer(void *arg) {
-    int loops;
-    char star = '*';
-    for(loops = 0; loops < NUM_ITEMS ; loops++) {
-        sem_wait(&cons_wait);
+    sem_wait(&prod_wait);
+    while(1) {
         counter++;
-        current_items++;
-        printf("iIndex: %d\t%s\n", current_items, charArray);
-        sem_post(&prod_wait);
+        iIndex++;
+        printf("P iIndex: %d\n", iIndex);
+        //printSemValues();
+        if (counter == NUM_ITEMS) {
+            sem_post(&cons_wait);
+            sem_post(&prod_wait);
+            return NULL;
+        }
     }
-    return NULL;
 }
 
 void *consumer(void *arg) {
-    int temp, i, loops;
-    char space = ' ';
-    for(loops = 0; loops < NUM_ITEMS ; loops++) {
+    sem_wait(&cons_wait);
+    while(1) {
         sem_wait(&prod_wait);
-        current_items--;
-        temp = current_items;
-        printf("iIndex: %d\t%s\n", temp, charArray);
-        sem_post(&cons_wait);
+        iIndex--;
+        int temp = iIndex;
+        printf("C iIndex: %d\n", temp);
+        //printSemValues();
+        sem_post(&prod_wait);
+        if (temp == 0) {
+            return NULL;
+        }
     }
-    return NULL;
 }
 
 int main() {
-    pthread_t producer_thread, consumer_thread_1, consumer_thread_2;
+    pthread_t producer_thread, consumer_thread;
     int check_prod, check_cons_1, check_cons_2;
 
-    sem_init(&prod_wait, 0, 0);
-    sem_init(&cons_wait, 0, BUF_SIZE);
+    sem_init(&prod_wait, 0, 1);
+    sem_init(&cons_wait, 0, 0);
 
     check_prod = pthread_create(&producer_thread, NULL, producer, NULL);
     if (check_prod) {
         printf("Error - pthread returned %d\n", check_prod);
         return 0;
     }
-    check_cons_1 = pthread_create(&consumer_thread_1, NULL, consumer, NULL);
+    check_cons_1 = pthread_create(&consumer_thread, NULL, consumer, NULL);
     if (check_cons_1) {
         printf("Error - pthread returned %d\n", check_cons_1);
         return 0;
     }
     pthread_join(producer_thread, NULL);
-    pthread_join(consumer_thread_1, NULL);
+    pthread_join(consumer_thread, NULL);
 
-    printf("prod_wait: %d\n", getSemValue(prod_wait));
-    printf("cons_wait: %d\n", getSemValue(cons_wait));
+    printSemValues();
     sem_destroy(&cons_wait);
     sem_destroy(&prod_wait);
     return 0;
