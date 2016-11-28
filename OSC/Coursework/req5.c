@@ -71,15 +71,15 @@ void simulateJob(int iTime)
 
 int iIndex = 0;
 int counter = 0;
-int start_timer = 0;
+int startTimer = 0;
 
-sem_t prod_wait;
-sem_t cons_wait;
+sem_t sProdWait;
+sem_t sConsWait;
 
 void printSemValues() {
     int prodValue, consValue;
-    sem_getvalue(&prod_wait, &prodValue);
-    sem_getvalue(&cons_wait, &consValue);
+    sem_getvalue(&sProdWait, &prodValue);
+    sem_getvalue(&sConsWait, &consValue);
     printf("P: %d C: %d\n", prodValue, consValue);
 }
 
@@ -93,10 +93,10 @@ void *producer(void *arg) {
             printf("Producing:\t");
             printf("JOB ID: %d Burst Time: %d Remaining Time: %d", aiJobs[iIndex][JOB_INDEX], aiJobs[iIndex][BURST_TIME], aiJobs[iIndex][REMAINING_TIME]);
             printf(" (Jobs Produced: %d, Jobs In Buffer: %d)\n", counter, iIndex);
-            sem_post(&cons_wait);
+            sem_post(&sConsWait);
         } else {
-            sem_post(&cons_wait);
-            sem_wait(&prod_wait);
+            sem_post(&sConsWait);
+            sem_wait(&sProdWait);
         }
         if (counter == NUM_ITEMS && iIndex == 0) {
             return NULL;
@@ -105,26 +105,26 @@ void *producer(void *arg) {
 }
 
 void *consumer(void *arg) {
-    int temp_counter, array_mover;
-    sem_wait(&prod_wait);
+    int tempCounter, arrayMover;
+    sem_wait(&sProdWait);
     while(1) {
-        temp_counter = counter;
+        tempCounter = counter;
         if (iIndex > 0) {
             simulateJob(aiJobs[1][REMAINING_TIME]);
-            start_timer += aiJobs[0][REMAINING_TIME];
+            startTimer += aiJobs[0][REMAINING_TIME];
             printf("Removing:\t");
-            printf("JOB ID: %d Burst Time: %d Start Time: %d", aiJobs[1][JOB_INDEX], aiJobs[1][BURST_TIME], start_timer);
+            printf("JOB ID: %d Burst Time: %d Start Time: %d", aiJobs[1][JOB_INDEX], aiJobs[1][BURST_TIME], startTimer);
             printf(" (Jobs Produced: %d, Jobs In Buffer: %d)\n", counter, --iIndex);
-            for (array_mover = 0; array_mover < BUF_SIZE;) {
-                memcpy(aiJobs[array_mover], aiJobs[++array_mover], sizeof(aiJobs[++array_mover]));
+            for (arrayMover = 0; arrayMover < BUF_SIZE;) {
+                memcpy(aiJobs[arrayMover], aiJobs[++arrayMover], sizeof(aiJobs[++arrayMover]));
             }
-            sem_wait(&cons_wait);
+            sem_wait(&sConsWait);
         } else {
-            sem_post(&prod_wait);
-            sem_wait(&cons_wait);
+            sem_post(&sProdWait);
+            sem_wait(&sConsWait);
         }
         if (counter == NUM_ITEMS && iIndex == 0) {
-            sem_post(&prod_wait);
+            sem_post(&sProdWait);
             return NULL;
         }
     }
@@ -132,34 +132,34 @@ void *consumer(void *arg) {
 
 int main() {
     // Production/Consumption Stuff
-    pthread_t producer_thread, consumer_thread;
-    int check_prod, check_cons;
+    pthread_t producerThread, consumerThread;
+    int checkProd, checkCons;
 
-    sem_init(&prod_wait, 0, 1);
-    sem_init(&cons_wait, 0, 0);
+    sem_init(&sProdWait, 0, 1);
+    sem_init(&sConsWait, 0, 0);
     printSemValues();
 
-    check_prod = pthread_create(&producer_thread, NULL, producer, NULL);
-    if (check_prod) {
-        printf("Error - pthread returned %d\n", check_prod);
+    checkProd = pthread_create(&producerThread, NULL, producer, NULL);
+    if (checkProd) {
+        printf("Error - pthread returned %d\n", checkProd);
         return 0;
     } else {
         //printf("Producer thread OK\n");
     }
-    check_cons = pthread_create(&consumer_thread, NULL, consumer, NULL);
-    if (check_cons) {
-        printf("Error - pthread returned %d\n", check_cons);
+    checkCons = pthread_create(&consumerThread, NULL, consumer, NULL);
+    if (checkCons) {
+        printf("Error - pthread returned %d\n", checkCons);
         return 0;
     } else {
         //printf("Consumer thread OK\n");
     }
 
-    pthread_join(producer_thread, NULL);
-    pthread_join(consumer_thread, NULL);
+    pthread_join(producerThread, NULL);
+    pthread_join(consumerThread, NULL);
     printSemValues();
-    double avg_start_time = (start_timer*1.00)/NUM_ITEMS;
-    printf("Start Time: %d Number of Jobs: %d Avg Start Time: %.2f\n", start_timer, NUM_ITEMS, avg_start_time);
-    sem_destroy(&cons_wait);
-    sem_destroy(&prod_wait);
+    double avgStartTime = (startTimer*1.00)/NUM_ITEMS;
+    printf("Start Time: %d Number of Jobs: %d Avg Start Time: %.2f\n", startTimer, NUM_ITEMS, avgStartTime);
+    sem_destroy(&sConsWait);
+    sem_destroy(&sProdWait);
     return 0;
 }
