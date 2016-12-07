@@ -2,8 +2,6 @@ package MapViewer;
 // Only contains two types of tiles:
 // Blocked and non-blocked.
 
-
-
 import java.awt.image.BufferedImage;
 
 public class Tile {
