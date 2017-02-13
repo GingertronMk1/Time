@@ -37,6 +37,10 @@ a blank representing a position on the board that is not yet occupied:
 > data Player = O | B | X
 >               deriving (Ord, Eq, Show)
 
+deriving Eq means that the 'Player' data type supports equality
+Ord means it supports ordering; O < B < X
+Show prints things converted to strings
+
 The following code displays a board on the screen:
 
 > showBoard :: Board -> IO ()
@@ -64,8 +68,17 @@ The following is a test board:
 Now for a function that turns columns into rows:
 
 > colsToRows :: Board -> [Row]
-> colsToRows =  transpose   -- from this, colsToRows . colsToRows = id
+> colsToRows =  transpose
 
+From this, colsToRows . colsToRows = id
+
+A few more helper functions:
+
+> turn :: Board -> Player
+> hasRow :: Player -> Row -> Bool
+> hasWon :: Player -> Board -> Bool
+> move :: Player -> Int -> Board -> Board
+> isValid :: Int -> Bool
 
 
 ----------------------------------------------------------------------
