@@ -65,6 +65,8 @@ The following is a test board:
 >         [B,B,O,O,X,B,B],
 >         [B,O,O,X,X,X,O]]
 
+MY CODE STARTS HERE:-------------------------------------------------
+
 Now for a function that turns columns into rows:
 
 > colsToRows :: Board -> [Row]
@@ -81,7 +83,6 @@ A few more helper functions:
 turn :: Board -> Player
 hasRow :: Player -> Row -> Bool
 hasWon :: Player -> Board -> Bool
-move :: Player -> Int -> Board -> Board
 isValid :: Int -> Bool
 
 No real need of these two functions; they're more to help me remember how to do stuff with lists within lists
@@ -107,16 +108,45 @@ Fill the row back up with blanks
 > fillCol col = if (length col < rows) then fillCol (B:col)
 >               else col
 
+Add a piece to the front of a row
+
 > addPiece :: Row -> Player -> Row
 > addPiece col piece = piece:col
 
-> move :: Board -> Int -> Player -> Row
-> move board n piece = fillCol (addPiece (removeColBlanks board n) piece)
+Fill the rest of a row with blanks
 
+> putPiece :: Board -> Int -> Player -> Row
+> putPiece board n piece = fillCol (addPiece (removeColBlanks board n) piece)
 
-To add a counter to a column, transpose the board, then add the counter to the relevant row
-That is, replace the last non-B character of the relevant row.
-This can be done by removing every first B from the row, adding the counter to the head of the row, and filling up with B's
-Split the list of lists at the point (say !! 3), edit the list there, rejoin it all together, then print it
+So now, to construct a board with the piece added, we add the piece to the relevant row, then reconstruct the board from the other rows
+
+> move :: Board -> Int -> Board
+> move board n = colsToRows ((take n (colsToRows board)) 
+>                             ++ [(putPiece board n (whoseGo board))]
+>                             ++ (drop (n+1) (colsToRows board)))
+
+> showMove :: Board -> Int -> IO()
+> showMove board n = showBoard (move board n)
+
+Counting the number of pieces in play, for use in determining whose go it is
+
+> numPieces :: Board -> Int
+> numPieces = length . filter (/= B) . concat
+
+> whoseGo :: Board -> Player
+> whoseGo board = if mod (numPieces board) 2 == 0 then O
+>                 else X
+
+> hasXWon :: Row -> Bool
+> hasXWon row = elem [X,X,X,X] (subsequences row)
+
+> hasOWon :: Row -> Bool
+> hasOWon row = elem [O,O,O,O] (subsequences row)
+
+> hasWonRow :: Row -> Bool
+> hasWonRow row = or [hasXWon row, hasOWon row]
+
+> hasWon :: Board -> Bool
+> hasWon board = or (map (hasWonRow) board)
 
 ----------------------------------------------------------------------
