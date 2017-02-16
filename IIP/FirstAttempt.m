@@ -8,6 +8,15 @@ im1(im1>200) = 0;
 % Getting the size of the original image
 im1size = size(im1Green);
 
+im1RedChannel = im1(:,:,1);
+im1GreenChannel = im1(:,:,2);
+im1BlueChannel = im1(:,:,3);
+
+thresh = 5;
+im1(:,:,1) = abs(im1RedChannel(:,:)-im1BlueChannel(:,:))<=thresh & abs(im1BlueChannel(:,:)-im1GreenChannel(:,:))<=thresh;
+im1(:,:,2) = abs(im1RedChannel(:,:)-im1BlueChannel(:,:))<=thresh & abs(im1BlueChannel(:,:)-im1GreenChannel(:,:))<=thresh;
+im1(:,:,3) = abs(im1RedChannel(:,:)-im1BlueChannel(:,:))<=thresh & abs(im1BlueChannel(:,:)-im1GreenChannel(:,:))<=thresh;
+
 % Separating the greenness of the image
 im1Red = im1(:,:,1) - (im1(:,:,2) + im1(:,:,3))/2;
 im1Green = im1(:,:,2) - (im1(:,:,1) + im1(:,:,3))/2;
