@@ -68,17 +68,54 @@ The following is a test board:
 Now for a function that turns columns into rows:
 
 > colsToRows :: Board -> [Row]
-> colsToRows =  transpose
+> colsToRows = transpose
 
 From this, colsToRows . colsToRows = id
+Furthermore, just to make things a bit easier:
+
+> getCol :: Board -> Int -> Row
+> getCol board a = (colsToRows board) !! a
 
 A few more helper functions:
 
-> turn :: Board -> Player
-> hasRow :: Player -> Row -> Bool
-> hasWon :: Player -> Board -> Bool
-> move :: Player -> Int -> Board -> Board
-> isValid :: Int -> Bool
+turn :: Board -> Player
+hasRow :: Player -> Row -> Bool
+hasWon :: Player -> Board -> Bool
+move :: Player -> Int -> Board -> Board
+isValid :: Int -> Bool
 
+No real need of these two functions; they're more to help me remember how to do stuff with lists within lists
+
+> printRow :: Board -> Int -> IO()
+> printRow board a = print (board !! a)
+
+> printCol :: Board -> Int -> IO()
+> printCol board a = print (getCol board a)
+
+
+Removing blanks from the beginning of a column
+
+> removeColBlanks :: Board -> Int -> Row
+> removeColBlanks board a = removeBlanks (getCol board a)
+
+> removeBlanks :: Row -> Row
+> removeBlanks row = dropWhile (==B) row
+
+Fill the row back up with blanks
+
+> fillCol :: Row -> Row
+> fillCol col = if (length col < rows) then fillCol (B:col)
+>               else col
+
+> addPiece :: Row -> Player -> Row
+> addPiece col piece = piece:col
+
+> move :: Board -> Int -> Player -> Row
+> move board n piece = fillCol (addPiece (removeColBlanks board n) piece)
+
+
+To add a counter to a column, transpose the board, then add the counter to the relevant row
+That is, replace the last non-B character of the relevant row.
+This can be done by removing every first B from the row, adding the counter to the head of the row, and filling up with B's
 
 ----------------------------------------------------------------------
