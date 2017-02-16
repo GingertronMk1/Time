@@ -5,9 +5,10 @@ psyje5@nottingham.ac.uk
 
 ----------------------------------------------------------------------
 
-Gonna need some stuff from Data.List
+Gonna need some stuff from Data.List, as well as Data.Char (`isDigit` mostly)
 
 > import Data.List
+> import Data.Char
 
 For flexibility, we define constants for the row and column size of the
 board, length of a winning sequence, and search depth for the game tree:
@@ -64,6 +65,39 @@ The following is a test board:
 >         [B,B,B,X,X,B,B],
 >         [B,B,O,O,X,B,B],
 >         [B,O,O,X,X,X,O]]
+
+> testWonVert :: Board
+> testWonVert = [[B,B,B,B,B,B,B],
+>                [B,B,B,B,B,B,B],
+>                [B,B,B,B,X,B,B],
+>                [B,B,B,X,X,B,B],
+>                [B,B,O,O,X,B,B],
+>                [B,O,O,X,X,X,O]]
+
+> testWonHor :: Board
+> testWonHor = [[B,B,B,B,B,B,B],
+>               [B,B,B,B,B,B,B],
+>               [B,B,B,B,B,B,B],
+>               [B,B,B,X,X,B,B],
+>               [O,O,O,O,X,B,B],
+>               [X,O,O,X,X,X,O]]
+
+> testWonDiag :: Board
+> testWonDiag = [[B,B,B,B,B,B,B],
+>                [B,B,B,B,B,B,B],
+>                [B,B,X,B,B,B,B],
+>                [B,B,O,X,X,B,B],
+>                [B,O,O,O,X,B,B],
+>                [B,O,O,X,X,X,O]]
+
+> blank :: Board
+> blank = [[B,B,B,B,B,B,B],
+>          [B,B,B,B,B,B,B],
+>          [B,B,B,B,B,B,B],
+>          [B,B,B,B,B,B,B],
+>          [B,B,B,B,B,B,B],
+>          [B,B,B,B,B,B,B]]
+
 
 MY CODE STARTS HERE:-------------------------------------------------
 
@@ -138,15 +172,34 @@ Counting the number of pieces in play, for use in determining whose go it is
 >                 else X
 
 > hasXWon :: Row -> Bool
-> hasXWon row = elem [X,X,X,X] (subsequences row)
+> hasXWon row = elem [X,X,X,X] (group row)
 
 > hasOWon :: Row -> Bool
-> hasOWon row = elem [O,O,O,O] (subsequences row)
+> hasOWon row = elem [O,O,O,O] (group row)
 
 > hasWonRow :: Row -> Bool
 > hasWonRow row = or [hasXWon row, hasOWon row]
 
 > hasWon :: Board -> Bool
-> hasWon board = or (map (hasWonRow) board)
+> hasWon board = or [or (map (hasWonRow) board), or (map (hasWonRow) (colsToRows board))]
+
+> getDigit :: String -> IO Int
+> getDigit prompt = do putStrLn prompt
+>                      n <- getChar
+>                      if isDigit n then
+>                        return (ord n - ord '0')
+>                      else
+>                        do putStrLn "ERROR: INVALID DIGIT"
+>                           getDigit prompt
+
+> play :: Board -> IO()
+> play board = do showBoard board
+>                 n <- getDigit "Which Column?"
+>                 putChar '\n'
+>                 if hasWon (move board n) then
+>                   do showBoard (move board n)
+>                      putStrLn "Winner!"
+>                 else
+>                   play (move board n)
 
 ----------------------------------------------------------------------
