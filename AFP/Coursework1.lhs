@@ -117,5 +117,6 @@ Fill the row back up with blanks
 To add a counter to a column, transpose the board, then add the counter to the relevant row
 That is, replace the last non-B character of the relevant row.
 This can be done by removing every first B from the row, adding the counter to the head of the row, and filling up with B's
+Split the list of lists at the point (say !! 3), edit the list there, rejoin it all together, then print it
 
 ----------------------------------------------------------------------
