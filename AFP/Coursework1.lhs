@@ -49,7 +49,7 @@ The following code displays a board on the screen:
 >               where
 >                  showRow = map showPlayer
 >                  line    = replicate cols '-'
->                  nums    = take cols ['0'..]
+>                  nums    = take cols ['1'..]
 >
 > showPlayer :: Player -> Char
 > showPlayer O = 'O'
@@ -66,29 +66,37 @@ The following is a test board:
 >         [B,B,O,O,X,B,B],
 >         [B,O,O,X,X,X,O]]
 
-> testWonVert :: Board
-> testWonVert = [[B,B,B,B,B,B,B],
+> testWonCol :: Board
+> testWonCol = [[B,B,B,B,B,B,B],
 >                [B,B,B,B,B,B,B],
 >                [B,B,B,B,X,B,B],
 >                [B,B,B,X,X,B,B],
 >                [B,B,O,O,X,B,B],
 >                [B,O,O,X,X,X,O]]
 
-> testWonHor :: Board
-> testWonHor = [[B,B,B,B,B,B,B],
+> testWonRow :: Board
+> testWonRow = [[B,B,B,B,B,B,B],
 >               [B,B,B,B,B,B,B],
 >               [B,B,B,B,B,B,B],
 >               [B,B,B,X,X,B,B],
 >               [O,O,O,O,X,B,B],
 >               [X,O,O,X,X,X,O]]
 
-> testWonDiag :: Board
-> testWonDiag = [[B,B,B,B,B,B,B],
->                [B,B,B,B,B,B,B],
->                [B,B,X,B,B,B,B],
->                [B,B,O,X,X,B,B],
->                [B,O,O,O,X,B,B],
->                [B,O,O,X,X,X,O]]
+> testWonDiag1 :: Board
+> testWonDiag1 = [[X,B,B,B,B,B,B],
+>                 [B,X,B,B,B,B,B],
+>                 [B,B,X,B,B,B,B],
+>                 [B,B,B,X,B,B,B],
+>                 [B,B,B,B,B,B,B],
+>                 [B,B,B,B,B,B,B]]
+
+> testWonDiag2 :: Board
+> testWonDiag2 = [[B,B,B,B,B,B,B],
+>                 [B,B,B,B,X,B,B],
+>                 [B,B,B,X,B,B,B],
+>                 [B,B,X,B,B,B,B],
+>                 [B,X,B,B,B,B,B],
+>                 [B,B,B,B,B,B,B]]
 
 > blank :: Board
 > blank = [[B,B,B,B,B,B,B],
@@ -112,12 +120,18 @@ Furthermore, just to make things a bit easier:
 > getCol :: Board -> Int -> Row
 > getCol board a = (colsToRows board) !! a
 
-A few more helper functions:
+Taking Diagonals: diagonals of an empty list is an empty list
+Diagonals of an empty list followed by some other list is that list
 
-turn :: Board -> Player
-hasRow :: Player -> Row -> Bool
-hasWon :: Player -> Board -> Bool
-isValid :: Int -> Bool
+> diagonals :: Board -> [Row]
+> diagonals []       = []
+> diagonals ([]:xss) = xss
+> diagonals xss      = zipWith (++) (map ((:[]) . head) xss ++ repeat []) ([]:(diagonals (map tail xss)))
+
+The above takes diagonals that go from top-left to bottom-right. So to get the opposite, we flip the board about the middle vertical
+
+> allDiagonals :: Board -> [Row]
+> allDiagonals board = (diagonals board) ++ (diagonals (map reverse board))
 
 No real need of these two functions; they're more to help me remember how to do stuff with lists within lists
 
@@ -153,14 +167,12 @@ Fill the rest of a row with blanks
 > putPiece board n piece = fillCol (addPiece (removeColBlanks board n) piece)
 
 So now, to construct a board with the piece added, we add the piece to the relevant row, then reconstruct the board from the other rows
+From right to left: we make the columns rows again, doing this on a concatenation of all the columns before the one we wanted
+to play on, the modified version of the one we wanted to play on (encased in [] otherwise this wouldn't work), and all the columns
+after the one we wanted
 
 > move :: Board -> Int -> Board
-> move board n = colsToRows ((take n (colsToRows board)) 
->                             ++ [(putPiece board n (whoseGo board))]
->                             ++ (drop (n+1) (colsToRows board)))
-
-> showMove :: Board -> Int -> IO()
-> showMove board n = showBoard (move board n)
+> move board n = colsToRows ((take n (colsToRows board)) ++ [(putPiece board n (whoseGo board))] ++ (drop (n+1) (colsToRows board)))
 
 Counting the number of pieces in play, for use in determining whose go it is
 
@@ -171,17 +183,61 @@ Counting the number of pieces in play, for use in determining whose go it is
 > whoseGo board = if mod (numPieces board) 2 == 0 then O
 >                 else X
 
+Check if a move is valid
+
+> isValid :: Board -> Int -> Bool
+> isValid board n
+>             | not (elem n [0..cols-1]) = False
+>             | (getCol board n) !! 0 /= B = False
+>             | otherwise = True
+
+HAS WON LOGIC GOES HERE
+
+Determines if either player has won a row
+
 > hasXWon :: Row -> Bool
 > hasXWon row = elem [X,X,X,X] (group row)
 
 > hasOWon :: Row -> Bool
 > hasOWon row = elem [O,O,O,O] (group row)
 
-> hasWonRow :: Row -> Bool
-> hasWonRow row = or [hasXWon row, hasOWon row]
+Determines `which` player won the row
 
-> hasWon :: Board -> Bool
-> hasWon board = or [or (map (hasWonRow) board), or (map (hasWonRow) (colsToRows board))]
+> hasWonRow :: Row -> Player
+> hasWonRow row
+>           | hasXWon row = X
+>           | hasOWon row = O
+>           | otherwise   = B
+
+Build a list with the win state of every row
+
+> hasWonRows :: Board -> [Player]
+> hasWonRows board = map hasWonRow board
+
+Win states of every column
+
+> hasWonCols :: Board -> [Player]
+> hasWonCols board = map hasWonRow (colsToRows board)
+
+Win states of every diagonal
+
+> hasWonDiags :: Board -> [Player]
+> hasWonDiags board = map hasWonRow (allDiagonals board)
+
+Win states of all three combined
+
+> hasWon :: Board -> [Player]
+> hasWon board = hasWonRows board ++ hasWonCols board ++ hasWonDiags board
+
+Who won?
+
+> whoWon :: Board -> Player
+> whoWon board
+>           | elem X (hasWon board) = X
+>           | elem O (hasWon board) = O
+>           | elem B (hasWon board) = B
+
+Need a little helper to let us get just single digits from input
 
 > getDigit :: String -> IO Int
 > getDigit prompt = do putStrLn prompt
@@ -192,14 +248,44 @@ Counting the number of pieces in play, for use in determining whose go it is
 >                        do putStrLn "ERROR: INVALID DIGIT"
 >                           getDigit prompt
 
+And now for the actual game loop!
+
+Starting at the top:
+  1) Show the board as it is
+  2) Get the digit pertaining to the column to be played
+    2.5) This is going to be decremented by one because of a mix of zero-indexing and format changing
+  3) Put a new line in for tidyness
+  4) If the move is valid, let the new board be the old board with the new move
+    4.1) If someone's won, show the final board and let us know who won, and end the game
+    4.2) Else, if the board's full, end the game with nobody having won
+    4.3) If neither of those are the case, begin the loop again with the new board as the input
+  5) If the move isn't valid, tell us so and start the loop again with the same input as last time
+
 > play :: Board -> IO()
 > play board = do showBoard board
 >                 n <- getDigit "Which Column?"
 >                 putChar '\n'
->                 if hasWon (move board n) then
->                   do showBoard (move board n)
->                      putStrLn "Winner!"
+>                 if isValid board (n-1) then
+>                   do let newBoard = move board (n-1)
+>                      if whoWon (newBoard) /= B then
+>                        do showBoard newBoard
+>                           print (whoWon newBoard)
+>                      else if numPieces board == rows*cols then
+>                        do showBoard newBoard
+>                           putStrLn "Board full, nobody wins..."
+>                      else
+>                        play (newBoard)
 >                 else
->                   play (move board n)
+>                   do putStrLn "Move invalid (either the column's full or doesn't exist)"
+>                      play board
+
+And finally...
+
+> main :: IO()
+> main = play blank
+
+----------------------------------------------------------------------
+
+TODO:
 
 ----------------------------------------------------------------------
