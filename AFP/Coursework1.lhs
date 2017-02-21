@@ -67,7 +67,9 @@ The following is a test board:
 >         [B,B,O,O,X,B,B],
 >         [B,O,O,X,X,X,O]]
 
-MY CODE STARTS HERE:-------------------------------------------------
+----------------------------------------------------------------------
+MY CODE STARTS HERE:--------------------------------------------------
+----------------------------------------------------------------------
 
 > testWonCol :: Board
 > testWonCol = [[B,B,B,B,B,B,B],
@@ -100,6 +102,11 @@ MY CODE STARTS HERE:-------------------------------------------------
 >                 [B,B,X,B,B,B,B],
 >                 [B,X,B,B,B,B,B],
 >                 [B,B,B,B,B,B,B]]
+
+----------------------------------------------------------------------
+BOARD MANIPULATION HERE:----------------------------------------------
+----------------------------------------------------------------------
+
 
 Generate a board of `rows` rows and `cols` columns
 Standard is c = 7, r = 6
@@ -139,6 +146,9 @@ No real need of these two functions; they're more to help me remember how to do 
 > printCol :: Board -> Int -> IO()
 > printCol board a = print (getCol board a)
 
+----------------------------------------------------------------------
+MOVEMENT CODE HERE:---------------------------------------------------
+----------------------------------------------------------------------
 
 Removing blanks from the beginning of a column
 
@@ -164,10 +174,7 @@ Fill the rest of a row with blanks
 > putPiece :: Board -> Int -> Player -> Row
 > putPiece board n piece = fillCol (addPiece (removeColBlanks board n) piece)
 
-So now, to construct a board with the piece added, we add the piece to the relevant row, then reconstruct the board from the other rows
-From right to left: we make the columns rows again, doing this on a concatenation of all the columns before the one we wanted
-to play on, the modified version of the one we wanted to play on (encased in [] otherwise this wouldn't work), and all the columns
-after the one we wanted
+[Columns before the modified one] ++ [modified one] ++ [all columns after modified one]
 
 > makeMove :: Board -> Int -> Player -> Board
 > makeMove board n piece = colsToRows ((take n (colsToRows board))
@@ -191,7 +198,10 @@ Check if a move is valid
 >             | (getCol board n) !! 0 /= B = False
 >             | otherwise = True
 
-HAS WON LOGIC GOES HERE
+
+----------------------------------------------------------------------
+HAS WON LOGIC GOES HERE:----------------------------------------------
+----------------------------------------------------------------------
 
 Determines if either player has won a row
 
@@ -237,6 +247,10 @@ Who won?
 >           | elem O (hasWon board) = O
 >           | elem B (hasWon board) = B
 
+----------------------------------------------------------------------
+COLUMN SELECTION HERE:------------------------------------------------
+----------------------------------------------------------------------
+
 Need a little helper to let us get just single digits from input
 
 > getDigit :: String -> IO Int
@@ -253,7 +267,9 @@ Beginnings of AI:
 > pickCol :: IO Int
 > pickCol = getStdRandom (randomR (0, cols))
 
-And now for the actual game loop!
+----------------------------------------------------------------------
+GAME LOOP HERE:-------------------------------------------------------
+----------------------------------------------------------------------
 
 Starting at the top:
   1) Show the board as it is
