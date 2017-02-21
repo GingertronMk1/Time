@@ -9,6 +9,7 @@ Gonna need some stuff from Data.List, as well as Data.Char (`isDigit` mostly)
 
 > import Data.List
 > import Data.Char
+> import System.Random
 
 For flexibility, we define constants for the row and column size of the
 board, length of a winning sequence, and search depth for the game tree:
@@ -66,6 +67,8 @@ The following is a test board:
 >         [B,B,O,O,X,B,B],
 >         [B,O,O,X,X,X,O]]
 
+MY CODE STARTS HERE:-------------------------------------------------
+
 > testWonCol :: Board
 > testWonCol = [[B,B,B,B,B,B,B],
 >                [B,B,B,B,B,B,B],
@@ -98,16 +101,11 @@ The following is a test board:
 >                 [B,X,B,B,B,B,B],
 >                 [B,B,B,B,B,B,B]]
 
-> blank :: Board
-> blank = [[B,B,B,B,B,B,B],
->          [B,B,B,B,B,B,B],
->          [B,B,B,B,B,B,B],
->          [B,B,B,B,B,B,B],
->          [B,B,B,B,B,B,B],
->          [B,B,B,B,B,B,B]]
+Generate a board of `rows` rows and `cols` columns
+Standard is c = 7, r = 6
 
-
-MY CODE STARTS HERE:-------------------------------------------------
+> boardGen :: Int -> Int -> Board
+> boardGen c r = replicate c (replicate r B)
 
 Now for a function that turns columns into rows:
 
@@ -172,7 +170,9 @@ to play on, the modified version of the one we wanted to play on (encased in [] 
 after the one we wanted
 
 > move :: Board -> Int -> Board
-> move board n = colsToRows ((take n (colsToRows board)) ++ [(putPiece board n (whoseGo board))] ++ (drop (n+1) (colsToRows board)))
+> move board n = colsToRows ((take n (colsToRows board))
+>                ++ [(putPiece board n (whoseGo board))]
+>                ++ (drop (n+1) (colsToRows board)))
 
 Counting the number of pieces in play, for use in determining whose go it is
 
@@ -196,10 +196,10 @@ HAS WON LOGIC GOES HERE
 Determines if either player has won a row
 
 > hasXWon :: Row -> Bool
-> hasXWon row = elem [X,X,X,X] (group row)
+> hasXWon row = elem (replicate win X) (group row)
 
 > hasOWon :: Row -> Bool
-> hasOWon row = elem [O,O,O,O] (group row)
+> hasOWon row = elem (replicate win O) (group row)
 
 Determines `which` player won the row
 
@@ -241,12 +241,17 @@ Need a little helper to let us get just single digits from input
 
 > getDigit :: String -> IO Int
 > getDigit prompt = do putStrLn prompt
->                      n <- getChar
->                      if isDigit n then
->                        return (ord n - ord '0')
->                      else
->                        do putStrLn "ERROR: INVALID DIGIT"
->                           getDigit prompt
+>                      n <- getLine
+>                      return (toDigits n)
+
+> toDigits :: String -> Int
+> toDigits (x:[]) = digitToInt x
+> toDigits (x:xs) = 10*(digitToInt x) + toDigits xs
+
+Beginnings of AI:
+
+> pickCol :: IO Int
+> pickCol = getStdRandom (randomR (0, cols))
 
 And now for the actual game loop!
 
@@ -269,6 +274,7 @@ Starting at the top:
 >                   do let newBoard = move board (n-1)
 >                      if whoWon (newBoard) /= B then
 >                        do showBoard newBoard
+>                           putStr "Winner: "
 >                           print (whoWon newBoard)
 >                      else if numPieces board == rows*cols then
 >                        do showBoard newBoard
@@ -276,16 +282,20 @@ Starting at the top:
 >                      else
 >                        play (newBoard)
 >                 else
->                   do putStrLn "Move invalid (either the column's full or doesn't exist)"
+>                   do putStr "Move invalid (either the column's full or doesn't exist). Your move: "
+>                      print n
 >                      play board
 
 And finally...
 
 > main :: IO()
-> main = play blank
+> main = play (boardGen rows cols)
 
 ----------------------------------------------------------------------
 
-TODO:
+TODO: AI
+
+So currently the making moves functions are a bit inextensible. Need to do something about that.
+Change `move` to take `piece` as an arg, putting more on `whoseGo` so we can shove something in there about picking a number
 
 ----------------------------------------------------------------------
