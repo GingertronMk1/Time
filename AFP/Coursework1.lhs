@@ -169,9 +169,9 @@ From right to left: we make the columns rows again, doing this on a concatenatio
 to play on, the modified version of the one we wanted to play on (encased in [] otherwise this wouldn't work), and all the columns
 after the one we wanted
 
-> move :: Board -> Int -> Board
-> move board n = colsToRows ((take n (colsToRows board))
->                ++ [(putPiece board n (whoseGo board))]
+> makeMove :: Board -> Int -> Player -> Board
+> makeMove board n piece = colsToRows ((take n (colsToRows board))
+>                ++ [(putPiece board n piece)]
 >                ++ (drop (n+1) (colsToRows board)))
 
 Counting the number of pieces in play, for use in determining whose go it is
@@ -179,9 +179,9 @@ Counting the number of pieces in play, for use in determining whose go it is
 > numPieces :: Board -> Int
 > numPieces = length . filter (/= B) . concat
 
-> whoseGo :: Board -> Player
-> whoseGo board = if mod (numPieces board) 2 == 0 then O
->                 else X
+> move :: Board -> Int -> Board
+> move board n = if mod (numPieces board) 2 == 0 then makeMove board n X
+>                 else makeMove board n O
 
 Check if a move is valid
 
