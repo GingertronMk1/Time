@@ -71,37 +71,37 @@ The following is a test board:
 MY CODE STARTS HERE:--------------------------------------------------
 ----------------------------------------------------------------------
 
-> testWonCol :: Board
-> testWonCol = [[B,B,B,B,B,B,B],
->                [B,B,B,B,B,B,B],
->                [B,B,B,B,X,B,B],
->                [B,B,B,X,X,B,B],
->                [B,B,O,O,X,B,B],
->                [B,O,O,X,X,X,O]]
+> testWon1 :: Board
+> testWon1 = [[B,B,B,B,B,B,B],
+>             [B,B,B,B,B,B,B],
+>             [B,B,B,B,X,B,B],
+>             [B,B,B,X,X,B,B],
+>             [B,B,O,O,X,B,B],
+>             [B,O,O,X,X,X,O]]
 
-> testWonRow :: Board
-> testWonRow = [[B,B,B,B,B,B,B],
->               [B,B,B,B,B,B,B],
->               [B,B,B,B,B,B,B],
->               [B,B,B,X,X,B,B],
->               [O,O,O,O,X,B,B],
->               [X,O,O,X,X,X,O]]
+> testWon2 :: Board
+> testWon2 = [[B,B,B,B,B,B,B],
+>             [B,B,B,B,B,B,B],
+>             [B,B,B,B,B,B,B],
+>             [B,B,B,X,X,B,B],
+>             [O,O,O,O,X,B,B],
+>             [X,O,O,X,X,X,O]]
 
-> testWonDiag1 :: Board
-> testWonDiag1 = [[X,B,B,B,B,B,B],
->                 [B,X,B,B,B,B,B],
->                 [B,B,X,B,B,B,B],
->                 [B,B,B,X,B,B,B],
->                 [B,B,B,B,B,B,B],
->                 [B,B,B,B,B,B,B]]
+> testWon3 :: Board
+> testWon3 = [[X,B,B,B,B,B,B],
+>             [B,X,B,B,B,B,B],
+>             [B,B,X,B,B,B,B],
+>             [B,B,B,X,B,B,B],
+>             [B,B,B,B,B,B,B],
+>             [B,B,B,B,B,B,B]]
 
-> testWonDiag2 :: Board
-> testWonDiag2 = [[B,B,B,B,B,B,B],
->                 [B,B,B,B,X,B,B],
->                 [B,B,B,X,B,B,B],
->                 [B,B,X,B,B,B,B],
->                 [B,X,B,B,B,B,B],
->                 [B,B,B,B,B,B,B]]
+> testWon4 :: Board
+> testWon4 = [[B,B,B,B,B,B,B],
+>             [B,B,B,B,X,B,B],
+>             [B,B,B,X,B,B,B],
+>             [B,B,X,B,B,B,B],
+>             [B,X,B,B,B,B,B],
+>             [B,B,B,B,B,B,B]]
 
 ----------------------------------------------------------------------
 BOARD MANIPULATION HERE:----------------------------------------------
@@ -186,9 +186,12 @@ Counting the number of pieces in play, for use in determining whose go it is
 > numPieces :: Board -> Int
 > numPieces = length . filter (/= B) . concat
 
+> whoseGo :: Board -> Player
+> whoseGo board = if mod (numPieces board) 2 == 0 then X
+>                 else O
+
 > move :: Board -> Int -> Board
-> move board n = if mod (numPieces board) 2 == 0 then makeMove board n X
->                 else makeMove board n O
+> move board n = makeMove board n (whoseGo board)
 
 Check if a move is valid
 
@@ -264,6 +267,15 @@ Need a little helper to let us get just single digits from input
 
 Beginnings of AI:
 
+> randomCol :: IO Int
+> randomCol = randomRIO (1, cols)
+
+Getting the right person's choice
+
+> getChoice :: Player -> IO Int
+> getChoice player = if player == X then getDigit "Which Column?"
+>                                   else randomCol
+
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
 ----------------------------------------------------------------------
@@ -280,22 +292,22 @@ Starting at the top:
   5) If the move isn't valid, tell us so and start the loop again with the same input as last time
 
 > play :: Board -> IO()
-> play board = do showBoard board
->                 n <- getDigit "Which Column?"
->                 putChar '\n'
->                 if isValid board (n-1) then
->                   do let newBoard = move board (n-1)
->                      if whoWon (newBoard) /= B then
+> play board =  do showBoard board
+>                  n <- getChoice (whoseGo board)
+>                  putChar '\n'
+>                  if isValid board (n-1) then
+>                    do let newBoard = move board (n-1)
+>                       if whoWon (newBoard) /= B then
 >                        do showBoard newBoard
 >                           putStrLn ("Winner: " ++ show (whoWon newBoard))
->                      else if numPieces board == rows*cols then
->                        do showBoard newBoard
->                           putStrLn "Board full, nobody wins..."
->                      else
->                        play (newBoard)
->                 else
->                   do putStrLn ("Move invalid (either the column's full or doesn't exist). Your move: " ++ show n)
->                      play board
+>                       else if numPieces board == rows*cols then
+>                         do showBoard newBoard
+>                            putStrLn "Board full, nobody wins..."
+>                       else
+>                         play (newBoard)
+>                  else
+>                    do putStrLn ("Move invalid (either the column's full or doesn't exist). Your move: " ++ show n)
+>                       play board
 
 And finally...
 
