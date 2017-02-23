@@ -264,9 +264,6 @@ Need a little helper to let us get just single digits from input
 
 Beginnings of AI:
 
-> pickCol :: IO Int
-> pickCol = getStdRandom (randomR (0, cols))
-
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
 ----------------------------------------------------------------------
@@ -290,16 +287,14 @@ Starting at the top:
 >                   do let newBoard = move board (n-1)
 >                      if whoWon (newBoard) /= B then
 >                        do showBoard newBoard
->                           putStr "Winner: "
->                           print (whoWon newBoard)
+>                           putStrLn ("Winner: " ++ show (whoWon newBoard))
 >                      else if numPieces board == rows*cols then
 >                        do showBoard newBoard
 >                           putStrLn "Board full, nobody wins..."
 >                      else
 >                        play (newBoard)
 >                 else
->                   do putStr "Move invalid (either the column's full or doesn't exist). Your move: "
->                      print n
+>                   do putStrLn ("Move invalid (either the column's full or doesn't exist). Your move: " ++ show n)
 >                      play board
 
 And finally...
