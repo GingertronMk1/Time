@@ -5,11 +5,12 @@ psyje5@nottingham.ac.uk
 
 ----------------------------------------------------------------------
 
-Gonna need some stuff from Data.List, as well as Data.Char (`isDigit` mostly)
+Gonna need some stuff from Data.List, as well as Data.Char (`isDigit` mostly), System.Random, and Data.Tree
 
 > import Data.List
 > import Data.Char
 > import System.Random
+> import Data.Tree
 
 For flexibility, we define constants for the row and column size of the
 board, length of a winning sequence, and search depth for the game tree:
@@ -70,6 +71,14 @@ The following is a test board:
 ----------------------------------------------------------------------
 MY CODE STARTS HERE:--------------------------------------------------
 ----------------------------------------------------------------------
+
+> test2 :: Board
+> test2 = [[B,B,B,B,B,B,B],
+>          [B,B,B,B,B,B,B],
+>          [B,B,B,B,B,B,B],
+>          [B,B,B,X,X,B,B],
+>          [B,B,O,O,X,B,O],
+>          [B,O,O,X,X,X,O]]
 
 > testWon1 :: Board
 > testWon1 = [[B,B,B,B,B,B,B],
@@ -277,6 +286,20 @@ Getting the right person's choice
 >                                   else randomCol
 
 ----------------------------------------------------------------------
+GAME TREE STUFF HERE:-------------------------------------------------
+----------------------------------------------------------------------
+
+Maybe make a list of boards?
+
+> possibleBoards :: Board -> [Board]
+> possibleBoards board = [move board n | n <- [0..cols-1]]
+
+Show all possible boards from current board (useless function just here for illustration)
+
+> showPossibleBoards :: Board -> IO[()]
+> showPossibleBoards board = sequence (map showBoard (possibleBoards board))
+
+----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
 ----------------------------------------------------------------------
 
@@ -292,20 +315,20 @@ Starting at the top:
   5) If the move isn't valid, tell us so and start the loop again with the same input as last time
 
 > play :: Board -> IO()
-> play board =  do showBoard board
->                  n <- getChoice (whoseGo board)
->                  putChar '\n'
->                  if isValid board (n-1) then
->                    do let newBoard = move board (n-1)
->                       if whoWon (newBoard) /= B then
->                        do showBoard newBoard
->                           putStrLn ("Winner: " ++ show (whoWon newBoard))
->                       else if numPieces board == rows*cols then
->                         do showBoard newBoard
->                            putStrLn "Board full, nobody wins..."
->                       else
->                         play (newBoard)
->                  else
+> play board =  do showBoard board                                    -- show the current board
+>                  n <- getChoice (whoseGo board)                     -- get the new column
+>                  putChar '\n'                                       -- put a new line in for tidyness
+>                  if isValid board (n-1) then                        -- if the move is valid:
+>                    do let newBoard = move board (n-1)                 -- do it
+>                       if whoWon (newBoard) /= B then                  -- if someone's won:
+>                        do showBoard newBoard                            -- show the board
+>                           putStrLn ("Winner: " ++ show (whoWon newBoard)) -- and show who's won
+>                       else if numPieces board == rows*cols then       -- otherwise, if the board's full:
+>                         do showBoard newBoard                           -- show it
+>                            putStrLn "Board full, nobody wins..."        -- nobody wins
+>                       else                                            -- if neither of the above:
+>                         play (newBoard)                                 -- ANOTHER ROUND
+>                  else                                               -- else say the move's invalid, try again
 >                    do putStrLn ("Move invalid (either the column's full or doesn't exist). Your move: " ++ show n)
 >                       play board
 
