@@ -10,7 +10,7 @@ Gonna need some stuff from Data.List, as well as Data.Char (`isDigit` mostly), S
 > import Data.List
 > import Data.Char
 > import System.Random
-> import Data.Tree
+> import Data.Maybe
 
 For flexibility, we define constants for the row and column size of the
 board, length of a winning sequence, and search depth for the game tree:
@@ -80,6 +80,14 @@ MY CODE STARTS HERE:--------------------------------------------------
 >          [B,B,O,O,X,B,O],
 >          [B,O,O,X,X,X,O]]
 
+> test3 :: Board
+> test3 = [[B,B,B,B,B,B,B],
+>          [B,B,B,B,B,B,B],
+>          [B,B,B,B,B,B,B],
+>          [O,B,B,B,B,B,B],
+>          [O,X,B,B,B,B,B],
+>          [O,X,B,B,B,X,X]]
+
 > testWon1 :: Board
 > testWon1 = [[B,B,B,B,B,B,B],
 >             [B,B,B,B,B,B,B],
@@ -111,6 +119,14 @@ MY CODE STARTS HERE:--------------------------------------------------
 >             [B,B,X,B,B,B,B],
 >             [B,X,B,B,B,B,B],
 >             [B,B,B,B,B,B,B]]
+
+> oNearWin :: Board
+> oNearWin = [[B,B,B,B,B,B,B],
+>             [B,B,B,B,B,B,B],
+>             [B,B,B,B,B,B,B],
+>             [X,B,B,B,B,B,B],
+>             [X,B,B,B,B,B,B],
+>             [O,O,O,B,B,B,X]]
 
 ----------------------------------------------------------------------
 BOARD MANIPULATION HERE:----------------------------------------------
@@ -165,13 +181,12 @@ Removing blanks from the beginning of a column
 > removeColBlanks board a = removeBlanks (getCol board a)
 
 > removeBlanks :: Row -> Row
-> removeBlanks row = dropWhile (==B) row
+> removeBlanks = dropWhile (==B)
 
 Fill the row back up with blanks
 
 > fillCol :: Row -> Row
-> fillCol col = if (length col < rows) then fillCol (B:col)
->               else col
+> fillCol col = if (length col < rows) then fillCol (B:col) else col
 
 Add a piece to the front of a row
 
@@ -187,8 +202,8 @@ Fill the rest of a row with blanks
 
 > makeMove :: Board -> Int -> Player -> Board
 > makeMove board n piece = colsToRows ((take n (colsToRows board))
->                ++ [(putPiece board n piece)]
->                ++ (drop (n+1) (colsToRows board)))
+>                          ++ [(putPiece board n piece)]
+>                          ++ (drop (n+1) (colsToRows board)))
 
 Counting the number of pieces in play, for use in determining whose go it is
 
@@ -196,11 +211,13 @@ Counting the number of pieces in play, for use in determining whose go it is
 > numPieces = length . filter (/= B) . concat
 
 > whoseGo :: Board -> Player
-> whoseGo board = if mod (numPieces board) 2 == 0 then X
->                 else O
+> whoseGo board = if mod (numPieces board) 2 == 0 then X else O
+
+There wasn't any error checking in this one, however the beginnings of the AI code require it
+The else case won't ever be invoked in the main game loop as the conditional's already there
 
 > move :: Board -> Int -> Board
-> move board n = makeMove board n (whoseGo board)
+> move board n = if isValid board n == True then makeMove board n (whoseGo board) else board
 
 Check if a move is valid
 
@@ -218,10 +235,10 @@ HAS WON LOGIC GOES HERE:----------------------------------------------
 Determines if either player has won a row
 
 > hasXWon :: Row -> Bool
-> hasXWon row = elem (replicate win X) (group row)
+> hasXWon = elem (replicate win X) . group
 
 > hasOWon :: Row -> Bool
-> hasOWon row = elem (replicate win O) (group row)
+> hasOWon = elem (replicate win O) . group
 
 Determines `which` player won the row
 
@@ -234,7 +251,7 @@ Determines `which` player won the row
 Build a list with the win state of every row
 
 > hasWonRows :: Board -> [Player]
-> hasWonRows board = map hasWonRow board
+> hasWonRows = map hasWonRow
 
 Win states of every column
 
@@ -274,30 +291,61 @@ Need a little helper to let us get just single digits from input
 > toDigits (x:[]) = digitToInt x
 > toDigits (x:xs) = 10*(digitToInt x) + toDigits xs
 
-Beginnings of AI:
+Beginnings of AI: choosing a random column within a range
 
-> randomCol :: IO Int
-> randomCol = randomRIO (1, cols)
+> randomCol :: Int -> Int -> IO Int
+> randomCol 0 a = randomRIO (a, a)
+> randomCol a b = randomRIO (a, b)
 
-Getting the right person's choice
+Getting the right person (or computer)'s choice
 
-> getChoice :: Player -> IO Int
-> getChoice player = if player == X then getDigit "Which Column?"
->                                   else randomCol
+> getChoice :: Board -> IO Int
+> getChoice board = if (whoseGo board) == X then getDigit "Which Column?" else aiMove board
+> --getChoice board = if (whoseGo board) == X then aiMove board else aiMove board
 
 ----------------------------------------------------------------------
 GAME TREE STUFF HERE:-------------------------------------------------
 ----------------------------------------------------------------------
 
-Maybe make a list of boards?
+List of possible boards based on possible moves
 
 > possibleBoards :: Board -> [Board]
 > possibleBoards board = [move board n | n <- [0..cols-1]]
 
-Show all possible boards from current board (useless function just here for illustration)
+> possibleBoards2 :: [Board] -> [[Board]]
+> possibleBoards2 boards = map possibleBoards boards
+
+> possibleBoards12 :: Board -> [[Board]]
+> possibleBoards12 = possibleBoards2 . possibleBoards
+
+Show all possible boards from current board
 
 > showPossibleBoards :: Board -> IO[()]
-> showPossibleBoards board = sequence (map showBoard (possibleBoards board))
+> showPossibleBoards = sequence . map showBoard . possibleBoards
+
+> showPossibleBoards12 :: Board -> IO[[()]]
+> showPossibleBoards12 = sequence . map (sequence . map showBoard) . possibleBoards12
+
+Reduce all possible boards to the winner of all possible boards
+
+> possibleWinners :: Board -> [Player]
+> possibleWinners = map (whoWon) . possibleBoards
+
+Pick a winning move from a list of possible winners
+
+> isAWinningMove :: Board -> Maybe Int
+> isAWinningMove = elemIndex O . possibleWinners
+
+If there is a winning move, take it
+
+> pickAWinner :: Board -> Int
+> pickAWinner board = case (isAWinningMove board) of
+>                         Just x -> x+1
+>                         Nothing -> 0
+
+> aiMove :: Board -> IO Int
+> aiMove board = if (pickAWinner board) /= 0 then randomCol 0 (pickAWinner board)
+>                                            else randomCol 1 cols
 
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
@@ -316,7 +364,7 @@ Starting at the top:
 
 > play :: Board -> IO()
 > play board =  do showBoard board                                    -- show the current board
->                  n <- getChoice (whoseGo board)                     -- get the new column
+>                  n <- getChoice board                               -- get the new column
 >                  putChar '\n'                                       -- put a new line in for tidyness
 >                  if isValid board (n-1) then                        -- if the move is valid:
 >                    do let newBoard = move board (n-1)                 -- do it
@@ -327,7 +375,7 @@ Starting at the top:
 >                         do showBoard newBoard                           -- show it
 >                            putStrLn "Board full, nobody wins..."        -- nobody wins
 >                       else                                            -- if neither of the above:
->                         play (newBoard)                                 -- ANOTHER ROUND
+>                         play newBoard                                 -- ANOTHER ROUND
 >                  else                                               -- else say the move's invalid, try again
 >                    do putStrLn ("Move invalid (either the column's full or doesn't exist). Your move: " ++ show n)
 >                       play board
@@ -341,7 +389,8 @@ And finally...
 
 TODO: AI
 
-So currently the making moves functions are a bit inextensible. Need to do something about that.
-Change `move` to take `piece` as an arg, putting more on `whoseGo` so we can shove something in there about picking a number
+Go through and make all possible boards for the next 6 moves, reduce to list (of lists)^5
+  Stop function if a winner's found?
+We have a thing that looks two boards ahead right now, need to implement recursion so we can have it do it `n` boards ahead
 
 ----------------------------------------------------------------------
