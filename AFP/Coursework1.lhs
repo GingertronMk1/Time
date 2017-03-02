@@ -11,6 +11,7 @@ Gonna need some stuff from Data.List, as well as Data.Char (`isDigit` mostly), S
 > import Data.Char
 > import System.Random
 > import Data.Maybe
+> --import Data.Tree
 
 For flexibility, we define constants for the row and column size of the
 board, length of a winning sequence, and search depth for the game tree:
@@ -128,6 +129,9 @@ MY CODE STARTS HERE:--------------------------------------------------
 >             [X,B,B,B,B,B,B],
 >             [O,O,O,B,B,B,X]]
 
+> empty :: Board
+> empty = boardGen rows cols
+
 ----------------------------------------------------------------------
 BOARD MANIPULATION HERE:----------------------------------------------
 ----------------------------------------------------------------------
@@ -217,7 +221,9 @@ There wasn't any error checking in this one, however the beginnings of the AI co
 The else case won't ever be invoked in the main game loop as the conditional's already there
 
 > move :: Board -> Int -> Board
-> move board n = if isValid board n == True then makeMove board n (whoseGo board) else board
+> move board n = if isValid board n == True then makeMove board n (whoseGo board) 
+>                else if isFull board == True then []
+>                else board
 
 Check if a move is valid
 
@@ -226,6 +232,11 @@ Check if a move is valid
 >             | not (elem n [0..cols-1]) = False
 >             | (getCol board n) !! 0 /= B = False
 >             | otherwise = True
+
+Check if the board is full
+
+> isFull :: Board -> Bool
+> isFull board = if (numPieces board == rows*cols) then True else False
 
 
 ----------------------------------------------------------------------
@@ -307,13 +318,29 @@ Getting the right person (or computer)'s choice
 GAME TREE STUFF HERE:-------------------------------------------------
 ----------------------------------------------------------------------
 
+First, what is a tree?
+
+> data Tree a = Node a [Tree a] deriving Show
+
+> gameTree :: Board -> Tree Board
+> gameTree board = Node board [gameTree (move board n) | n <- [0..cols-1]]
+
+> prune :: Int -> Tree a -> Tree a
+> prune 0 (Node x _) = Node x []
+> prune n (Node x ts) = Node x [prune (n-1) t | t <- ts]
+
+> treeOfHeight :: Int -> Board -> Tree Board
+> treeOfHeight n board = prune n (gameTree board)
+
+
+
 List of possible boards based on possible moves
 
 > possibleBoards :: Board -> [Board]
 > possibleBoards board = [move board n | n <- [0..cols-1]]
 
 > possibleBoards2 :: [Board] -> [[Board]]
-> possibleBoards2 boards = map possibleBoards boards
+> possibleBoards2 = map possibleBoards
 
 > possibleBoards12 :: Board -> [[Board]]
 > possibleBoards12 = possibleBoards2 . possibleBoards
@@ -335,6 +362,13 @@ Pick a winning move from a list of possible winners
 
 > isAWinningMove :: Board -> Maybe Int
 > isAWinningMove = elemIndex O . possibleWinners
+
+
+USING ROSE TREES INSTEAD:
+
+ possibleBoards :: Board -> Tree Board
+ possibleBoards board = unfoldTree 
+
 
 If there is a winning move, take it
 
