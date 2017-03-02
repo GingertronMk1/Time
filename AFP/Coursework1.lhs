@@ -11,7 +11,7 @@ Gonna need some stuff from Data.List, as well as Data.Char (`isDigit` mostly), S
 > import Data.Char
 > import System.Random
 > import Data.Maybe
-> --import Data.Tree
+> import System.IO.Unsafe
 
 For flexibility, we define constants for the row and column size of the
 board, length of a winning sequence, and search depth for the game tree:
@@ -128,6 +128,14 @@ MY CODE STARTS HERE:--------------------------------------------------
 >             [O,X,B,B,B,B,B],
 >             [O,X,B,B,B,B,B],
 >             [O,X,X,B,B,B,B]]
+
+> xNearWin :: Board
+> xNearWin = [[B,B,B,B,B,B,B],
+>             [B,B,B,B,B,B,B],
+>             [B,B,B,B,B,B,B],
+>             [O,X,B,B,B,B,B],
+>             [O,X,B,B,B,B,B],
+>             [O,X,B,B,B,B,B]]
 
 > fullBoard :: Board
 > fullBoard = [[X,O,X,O,X,O,X],
@@ -310,11 +318,13 @@ Who won?
 >           | elem O (hasWon board) = O
 >           | otherwise = B
 
+And using that, is there a winner?
+
 > isAWinner :: Board -> Bool
 > isAWinner board = whoWon board /= B
 
 ----------------------------------------------------------------------
-COLUMN SELECTION HERE:------------------------------------------------
+GENERAL HELPERS HERE:-------------------------------------------------
 ----------------------------------------------------------------------
 
 Need a little helper to let us get which column wants a piece putting in
@@ -325,6 +335,11 @@ Need a little helper to let us get which column wants a piece putting in
 >                    if xs /= [] && all isDigit xs then return (read xs)
 >                    else do putStrLn "ERROR: Invalid number"
 >                            getNat prompt
+
+Good to have one little function that tells us if the board is done
+
+> isFinished :: Board -> Bool
+> isFinished board = isAWinner board || isFull board
 
 ----------------------------------------------------------------------
 GAME TREE STUFF HERE:-------------------------------------------------
@@ -337,8 +352,8 @@ First, what is a tree?
 Now, a function to generate a full game tree from a board. It's important that it stops on a full board.
 
 > gameTree :: Board -> Tree Board
-> gameTree board = if isAWinner board then Node board []
->                                     else Node board [gameTree (move board n) | n <- emptyCols board]
+> gameTree board = if isFinished board then Node board []
+>                                      else Node board [gameTree (move board n) | n <- emptyCols board]
 
 Pruning is needed to keep us at a reasonable height
 
