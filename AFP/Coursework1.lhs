@@ -26,7 +26,7 @@ board, length of a winning sequence, and search depth for the game tree:
 > win = 4
 >
 > depth :: Int
-> depth = 6
+> depth = 4
 
 The board itself is represented as a list of rows, where each row is
 a list of player values, subject to the above row and column sizes:
@@ -326,13 +326,6 @@ Need a little helper to let us get which column wants a piece putting in
 >                    else do putStrLn "ERROR: Invalid number"
 >                            getNat prompt
 
-Beginnings of AI: choosing a random column within a range
-
-Getting the right person (or computer)'s choice
-
-> getChoice :: Board -> Int
-> getChoice board = if (whoseGo board) == X then getNat "Which Column? " else pickAWinner board
-
 ----------------------------------------------------------------------
 GAME TREE STUFF HERE:-------------------------------------------------
 ----------------------------------------------------------------------
@@ -358,21 +351,18 @@ And now a function to generate a limited tree
 > treeOfHeight :: Int -> Board -> Tree Board
 > treeOfHeight h b = limitTree h (gameTree b)
 
-`interpret`, or rather, just get the board from a node
-
-> interpretNode :: Tree Board -> Board
-> interpretNode (Node b _) = b
-
-Possible boards from the current one
-
-> possibleBoardsT :: Board -> Tree Board
-> possibleBoardsT board = treeOfHeight 1 board
-
-Generating a new tree containing (board, winner) tuples
+Generating a new tree containing (board, winner) tuples.
+A childless node implies the board is either full or someone's won, per the gameTree function.
+If the node being converted has children, the new node contains the board, and the maximum or minimum of
+the boards to follow.
 
 > tupleGen :: Tree Board -> Tree (Board, Player)
 > tupleGen (Node b []) = Node (b, whoWon b) []
 > tupleGen (Node b bs) = Node (b, minOrMax (whoseGo b) (map (getPlayerTuple . tupleGen) bs)) (map tupleGen bs)
+
+> minOrMax :: Player -> ([Player] -> Player)
+> minOrMax X = maximum
+> minOrMax O = minimum
 
 Getting the player part of the tuple
 
@@ -385,17 +375,12 @@ Getting the player part of the tuple
 > getChildIndex :: Tree (Board, Player) -> Maybe Int
 > getChildIndex (Node (board, player) tuples) = elemIndex (whoseGo board) $ map getPlayerTuple tuples
 
-> minOrMax :: Player -> ([Player] -> Player)
-> minOrMax X = maximum
-> minOrMax O = minimum
-
 > returnIndex board = getChildIndex (tupleTreeHeight board depth)
 
-> pickAWinner :: Board -> Maybe Int
+> pickAWinner :: Board -> Int
 > pickAWinner board = case (returnIndex board) of
 >                         Just x -> x+1
 >                         Nothing -> 0
-
 
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
@@ -413,21 +398,20 @@ Starting at the top:
   5) If the move isn't valid, tell us so and start the loop again with the same input as last time
 
 > play :: Board -> IO()
-> play board =  do showBoard board                                    -- show the current board
->                  if isFull board then putStrLn "Board full: DRAW!"  -- If it's full, the game is a draw
->                  else do                                            -- If it isn't...
->                  n <- getChoice board                               -- get the new column
->                  putChar '\n'                                       -- put a new line in for tidyness
->                  if isValid board (n-1) then                        -- if the move is valid:
->                    do let newBoard = move board (n-1)                 -- do it
->                       if whoWon (newBoard) /= B then                  -- if someone's won:
->                        do showBoard newBoard                            -- show the board
->                           putStrLn ("Winner: " ++ show (whoWon newBoard)) -- and show who's won
->                       else                                            -- if neither of the above:
->                         play newBoard                                 -- ANOTHER ROUND
->                  else                                               -- else say the move's invalid, try again
->                    do putStrLn ("Move invalid (either the column's full or doesn't exist). Your move: " ++ show n)
->                       play board
+> play board = do showBoard board
+>                 if isFull board then putStrLn "Board Full: DRAW!!"
+>                 else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
+>                 else do
+>                   if (whoseGo board) == X then do
+>                     c <- getNat "Your turn"
+>                     putChar '\n'
+>                     if isValid board (c-1) then
+>                       play (move board (c-1))
+>                     else
+>                       putStrLn ("Move invalid: either column is full or out of range. Your move: " ++ [intToDigit c])
+>                   else
+>                     play (move board (pickAWinner board))
+
 
 And finally...
 
