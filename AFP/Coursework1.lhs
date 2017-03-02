@@ -125,9 +125,25 @@ MY CODE STARTS HERE:--------------------------------------------------
 > oNearWin = [[B,B,B,B,B,B,B],
 >             [B,B,B,B,B,B,B],
 >             [B,B,B,B,B,B,B],
->             [X,B,B,B,B,B,B],
->             [X,B,B,B,B,B,B],
->             [O,O,O,B,B,B,X]]
+>             [O,X,B,B,B,B,B],
+>             [O,X,B,B,B,B,B],
+>             [O,X,X,B,B,B,B]]
+
+> fullBoard :: Board
+> fullBoard = [[X,O,X,O,X,O,X],
+>              [X,O,X,O,X,O,X],
+>              [O,X,O,X,O,X,O],
+>              [O,X,O,X,O,X,O],
+>              [X,O,X,O,X,O,X],
+>              [X,O,X,O,X,O,X]]
+
+> notQuiteFullBoard :: Board
+> notQuiteFullBoard = [[B,B,B,B,B,B,B],
+>                      [X,O,X,O,X,O,X],
+>                      [O,X,O,X,O,X,O],
+>                      [O,X,O,X,O,X,O],
+>                      [X,O,X,O,X,O,X],
+>                      [X,O,X,O,X,O,X]]
 
 > empty :: Board
 > empty = boardGen rows cols
@@ -206,8 +222,8 @@ Fill the rest of a row with blanks
 
 > makeMove :: Board -> Int -> Player -> Board
 > makeMove board n piece = colsToRows ((take n (colsToRows board))
->                          ++ [(putPiece board n piece)]
->                          ++ (drop (n+1) (colsToRows board)))
+>                                     ++ [(putPiece board n piece)]
+>                                     ++ (drop (n+1) (colsToRows board)))
 
 Counting the number of pieces in play, for use in determining whose go it is
 
@@ -221,9 +237,14 @@ There wasn't any error checking in this one, however the beginnings of the AI co
 The else case won't ever be invoked in the main game loop as the conditional's already there
 
 > move :: Board -> Int -> Board
-> move board n = if isValid board n == True then makeMove board n (whoseGo board) 
->                else if isFull board == True then []
->                else board
+> move board n = makeMove board n (whoseGo board)
+
+if isColFull board n || isAWinner board then []
+                else if isValid board n then makeMove board n (whoseGo board)
+                else board
+
+> emptyCols :: Board -> [Int]
+> emptyCols board = filter (not . isColFull board) [0..cols-1]
 
 Check if a move is valid
 
@@ -233,11 +254,13 @@ Check if a move is valid
 >             | (getCol board n) !! 0 /= B = False
 >             | otherwise = True
 
+> isColFull :: Board -> Int -> Bool
+> isColFull board n = (getCol board n) !! 0 /= B
+
 Check if the board is full
 
 > isFull :: Board -> Bool
 > isFull board = if (numPieces board == rows*cols) then True else False
-
 
 ----------------------------------------------------------------------
 HAS WON LOGIC GOES HERE:----------------------------------------------
@@ -285,22 +308,23 @@ Who won?
 > whoWon board
 >           | elem X (hasWon board) = X
 >           | elem O (hasWon board) = O
->           | elem B (hasWon board) = B
+>           | otherwise = B
+
+> isAWinner :: Board -> Bool
+> isAWinner board = whoWon board /= B
 
 ----------------------------------------------------------------------
 COLUMN SELECTION HERE:------------------------------------------------
 ----------------------------------------------------------------------
 
-Need a little helper to let us get just single digits from input
+Need a little helper to let us get which column wants a piece putting in
 
-> getDigit :: String -> IO Int
-> getDigit prompt = do putStrLn prompt
->                      n <- getLine
->                      return (toDigits n)
-
-> toDigits :: String -> Int
-> toDigits (x:[]) = digitToInt x
-> toDigits (x:xs) = 10*(digitToInt x) + toDigits xs
+> getNat :: String -> IO Int
+> getNat prompt = do putStr prompt
+>                    xs <- getLine
+>                    if xs /= [] && all isDigit xs then return (read xs)
+>                    else do putStrLn "ERROR: Invalid number"
+>                            getNat prompt
 
 Beginnings of AI: choosing a random column within a range
 
@@ -311,8 +335,7 @@ Beginnings of AI: choosing a random column within a range
 Getting the right person (or computer)'s choice
 
 > getChoice :: Board -> IO Int
-> getChoice board = if (whoseGo board) == X then getDigit "Which Column?" else aiMove board
-> --getChoice board = if (whoseGo board) == X then aiMove board else aiMove board
+> getChoice board = if (whoseGo board) == X then getNat "Which Column? " else aiMove board
 
 ----------------------------------------------------------------------
 GAME TREE STUFF HERE:-------------------------------------------------
@@ -322,53 +345,64 @@ First, what is a tree?
 
 > data Tree a = Node a [Tree a] deriving Show
 
-> gameTree :: Board -> Tree Board
-> gameTree board = Node board [gameTree (move board n) | n <- [0..cols-1]]
+Now, a function to generate a full game tree from a board. It's important that it stops on a full board.
 
-> prune :: Int -> Tree a -> Tree a
-> prune 0 (Node x _) = Node x []
-> prune n (Node x ts) = Node x [prune (n-1) t | t <- ts]
+> gameTree :: Board -> Tree Board
+> gameTree board = if isAWinner board then Node board []
+>                                     else Node board [gameTree (move board n) | n <- emptyCols board]
+
+Pruning is needed to keep us at a reasonable height
+
+> limitTree :: Int -> Tree a -> Tree a
+> limitTree 0 (Node x _) = Node x []
+> limitTree n (Node x ts) = Node x [limitTree (n-1) t | t <- ts]
+
+And now a function to generate a limited tree
 
 > treeOfHeight :: Int -> Board -> Tree Board
-> treeOfHeight n board = prune n (gameTree board)
+> treeOfHeight h b = limitTree h (gameTree b)
 
+`interpret`, or rather, just get the board from a node
 
+> interpretNode :: Tree Board -> Board
+> interpretNode (Node b _) = b
 
-List of possible boards based on possible moves
+Possible boards from the current one
+
+> possibleBoardsT :: Board -> Tree Board
+> possibleBoardsT board = treeOfHeight 1 board
+
+Generating a new tree containing (board, winner) tuples
+
+> tupleGen :: Tree Board -> Tree (Board, Player)
+> tupleGen (Node b []) = Node (b, whoWon b) []
+> tupleGen (Node b bs) = Node (b, minOrMax (whoseGo b) (map (getPlayerTuple . tupleGen) bs)) (map tupleGen bs)
+
+Getting the player part of the tuple
+
+> getPlayerTuple :: Tree (a, b) -> b
+> getPlayerTuple (Node t _) = snd t
+
+> tupleTreeHeight :: Board -> Int -> Tree (Board, Player)
+> tupleTreeHeight board n = tupleGen $ treeOfHeight n board
+
+ getChildIndex (Node (b, p) ts) = 
+
+> minOrMax :: Player -> ([Player] -> Player)
+> minOrMax X = maximum
+> minOrMax O = minimum
+
+----------------------------------------------------------------------
+GAME LIST STUFF HERE (DEPRECATED):------------------------------------
+----------------------------------------------------------------------
 
 > possibleBoards :: Board -> [Board]
 > possibleBoards board = [move board n | n <- [0..cols-1]]
-
-> possibleBoards2 :: [Board] -> [[Board]]
-> possibleBoards2 = map possibleBoards
-
-> possibleBoards12 :: Board -> [[Board]]
-> possibleBoards12 = possibleBoards2 . possibleBoards
-
-Show all possible boards from current board
-
-> showPossibleBoards :: Board -> IO[()]
-> showPossibleBoards = sequence . map showBoard . possibleBoards
-
-> showPossibleBoards12 :: Board -> IO[[()]]
-> showPossibleBoards12 = sequence . map (sequence . map showBoard) . possibleBoards12
-
-Reduce all possible boards to the winner of all possible boards
-
 > possibleWinners :: Board -> [Player]
 > possibleWinners = map (whoWon) . possibleBoards
 
-Pick a winning move from a list of possible winners
-
 > isAWinningMove :: Board -> Maybe Int
 > isAWinningMove = elemIndex O . possibleWinners
-
-
-USING ROSE TREES INSTEAD:
-
- possibleBoards :: Board -> Tree Board
- possibleBoards board = unfoldTree 
-
 
 If there is a winning move, take it
 
@@ -398,6 +432,8 @@ Starting at the top:
 
 > play :: Board -> IO()
 > play board =  do showBoard board                                    -- show the current board
+>                  if isFull board then putStrLn "Board full: DRAW!"  -- If it's full, the game is a draw
+>                  else do                                            -- If it isn't...
 >                  n <- getChoice board                               -- get the new column
 >                  putChar '\n'                                       -- put a new line in for tidyness
 >                  if isValid board (n-1) then                        -- if the move is valid:
@@ -405,9 +441,6 @@ Starting at the top:
 >                       if whoWon (newBoard) /= B then                  -- if someone's won:
 >                        do showBoard newBoard                            -- show the board
 >                           putStrLn ("Winner: " ++ show (whoWon newBoard)) -- and show who's won
->                       else if numPieces board == rows*cols then       -- otherwise, if the board's full:
->                         do showBoard newBoard                           -- show it
->                            putStrLn "Board full, nobody wins..."        -- nobody wins
 >                       else                                            -- if neither of the above:
 >                         play newBoard                                 -- ANOTHER ROUND
 >                  else                                               -- else say the move's invalid, try again
@@ -417,14 +450,11 @@ Starting at the top:
 And finally...
 
 > main :: IO()
-> main = play (boardGen rows cols)
+> main = play empty
 
 ----------------------------------------------------------------------
 
 TODO: AI
 
-Go through and make all possible boards for the next 6 moves, reduce to list (of lists)^5
-  Stop function if a winner's found?
-We have a thing that looks two boards ahead right now, need to implement recursion so we can have it do it `n` boards ahead
-
+Get the index of the child with the correct whoWon part of tuple from the getTuples function, use for AI
 ----------------------------------------------------------------------
