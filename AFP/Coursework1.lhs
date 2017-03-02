@@ -328,14 +328,10 @@ Need a little helper to let us get which column wants a piece putting in
 
 Beginnings of AI: choosing a random column within a range
 
-> randomCol :: Int -> Int -> IO Int
-> randomCol 0 a = randomRIO (a, a)
-> randomCol a b = randomRIO (a, b)
-
 Getting the right person (or computer)'s choice
 
-> getChoice :: Board -> IO Int
-> getChoice board = if (whoseGo board) == X then getNat "Which Column? " else aiMove board
+> getChoice :: Board -> Int
+> getChoice board = if (whoseGo board) == X then getNat "Which Column? " else pickAWinner board
 
 ----------------------------------------------------------------------
 GAME TREE STUFF HERE:-------------------------------------------------
@@ -386,34 +382,20 @@ Getting the player part of the tuple
 > tupleTreeHeight :: Board -> Int -> Tree (Board, Player)
 > tupleTreeHeight board n = tupleGen $ treeOfHeight n board
 
- getChildIndex (Node (b, p) ts) = 
+> getChildIndex :: Tree (Board, Player) -> Maybe Int
+> getChildIndex (Node (board, player) tuples) = elemIndex (whoseGo board) $ map getPlayerTuple tuples
 
 > minOrMax :: Player -> ([Player] -> Player)
 > minOrMax X = maximum
 > minOrMax O = minimum
 
-----------------------------------------------------------------------
-GAME LIST STUFF HERE (DEPRECATED):------------------------------------
-----------------------------------------------------------------------
+> returnIndex board = getChildIndex (tupleTreeHeight board depth)
 
-> possibleBoards :: Board -> [Board]
-> possibleBoards board = [move board n | n <- [0..cols-1]]
-> possibleWinners :: Board -> [Player]
-> possibleWinners = map (whoWon) . possibleBoards
-
-> isAWinningMove :: Board -> Maybe Int
-> isAWinningMove = elemIndex O . possibleWinners
-
-If there is a winning move, take it
-
-> pickAWinner :: Board -> Int
-> pickAWinner board = case (isAWinningMove board) of
+> pickAWinner :: Board -> Maybe Int
+> pickAWinner board = case (returnIndex board) of
 >                         Just x -> x+1
 >                         Nothing -> 0
 
-> aiMove :: Board -> IO Int
-> aiMove board = if (pickAWinner board) /= 0 then randomCol 0 (pickAWinner board)
->                                            else randomCol 1 cols
 
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
