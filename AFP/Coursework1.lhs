@@ -26,7 +26,7 @@ board, length of a winning sequence, and search depth for the game tree:
 > win = 4
 >
 > depth :: Int
-> depth = 4
+> depth = 6
 
 The board itself is represented as a list of rows, where each row is
 a list of player values, subject to the above row and column sizes:
@@ -74,10 +74,10 @@ MY CODE STARTS HERE:--------------------------------------------------
 ----------------------------------------------------------------------
 
 > test2 :: Board
-> test2 = [[B,B,B,B,B,B,B],
->          [B,B,B,B,B,B,B],
->          [B,B,B,B,B,B,B],
->          [B,B,B,X,X,B,B],
+> test2 = [[B,B,B,O,B,B,B],
+>          [B,B,B,X,B,B,B],
+>          [B,B,B,O,B,B,B],
+>          [B,B,O,X,X,B,B],
 >          [B,B,O,O,X,B,O],
 >          [B,O,O,X,X,X,O]]
 
@@ -152,6 +152,15 @@ MY CODE STARTS HERE:--------------------------------------------------
 >                      [O,X,O,X,O,X,O],
 >                      [X,O,X,O,X,O,X],
 >                      [X,O,X,O,X,O,X]]
+
+> cgBoard :: Board
+> cgBoard = [[B,B,B,B,B,B,B],
+>            [B,B,B,B,B,B,B],
+>            [B,B,B,B,B,B,B],
+>            [B,B,B,B,B,B,B],
+>            [B,B,B,B,B,B,B],
+>            [O,B,B,B,B,O,B],
+>            [X,O,O,X,X,X,B]]
 
 > empty :: Board
 > empty = boardGen rows cols
@@ -349,13 +358,14 @@ First, what is a tree?
 
 > data Tree a = Node a [Tree a] deriving Show
 
-Now, a function to generate a full game tree from a board. It's important that it stops on a full board.
+Now, a function to generate a full game tree from a board. It's important that it stops on a board that would be the end of the game
+The node consists of the current board and a list of nodes of the same format where the boards are the result of every possible move
 
 > gameTree :: Board -> Tree Board
 > gameTree board = if isFinished board then Node board []
 >                                      else Node board [gameTree (move board n) | n <- emptyCols board]
 
-Pruning is needed to keep us at a reasonable height
+Pruning is needed to keep us at a reasonable height; this does that
 
 > limitTree :: Int -> Tree a -> Tree a
 > limitTree 0 (Node x _) = Node x []
@@ -394,8 +404,11 @@ Getting the player part of the tuple
 
 > pickAWinner :: Board -> Int
 > pickAWinner board = case (returnIndex board) of
->                         Just x -> x+1
->                         Nothing -> 0
+>                         Just x -> x
+>                         Nothing -> randomNum cols
+
+> randomNum :: Int -> Int
+> randomNum n = unsafePerformIO(randomRIO(0,n-1))
 
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
@@ -418,7 +431,7 @@ Starting at the top:
 >                 else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
 >                 else do
 >                   if (whoseGo board) == X then do
->                     c <- getNat "Your turn"
+>                     c <- getNat "Your turn: "
 >                     putChar '\n'
 >                     if isValid board (c-1) then
 >                       play (move board (c-1))
@@ -426,6 +439,12 @@ Starting at the top:
 >                       putStrLn ("Move invalid: either column is full or out of range. Your move: " ++ [intToDigit c])
 >                   else
 >                     play (move board (pickAWinner board))
+
+> playAI :: Board -> IO()
+> playAI board = do showBoard board
+>                   if isFull board then putStrLn "Board Full: DRAW!!"
+>                   else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
+>                   else playAI (move board (pickAWinner board))
 
 
 And finally...
