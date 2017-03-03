@@ -26,7 +26,7 @@ board, length of a winning sequence, and search depth for the game tree:
 > win = 4
 >
 > depth :: Int
-> depth = 6
+> depth = 3
 
 The board itself is represented as a list of rows, where each row is
 a list of player values, subject to the above row and column sizes:
@@ -148,7 +148,7 @@ Testing boards for various situations
 >              [X,O,X,O,X,O,X]]
 
 > notQuiteFullBoard :: Board
-> notQuiteFullBoard = [[B,B,B,B,B,B,B],
+> notQuiteFullBoard = [[B,B,B,B,B,O,B],
 >                      [X,O,X,O,X,O,X],
 >                      [O,X,O,X,O,X,O],
 >                      [O,X,O,X,O,X,O],
@@ -156,13 +156,19 @@ Testing boards for various situations
 >                      [X,O,X,O,X,O,X]]
 
 > cgBoard :: Board
-> cgBoard = [[B,B,B,B,B,B,B],
->            [B,B,B,B,B,B,B],
->            [B,B,B,B,B,B,B],
->            [B,B,B,B,B,B,B],
->            [B,B,B,B,B,B,B],
->            [O,B,B,B,B,O,B],
->            [X,O,O,X,X,X,B]]
+> cgBoard = [[B,B,B,B,B,B,O],
+>            [B,B,B,B,B,B,O],
+>            [B,B,X,B,B,B,X],
+>            [X,B,O,B,B,X,O],
+>            [X,O,O,O,X,X,X],
+>            [X,O,O,O,X,X,O]]
+
+......O
+......O
+..X...X
+X.O..XO
+X.OOXXX
+XOOOXXO
 
 Generate an empty board of the correct number of rows and cols
 DEFAULT IS 6 ROWS, 7 COLUMNS
@@ -366,8 +372,10 @@ expressed as a list of further trees
 
 > data Tree a = Node a [Tree a] deriving Show
 
-Now, a function to generate a full game tree from a board. It's important that it stops on a board that would be the end of the game
-The node consists of the current board and a list of nodes of the same format where the boards are the result of every possible move
+Now, a function to generate a full game tree from a board. It's important that it
+stops on a board that would be the end of the game. The node consists of the
+current board and a list of nodes of the same format where the boards are the 
+result of every possible move
 
 > gameTree :: Board -> Tree Board
 > gameTree board = if isFinished board then Node board []
@@ -387,7 +395,7 @@ And now a function to generate a limited tree
 Generating a new tree containing (board, winner) tuples.
 A childless node implies the board is either full or someone's won, per the gameTree function.
 If the node being converted has children, the new node contains the board, and the maximum or minimum of
-the boards to follow.
+its children
 
 > tupleGen :: Tree Board -> Tree (Board, Player)
 > tupleGen (Node b []) = Node (b, whoWon b) []
@@ -423,25 +431,21 @@ Else, if the above has returned Nothing, just use a random value
 > pickAWinner :: Board -> Int
 > pickAWinner board = case (returnIndex board) of
 >                         Just x -> x
->                         Nothing -> randomNum cols
+>                         Nothing -> randomEmptyCol board
 
 > randomNum :: Int -> Int
 > randomNum n = unsafePerformIO(randomRIO(0,n-1))
+
+> randomEmptyCol :: Board -> Int
+> randomEmptyCol board = emptyCols board !! randomNum (length (emptyCols board))
 
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
 ----------------------------------------------------------------------
 
-Starting at the top:
-  1) Show the board as it is
-  2) Get the digit pertaining to the column to be played
-    2.5) This is going to be decremented by one because of a mix of zero-indexing and format changing
-  3) Put a new line in for tidyness
-  4) If the move is valid, let the new board be the old board with the new move
-    4.1) If someone's won, show the final board and let us know who won, and end the game
-    4.2) Else, if the board's full, end the game with nobody having won
-    4.3) If neither of those are the case, begin the loop again with the new board as the input
-  5) If the move isn't valid, tell us so and start the loop again with the same input as last time
+PvE Connect-4: show the board. If it's full, the game is tied, so end. If there's a winner, print the winner and end.
+Otherwise, the game's still on. If it's X to play, get a human input, make sure it's valid, if it is play it. If it's
+not, try again. If it's O to play, the computer does it.
 
 > play :: Board -> IO()
 > play board = do showBoard board
@@ -458,11 +462,17 @@ Starting at the top:
 >                   else
 >                     play (move board (pickAWinner board))
 
+EvE Connect-4: See above, but without the human bits.
+
 > playAI :: Board -> IO()
 > playAI board = do showBoard board
 >                   if isFull board then putStrLn "Board Full: DRAW!!"
 >                   else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
->                   else playAI (move board (pickAWinner board))
+>                   else do let c = pickAWinner board
+>                           putStrLn (show (whoseGo board) ++ " chooses " ++ [intToDigit c])
+>                           playAI (move board (c))
+
+PvP Connect-4: as PvE, but without the computer bits.
 
 > playPVP :: Board -> IO()
 > playPVP board = do showBoard board
@@ -476,18 +486,20 @@ Starting at the top:
 >                      else putStrLn ("Move invalid: either column is full or out of range. Your move: " ++ [intToDigit c])
 
 
-And finally...
+And finally, main, in which the human gets to decide how many humans are playing.
+
+ main :: IO()
+ main = do p <- getPlayerNo "How many players? (0, 1, or 2) "
+           if p == 0 then playAI empty
+           else if p == 1 then play empty
+           else if p == 2 then playPVP empty
+           else putStrLn "Something's gone very wrong..."
 
 > main :: IO()
-> main = do p <- getPlayerNo "How many players? (0, 1, or 2) "
->           if p == 0 then playAI empty
->           else if p == 1 then play empty
->           else if p == 2 then playPVP empty
->           else putStrLn "Something's gone very wrong..."
+> main = playAI empty
 
 ----------------------------------------------------------------------
 
-TODO: AI
+TODO: Tidy up
 
-Get the index of the child with the correct whoWon part of tuple from the getTuples function, use for AI
 ----------------------------------------------------------------------
