@@ -17,16 +17,16 @@ For flexibility, we define constants for the row and column size of the
 board, length of a winning sequence, and search depth for the game tree:
 
 > rows :: Int
-> rows = 6
+> rows = 6    -- Standard: 6
 >
 > cols :: Int
-> cols = 7
+> cols = 7    -- Standard: 7
 >
 > win :: Int
-> win = 4
+> win = 4     -- Standard: 4
 >
 > depth :: Int
-> depth = 3
+> depth = 3   -- Standard: 6
 
 The board itself is represented as a list of rows, where each row is
 a list of player values, subject to the above row and column sizes:
@@ -148,7 +148,7 @@ Testing boards for various situations
 >              [X,O,X,O,X,O,X]]
 
 > notQuiteFullBoard :: Board
-> notQuiteFullBoard = [[B,B,B,B,B,O,B],
+> notQuiteFullBoard = [[X,X,B,O,O,O,X],
 >                      [X,O,X,O,X,O,X],
 >                      [O,X,O,X,O,X,O],
 >                      [O,X,O,X,O,X,O],
@@ -426,18 +426,23 @@ Wrapping the above so we can get it from just a board
 > returnIndex board = getChildIndex $ tupleTreeHeight board depth
 
 Finally, if a value has been returned by the above, strip away the `Just` part and give us the value
-Else, if the above has returned Nothing, just use a random value
+Else, if the above has returned Nothing, choose a random value from all empty columns
 
 > pickAWinner :: Board -> Int
 > pickAWinner board = case (returnIndex board) of
 >                         Just x -> x
 >                         Nothing -> randomEmptyCol board
 
+Generating a random number in a way that doesn't then wrap it in IO, cos that'll propagate through and be a pain to
+deal with.
+
 > randomNum :: Int -> Int
 > randomNum n = unsafePerformIO(randomRIO(0,n-1))
 
+Selecting a random member of the list of empty columns
+
 > randomEmptyCol :: Board -> Int
-> randomEmptyCol board = emptyCols board !! randomNum (length (emptyCols board))
+> randomEmptyCol board = (emptyCols board) !! randomNum (length (emptyCols board))
 
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
@@ -460,7 +465,7 @@ not, try again. If it's O to play, the computer does it.
 >                     else
 >                       putStrLn ("Move invalid: either column is full or out of range. Your move: " ++ [intToDigit c])
 >                   else
->                     play (move board (pickAWinner board))
+>                     play $ move board $ pickAWinner board
 
 EvE Connect-4: See above, but without the human bits.
 
@@ -469,8 +474,8 @@ EvE Connect-4: See above, but without the human bits.
 >                   if isFull board then putStrLn "Board Full: DRAW!!"
 >                   else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
 >                   else do let c = pickAWinner board
->                           putStrLn (show (whoseGo board) ++ " chooses " ++ [intToDigit c])
->                           playAI (move board (c))
+>                           putStrLn (show (whoseGo board) ++ " chooses " ++ [intToDigit c] ++ " from " ++ (map intToDigit (emptyCols board)))
+>                           playAI $ move board c
 
 PvP Connect-4: as PvE, but without the computer bits.
 
@@ -488,15 +493,12 @@ PvP Connect-4: as PvE, but without the computer bits.
 
 And finally, main, in which the human gets to decide how many humans are playing.
 
- main :: IO()
- main = do p <- getPlayerNo "How many players? (0, 1, or 2) "
-           if p == 0 then playAI empty
-           else if p == 1 then play empty
-           else if p == 2 then playPVP empty
-           else putStrLn "Something's gone very wrong..."
-
 > main :: IO()
-> main = playAI empty
+> main = do p <- getPlayerNo "How many human players? (0, 1, or 2) "
+>           if p == 0 then playAI empty
+>           else if p == 1 then play empty
+>           else if p == 2 then playPVP empty
+>           else putStrLn "Something's gone very wrong..."
 
 ----------------------------------------------------------------------
 
