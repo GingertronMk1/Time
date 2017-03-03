@@ -73,6 +73,8 @@ The following is a test board:
 MY CODE STARTS HERE:--------------------------------------------------
 ----------------------------------------------------------------------
 
+Testing boards for various situations
+
 > test2 :: Board
 > test2 = [[B,B,B,O,B,B,B],
 >          [B,B,B,X,B,B,B],
@@ -162,6 +164,9 @@ MY CODE STARTS HERE:--------------------------------------------------
 >            [O,B,B,B,B,O,B],
 >            [X,O,O,X,X,X,B]]
 
+Generate an empty board of the correct number of rows and cols
+DEFAULT IS 6 ROWS, 7 COLUMNS
+
 > empty :: Board
 > empty = boardGen rows cols
 
@@ -171,7 +176,6 @@ BOARD MANIPULATION HERE:----------------------------------------------
 
 
 Generate a board of `rows` rows and `cols` columns
-Standard is c = 7, r = 6
 
 > boardGen :: Int -> Int -> Board
 > boardGen c r = replicate c (replicate r B)
@@ -182,7 +186,8 @@ Now for a function that turns columns into rows:
 > colsToRows = transpose
 
 From this, colsToRows . colsToRows = id
-Furthermore, just to make things a bit easier:
+
+Furthermore, just to make things a bit easier, a function that returns a specific column
 
 > getCol :: Board -> Int -> Row
 > getCol board a = (colsToRows board) !! a
@@ -200,14 +205,6 @@ The above takes diagonals that go from top-left to bottom-right. So to get the o
 > allDiagonals :: Board -> [Row]
 > allDiagonals board = (diagonals board) ++ (diagonals (map reverse board))
 
-No real need of these two functions; they're more to help me remember how to do stuff with lists within lists
-
-> printRow :: Board -> Int -> IO()
-> printRow board a = print (board !! a)
-
-> printCol :: Board -> Int -> IO()
-> printCol board a = print (getCol board a)
-
 ----------------------------------------------------------------------
 MOVEMENT CODE HERE:---------------------------------------------------
 ----------------------------------------------------------------------
@@ -217,10 +214,12 @@ Removing blanks from the beginning of a column
 > removeColBlanks :: Board -> Int -> Row
 > removeColBlanks board a = removeBlanks (getCol board a)
 
+Helper for the above, gets rid of blank list items
+
 > removeBlanks :: Row -> Row
 > removeBlanks = dropWhile (==B)
 
-Fill the row back up with blanks
+Fill the row back up with blanks.
 
 > fillCol :: Row -> Row
 > fillCol col = if (length col < rows) then fillCol (B:col) else col
@@ -235,44 +234,45 @@ Fill the rest of a row with blanks
 > putPiece :: Board -> Int -> Player -> Row
 > putPiece board n piece = fillCol (addPiece (removeColBlanks board n) piece)
 
-[Columns before the modified one] ++ [modified one] ++ [all columns after modified one]
+[Columns before the modified one] ++ [modified one] ++ [all columns after modified one] = board
 
 > makeMove :: Board -> Int -> Player -> Board
 > makeMove board n piece = colsToRows ((take n (colsToRows board))
 >                                     ++ [(putPiece board n piece)]
 >                                     ++ (drop (n+1) (colsToRows board)))
 
-Counting the number of pieces in play, for use in determining whose go it is
+Counting the number of pieces in play
 
 > numPieces :: Board -> Int
 > numPieces = length . filter (/= B) . concat
 
+Using this to determine whose go it is. X goes first in my book.
+
 > whoseGo :: Board -> Player
 > whoseGo board = if mod (numPieces board) 2 == 0 then X else O
 
-There wasn't any error checking in this one, however the beginnings of the AI code require it
-The else case won't ever be invoked in the main game loop as the conditional's already there
+Actually making the move now, suing just the board to determine whose go it is
 
 > move :: Board -> Int -> Board
-> move board n = makeMove board n (whoseGo board)
+> move board n = makeMove board n $ whoseGo board
 
-if isColFull board n || isAWinner board then []
-                else if isValid board n then makeMove board n (whoseGo board)
-                else board
+Returns a list of all non-full columns on the board
 
 > emptyCols :: Board -> [Int]
 > emptyCols board = filter (not . isColFull board) [0..cols-1]
+
+Checking if a column is full, to help with the above
+
+> isColFull :: Board -> Int -> Bool
+> isColFull board n = (getCol board n) !! 0 /= B
 
 Check if a move is valid
 
 > isValid :: Board -> Int -> Bool
 > isValid board n
 >             | not (elem n [0..cols-1]) = False
->             | (getCol board n) !! 0 /= B = False
+>             | isColFull board n = False
 >             | otherwise = True
-
-> isColFull :: Board -> Int -> Bool
-> isColFull board n = (getCol board n) !! 0 /= B
 
 Check if the board is full
 
@@ -283,7 +283,9 @@ Check if the board is full
 HAS WON LOGIC GOES HERE:----------------------------------------------
 ----------------------------------------------------------------------
 
-Determines if either player has won a row
+Determines if either player has won a row. Uses the `win` value defined
+at the start to generate a list of, say 4 X's and one of 4 O's, if the
+value of `win` is 4
 
 > hasXWon :: Row -> Bool
 > hasXWon = elem (replicate win X) . group
@@ -291,7 +293,7 @@ Determines if either player has won a row
 > hasOWon :: Row -> Bool
 > hasOWon = elem (replicate win O) . group
 
-Determines `which` player won the row
+Determines *which* player won the row
 
 > hasWonRow :: Row -> Player
 > hasWonRow row
@@ -307,14 +309,14 @@ Build a list with the win state of every row
 Win states of every column
 
 > hasWonCols :: Board -> [Player]
-> hasWonCols board = map hasWonRow (colsToRows board)
+> hasWonCols board = map hasWonRow $ colsToRows board
 
 Win states of every diagonal
 
 > hasWonDiags :: Board -> [Player]
-> hasWonDiags board = map hasWonRow (allDiagonals board)
+> hasWonDiags board = map hasWonRow $ allDiagonals board
 
-Win states of all three combined
+Win states of all three combined into one list
 
 > hasWon :: Board -> [Player]
 > hasWon board = hasWonRows board ++ hasWonCols board ++ hasWonDiags board
@@ -327,7 +329,7 @@ Who won?
 >           | elem O (hasWon board) = O
 >           | otherwise = B
 
-And using that, is there a winner?
+And using that, is there a winner? (Yes this seems backwards, but it works)
 
 > isAWinner :: Board -> Bool
 > isAWinner board = whoWon board /= B
@@ -350,11 +352,17 @@ Good to have one little function that tells us if the board is done
 > isFinished :: Board -> Bool
 > isFinished board = isAWinner board || isFull board
 
+> getPlayerNo :: String -> IO Int
+> getPlayerNo prompt = do p <- getNat prompt
+>                         if elem p [0..2] then return p
+>                         else getPlayerNo "Please enter 0, 1, or 2 "
+
 ----------------------------------------------------------------------
 GAME TREE STUFF HERE:-------------------------------------------------
 ----------------------------------------------------------------------
 
-First, what is a tree?
+First, what is a tree? It's a Node with a value attached, whose children can be
+expressed as a list of further trees
 
 > data Tree a = Node a [Tree a] deriving Show
 
@@ -365,7 +373,7 @@ The node consists of the current board and a list of nodes of the same format wh
 > gameTree board = if isFinished board then Node board []
 >                                      else Node board [gameTree (move board n) | n <- emptyCols board]
 
-Pruning is needed to keep us at a reasonable height; this does that
+Limiting is needed to keep us at a reasonable height; this does that
 
 > limitTree :: Int -> Tree a -> Tree a
 > limitTree 0 (Node x _) = Node x []
@@ -374,7 +382,7 @@ Pruning is needed to keep us at a reasonable height; this does that
 And now a function to generate a limited tree
 
 > treeOfHeight :: Int -> Board -> Tree Board
-> treeOfHeight h b = limitTree h (gameTree b)
+> treeOfHeight h b = limitTree h $ gameTree b
 
 Generating a new tree containing (board, winner) tuples.
 A childless node implies the board is either full or someone's won, per the gameTree function.
@@ -394,13 +402,23 @@ Getting the player part of the tuple
 > getPlayerTuple :: Tree (a, b) -> b
 > getPlayerTuple (Node t _) = snd t
 
+Generating a tuple tree of height n: apply tupleGen to treeOfHeight in one function
+
 > tupleTreeHeight :: Board -> Int -> Tree (Board, Player)
 > tupleTreeHeight board n = tupleGen $ treeOfHeight n board
+
+Getting the next move to take by seeing if the winning move has propagated up the tree
 
 > getChildIndex :: Tree (Board, Player) -> Maybe Int
 > getChildIndex (Node (board, player) tuples) = elemIndex (whoseGo board) $ map getPlayerTuple tuples
 
-> returnIndex board = getChildIndex (tupleTreeHeight board depth)
+Wrapping the above so we can get it from just a board
+
+> returnIndex :: Board -> Maybe Int
+> returnIndex board = getChildIndex $ tupleTreeHeight board depth
+
+Finally, if a value has been returned by the above, strip away the `Just` part and give us the value
+Else, if the above has returned Nothing, just use a random value
 
 > pickAWinner :: Board -> Int
 > pickAWinner board = case (returnIndex board) of
@@ -446,11 +464,26 @@ Starting at the top:
 >                   else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
 >                   else playAI (move board (pickAWinner board))
 
+> playPVP :: Board -> IO()
+> playPVP board = do showBoard board
+>                    if isFull board then putStrLn "Board Full: DRAW!!"
+>                    else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
+>                    else do
+>                      putStrLn (show (whoseGo board) ++ " to play")
+>                      c <- getNat "Choose a column: "
+>                      putChar '\n'
+>                      if isValid board (c-1) then playPVP $ move board (c-1)
+>                      else putStrLn ("Move invalid: either column is full or out of range. Your move: " ++ [intToDigit c])
+
 
 And finally...
 
 > main :: IO()
-> main = play empty
+> main = do p <- getPlayerNo "How many players? (0, 1, or 2) "
+>           if p == 0 then playAI empty
+>           else if p == 1 then play empty
+>           else if p == 2 then playPVP empty
+>           else putStrLn "Something's gone very wrong..."
 
 ----------------------------------------------------------------------
 
