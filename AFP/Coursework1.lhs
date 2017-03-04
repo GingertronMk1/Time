@@ -163,15 +163,7 @@ Testing boards for various situations
 >            [X,O,O,O,X,X,X],
 >            [X,O,O,O,X,X,O]]
 
-......O
-......O
-..X...X
-X.O..XO
-X.OOXXX
-XOOOXXO
-
 Generate an empty board of the correct number of rows and cols
-DEFAULT IS 6 ROWS, 7 COLUMNS
 
 > empty :: Board
 > empty = boardGen rows cols
@@ -179,7 +171,6 @@ DEFAULT IS 6 ROWS, 7 COLUMNS
 ----------------------------------------------------------------------
 BOARD MANIPULATION HERE:----------------------------------------------
 ----------------------------------------------------------------------
-
 
 Generate a board of `rows` rows and `cols` columns
 
@@ -240,12 +231,12 @@ Fill the rest of a row with blanks
 > putPiece :: Board -> Int -> Player -> Row
 > putPiece board n piece = fillCol (addPiece (removeColBlanks board n) piece)
 
-[Columns before the modified one] ++ [modified one] ++ [all columns after modified one] = board
+[Columns before the modified one] ++ [modified one] ++ [all columns after modified one] = new board
 
 > makeMove :: Board -> Int -> Player -> Board
-> makeMove board n piece = colsToRows ((take n (colsToRows board))
+> makeMove board n piece = colsToRows ((take n $ colsToRows board)
 >                                     ++ [(putPiece board n piece)]
->                                     ++ (drop (n+1) (colsToRows board)))
+>                                     ++ (drop (n+1) $ colsToRows board))
 
 Counting the number of pieces in play
 
@@ -379,7 +370,7 @@ result of every possible move
 
 > gameTree :: Board -> Tree Board
 > gameTree board = if isFinished board then Node board []
->                                      else Node board [gameTree (move board n) | n <- emptyCols board]
+>                                      else Node board [gameTree $ move board n | n <- emptyCols board]
 
 Limiting is needed to keep us at a reasonable height; this does that
 
@@ -425,12 +416,13 @@ Wrapping the above so we can get it from just a board
 > returnIndex :: Board -> Maybe Int
 > returnIndex board = getChildIndex $ tupleTreeHeight board depth
 
-Finally, if a value has been returned by the above, strip away the `Just` part and give us the value
+If the tree has returned a winning move, it will have done so as the index of the move in the `emptyCols` list, so
+return that entry
 Else, if the above has returned Nothing, choose a random value from all empty columns
 
 > pickAWinner :: Board -> Int
 > pickAWinner board = case (returnIndex board) of
->                         Just x -> x
+>                         Just x -> (emptyCols board) !! x
 >                         Nothing -> randomEmptyCol board
 
 Generating a random number in a way that doesn't then wrap it in IO, cos that'll propagate through and be a pain to
@@ -502,6 +494,6 @@ And finally, main, in which the human gets to decide how many humans are playing
 
 ----------------------------------------------------------------------
 
-TODO: Tidy up
+TODO: If I make it so the tree is generated from every empty column, the selection then gets messed up
 
 ----------------------------------------------------------------------
