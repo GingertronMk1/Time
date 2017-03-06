@@ -147,13 +147,22 @@ Testing boards for various situations
 >              [X,O,X,O,X,O,X],
 >              [X,O,X,O,X,O,X]]
 
-> notQuiteFullBoard :: Board
-> notQuiteFullBoard = [[X,X,B,O,O,O,X],
->                      [X,O,X,O,X,O,X],
->                      [O,X,O,X,O,X,O],
->                      [O,X,O,X,O,X,O],
->                      [X,O,X,O,X,O,X],
->                      [X,O,X,O,X,O,X]]
+> nqfBoard :: Board
+> nqfBoard = [[X,X,B,B,O,O,B],
+>             [X,O,X,O,X,O,X],
+>             [O,X,O,X,O,X,O],
+>             [O,X,O,X,O,X,O],
+>             [X,O,X,O,X,O,X],
+>             [X,O,X,O,X,O,X]]
+
+> oneRow :: Board
+> oneRow = [[B,B,B,B,B,B,B],
+>           [X,O,X,O,X,O,X],
+>           [O,X,O,X,O,X,O],
+>           [O,X,O,X,O,X,O],
+>           [X,O,X,O,X,O,X],
+>           [X,O,X,O,X,O,X]]
+
 
 > cgBoard :: Board
 > cgBoard = [[B,B,B,B,B,B,O],
@@ -175,7 +184,7 @@ BOARD MANIPULATION HERE:----------------------------------------------
 Generate a board of `rows` rows and `cols` columns
 
 > boardGen :: Int -> Int -> Board
-> boardGen c r = replicate c (replicate r B)
+> boardGen c r = replicate c $ replicate r B
 
 Now for a function that turns columns into rows:
 
@@ -200,7 +209,7 @@ Diagonals of an empty list followed by some other list is that list
 The above takes diagonals that go from top-left to bottom-right. So to get the opposite, we flip the board about the middle vertical
 
 > allDiagonals :: Board -> [Row]
-> allDiagonals board = (diagonals board) ++ (diagonals (map reverse board))
+> allDiagonals board = (diagonals board) ++ (diagonals $ map reverse board)
 
 ----------------------------------------------------------------------
 MOVEMENT CODE HERE:---------------------------------------------------
@@ -209,7 +218,7 @@ MOVEMENT CODE HERE:---------------------------------------------------
 Removing blanks from the beginning of a column
 
 > removeColBlanks :: Board -> Int -> Row
-> removeColBlanks board a = removeBlanks (getCol board a)
+> removeColBlanks board a = removeBlanks $ getCol board a
 
 Helper for the above, gets rid of blank list items
 
@@ -229,14 +238,24 @@ Add a piece to the front of a row
 Fill the rest of a row with blanks
 
 > putPiece :: Board -> Int -> Player -> Row
-> putPiece board n piece = fillCol (addPiece (removeColBlanks board n) piece)
+> putPiece board n piece = fillCol $ addPiece (removeColBlanks board n) piece
 
 [Columns before the modified one] ++ [modified one] ++ [all columns after modified one] = new board
 
 > makeMove :: Board -> Int -> Player -> Board
-> makeMove board n piece = colsToRows ((take n $ colsToRows board)
->                                     ++ [(putPiece board n piece)]
->                                     ++ (drop (n+1) $ colsToRows board))
+> makeMove board n piece = colsToRows $ colsBefore board n
+>                                       ++ [putPiece board n piece]
+>                                       ++ colsAfter board n
+
+Helper to get the columns preceding the one to be modified
+
+> colsBefore :: Board -> Int -> [Row]
+> colsBefore board n = take n $ colsToRows board
+
+Helper to get the columns following the one to be modified
+
+> colsAfter :: Board -> Int -> [Row]
+> colsAfter board n = drop (n+1) $ colsToRows board
 
 Counting the number of pieces in play
 
@@ -266,15 +285,12 @@ Checking if a column is full, to help with the above
 Check if a move is valid
 
 > isValid :: Board -> Int -> Bool
-> isValid board n
->             | not (elem n [0..cols-1]) = False
->             | isColFull board n = False
->             | otherwise = True
+> isValid board n = elem n [0..cols-1] && not (isColFull board n)
 
 Check if the board is full
 
 > isFull :: Board -> Bool
-> isFull board = if (numPieces board == rows*cols) then True else False
+> isFull board = numPieces board == rows*cols
 
 ----------------------------------------------------------------------
 HAS WON LOGIC GOES HERE:----------------------------------------------
@@ -318,7 +334,8 @@ Win states of all three combined into one list
 > hasWon :: Board -> [Player]
 > hasWon board = hasWonRows board ++ hasWonCols board ++ hasWonDiags board
 
-Who won?
+Who won? If there's an X on the hasWon list of lists, it's X. If there's an O, it's
+O. If there's neither, the game is not won.
 
 > whoWon :: Board -> Player
 > whoWon board
@@ -326,7 +343,7 @@ Who won?
 >           | elem O (hasWon board) = O
 >           | otherwise = B
 
-And using that, is there a winner? (Yes this seems backwards, but it works)
+And using that, is there a winner?
 
 > isAWinner :: Board -> Bool
 > isAWinner board = whoWon board /= B
@@ -344,15 +361,22 @@ Need a little helper to let us get which column wants a piece putting in
 >                    else do putStrLn "ERROR: Invalid number"
 >                            getNat prompt
 
-Good to have one little function that tells us if the board is done
-
-> isFinished :: Board -> Bool
-> isFinished board = isAWinner board || isFull board
+Slight modification of the above getNat function to take a number of human players as input
 
 > getPlayerNo :: String -> IO Int
 > getPlayerNo prompt = do p <- getNat prompt
 >                         if elem p [0..2] then return p
 >                         else getPlayerNo "Please enter 0, 1, or 2 "
+
+Good to have one little function that tells us if the board is done
+
+> isFinished :: Board -> Bool
+> isFinished board = isAWinner board || isFull board
+
+Show the winner
+
+> showWinner :: Board -> String
+> showWinner board = show $ whoWon board
 
 ----------------------------------------------------------------------
 GAME TREE STUFF HERE:-------------------------------------------------
@@ -365,12 +389,13 @@ expressed as a list of further trees
 
 Now, a function to generate a full game tree from a board. It's important that it
 stops on a board that would be the end of the game. The node consists of the
-current board and a list of nodes of the same format where the boards are the 
-result of every possible move
+current board and a list of nodes of the same format where the boards are the
+result of every possible valid move. Some pruning can be done; boards that have
+been visited can be ignored and made 'dead ends'
 
-> gameTree :: Board -> Tree Board
-> gameTree board = if isFinished board then Node board []
->                                      else Node board [gameTree $ move board n | n <- emptyCols board]
+> gameTree :: Board -> [Board] -> Tree Board
+> gameTree board vb = if isFinished board || elem board vb then do Node board []
+>                     else Node board [gameTree (move board n) (vb ++ [board]) | n <- emptyCols board]
 
 Limiting is needed to keep us at a reasonable height; this does that
 
@@ -381,7 +406,7 @@ Limiting is needed to keep us at a reasonable height; this does that
 And now a function to generate a limited tree
 
 > treeOfHeight :: Int -> Board -> Tree Board
-> treeOfHeight h b = limitTree h $ gameTree b
+> treeOfHeight h b = limitTree h $ gameTree b []
 
 Generating a new tree containing (board, winner) tuples.
 A childless node implies the board is either full or someone's won, per the gameTree function.
@@ -390,7 +415,7 @@ its children
 
 > tupleGen :: Tree Board -> Tree (Board, Player)
 > tupleGen (Node b []) = Node (b, whoWon b) []
-> tupleGen (Node b bs) = Node (b, minOrMax (whoseGo b) (map (getPlayerTuple . tupleGen) bs)) (map tupleGen bs)
+> tupleGen (Node b bs) = Node (b, minOrMax (whoseGo b) $ map (getPlayerTuple . tupleGen) bs) $ map tupleGen bs
 
 > minOrMax :: Player -> ([Player] -> Player)
 > minOrMax X = maximum
@@ -429,12 +454,12 @@ Generating a random number in a way that doesn't then wrap it in IO, cos that'll
 deal with.
 
 > randomNum :: Int -> Int
-> randomNum n = unsafePerformIO(randomRIO(0,n-1))
+> randomNum n = unsafePerformIO $ randomRIO(0,n-1)
 
 Selecting a random member of the list of empty columns
 
 > randomEmptyCol :: Board -> Int
-> randomEmptyCol board = (emptyCols board) !! randomNum (length (emptyCols board))
+> randomEmptyCol board = (emptyCols board) !! randomNum (length $ emptyCols board)
 
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------
@@ -447,7 +472,7 @@ not, try again. If it's O to play, the computer does it.
 > play :: Board -> IO()
 > play board = do showBoard board
 >                 if isFull board then putStrLn "Board Full: DRAW!!"
->                 else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
+>                 else if isAWinner board then putStrLn ("Winner: " ++ showWinner board)
 >                 else do
 >                   if (whoseGo board) == X then do
 >                     c <- getNat "Your turn: "
@@ -456,17 +481,18 @@ not, try again. If it's O to play, the computer does it.
 >                       play (move board (c-1))
 >                     else
 >                       putStrLn ("Move invalid: either column is full or out of range. Your move: " ++ [intToDigit c])
->                   else
->                     play $ move board $ pickAWinner board
+>                   else do let c = pickAWinner board
+>                           putStrLn ("Computer picks " ++ [intToDigit (c+1)])
+>                           play $ move board $ c
 
 EvE Connect-4: See above, but without the human bits.
 
 > playAI :: Board -> IO()
 > playAI board = do showBoard board
 >                   if isFull board then putStrLn "Board Full: DRAW!!"
->                   else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
+>                   else if isAWinner board then putStrLn ("Winner: " ++ showWinner board)
 >                   else do let c = pickAWinner board
->                           putStrLn (show (whoseGo board) ++ " chooses " ++ [intToDigit c] ++ " from " ++ (map intToDigit (emptyCols board)))
+>                           putStrLn (show (whoseGo board) ++ " chooses " ++ [intToDigit (c+1)])
 >                           playAI $ move board c
 
 PvP Connect-4: as PvE, but without the computer bits.
@@ -474,13 +500,13 @@ PvP Connect-4: as PvE, but without the computer bits.
 > playPVP :: Board -> IO()
 > playPVP board = do showBoard board
 >                    if isFull board then putStrLn "Board Full: DRAW!!"
->                    else if isAWinner board then putStrLn ("Winner: " ++ show (whoWon board))
->                    else do
->                      putStrLn (show (whoseGo board) ++ " to play")
->                      c <- getNat "Choose a column: "
->                      putChar '\n'
->                      if isValid board (c-1) then playPVP $ move board (c-1)
->                      else putStrLn ("Move invalid: either column is full or out of range. Your move: " ++ [intToDigit c])
+>                    else if isAWinner board then putStrLn ("Winner: " ++ showWinner board)
+>                    else do putStrLn (show (whoseGo board) ++ " to play")
+>                            c <- getNat "Choose a column: "
+>                            putChar '\n'
+>                            if isValid board (c-1) then playPVP $ move board (c-1)
+>                            else do putStrLn ("Move invalid: either column is full or out of range. Your move: " ++ [intToDigit c])
+>                                    playPVP board
 
 
 And finally, main, in which the human gets to decide how many humans are playing.
@@ -494,6 +520,6 @@ And finally, main, in which the human gets to decide how many humans are playing
 
 ----------------------------------------------------------------------
 
-TODO: If I make it so the tree is generated from every empty column, the selection then gets messed up
+TODO: Tidy up
 
 ----------------------------------------------------------------------
