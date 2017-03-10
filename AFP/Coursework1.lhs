@@ -1,5 +1,4 @@
 G52AFP Coursework 1 - Connect Four
-
 Jack Ellis
 psyje5@nottingham.ac.uk
 
@@ -26,7 +25,7 @@ board, length of a winning sequence, and search depth for the game tree:
 > win = 4     -- Standard: 4
 >
 > depth :: Int
-> depth = 3   -- Standard: 6
+> depth = 6   -- Standard: 6
 
 The board itself is represented as a list of rows, where each row is
 a list of player values, subject to the above row and column sizes:
@@ -357,7 +356,7 @@ Need a little helper to let us get which column wants a piece putting in
 > getNat :: String -> IO Int
 > getNat prompt = do putStr prompt
 >                    xs <- getLine
->                    if xs /= [] && all isDigit xs then return (read xs)
+>                    if xs /= [] && all isDigit xs then return $ read xs
 >                    else do putStrLn "ERROR: Invalid number"
 >                            getNat prompt
 
@@ -393,9 +392,9 @@ current board and a list of nodes of the same format where the boards are the
 result of every possible valid move. Some pruning can be done; boards that have
 been visited can be ignored and made 'dead ends'
 
-> gameTree :: Board -> [Board] -> Tree Board
-> gameTree board vb = if isFinished board || elem board vb then do Node board []
->                     else Node board [gameTree (move board n) (vb ++ [board]) | n <- emptyCols board]
+> gameTree :: Board -> Tree Board
+> gameTree board = if isFinished board then Node board []
+>                  else Node board [gameTree (move board n) | n <- emptyCols board]
 
 Limiting is needed to keep us at a reasonable height; this does that
 
@@ -406,22 +405,37 @@ Limiting is needed to keep us at a reasonable height; this does that
 And now a function to generate a limited tree
 
 > treeOfHeight :: Int -> Board -> Tree Board
-> treeOfHeight h b = limitTree h $ gameTree b []
+> treeOfHeight h b = limitTree h $ gameTree b
 
 Generating a new tree containing (board, winner) tuples.
 A childless node implies the board is either full or someone's won, per the gameTree function.
 If the node being converted has children, the new node contains the board, and the maximum or minimum of
-its children
+its children.
 
 > tupleGen :: Tree Board -> Tree (Board, Player)
 > tupleGen (Node b []) = Node (b, whoWon b) []
-> tupleGen (Node b bs) = Node (b, minOrMax (whoseGo b) $ map (getPlayerTuple . tupleGen) bs) $ map tupleGen bs
+> tupleGen (Node b bs) = Node (b, recurseWinner b bs) $ map tupleGen bs
+
+recurseWinner takes the list of a Node's children and turns them into a single player.
+
+> recurseWinner :: Board -> [Tree Board] -> Player
+> recurseWinner b bs = minOrMax (whoseGo b) $ genAndGetTuples bs
+
+We can work out if we want the maximum or minimum from whose go it is, so we need a function for that
 
 > minOrMax :: Player -> ([Player] -> Player)
 > minOrMax X = maximum
 > minOrMax O = minimum
 
-Getting the player part of the tuple
+genAndGetTuples generates the tuples of a tree of boards and then returns the winner part
+
+> genAndGetTuples :: [Tree Board] -> [Player]
+> genAndGetTuples bs = map (getPlayerTuple . tupleGen) bs
+
+Getting the individial parts of the tuple
+
+> getBoardTuple :: Tree (a, b) -> a
+> getBoardTuple (Node t _) = fst t
 
 > getPlayerTuple :: Tree (a, b) -> b
 > getPlayerTuple (Node t _) = snd t
