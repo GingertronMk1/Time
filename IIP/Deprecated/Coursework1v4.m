@@ -13,7 +13,7 @@ T = otsuthresh(counts);
 BW = imbinarize(im1green,T);
 BWsizeacross = size(BW);
 BWsizeacross = BWsizeacross(1);
-threshvalue = round(BWsize(1)/50, -1);
+threshvalue = round(BWsizeacross(1)/50, -1);
 BW2 = bwareaopen(BW, threshvalue);
 
 strelcalc = round(sqrt(BWsizeacross)/8);
