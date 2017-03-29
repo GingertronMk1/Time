@@ -187,7 +187,7 @@ and returning the result to the head of the stack
 >                where [x,y] = take 2 s
 > instDo Mul s m = ((x*y):(drop 2 s), m)
 >                where [x,y] = take 2 s
-> instDo Div s m = ((quot x y):(drop 2 s), m)
+> instDo Div s m = ((quot x y):(drop 2 s), m)   -- quot: integer division that rounds down
 >                where [x,y] = take 2 s
 
 Executing individual instances, bar JUMP, JUMPZ, and LABEL, as I've not figured out how to do program flow yet
@@ -203,8 +203,24 @@ Executing individual instances, bar JUMP, JUMPZ, and LABEL, as I've not figured 
 > codeExec (i:is) s m = codeExec is s' m'
 >                       where (s',m') = instExec i s m
 
-> compExec :: Prog -> (Stack,Mem)
-> compExec p = codeExec (comp p) [] []
+> compExec :: Code -> (Stack,Mem)
+> compExec c = codeExec c [] []
+
+To store labels, a list of (Label name, Index) tuples is generated in the first pass over the code
+
+> labelPos :: Code -> Int -> [(Int, Int)] -> [(Int, Int)]
+> labelPos (i:[]) n s = snd $ labelPosHelp i (n,s)
+> labelPos (i:is) n s = labelPos is n' s'
+>                       where (n',s') = labelPosHelp i (n,s)
+
+> labelPosFin :: Code -> [(Int, Int)]
+> labelPosFin c = labelPos c 0 []
+
+> labelPosHelp :: Inst -> (Int,[(Int, Int)]) -> (Int,[(Int, Int)])
+> labelPosHelp (LABEL l) (x, xs) = (x+1, xs ++ [(l, x)])
+> labelPosHelp _ (x, xs) = (x+1, xs)
 
 TODO: Labels, program flow. To my understanding, a compiler/executor does two passes; the first goes through the labels and makes a note of where they are
-The second goes through the code using that information to jump as necessary. I've to figure out how to LABEL the code so that the JUMPs can happen
+The second goes through the code using that information to jump as necessary. I've to figure out how to LABEL the code so that the JUMPs can happen.
+
+Idea: first pass of the 'executor' makes a list of (Int, Int) tuples that stores which label appears at which index in the code
