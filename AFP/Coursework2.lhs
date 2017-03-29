@@ -5,8 +5,6 @@ psyje5@nottingham.ac.uk
 
 --------------------------------------------------------------------------------
 
-> import Data.List
-> import Data.Maybe
 
 Imperative language:
 
@@ -143,29 +141,70 @@ exec :: Code -> Mem
 
 > exec :: Code -> Mem
 > exec [] = []
+> exec c = snd $ codeExec c [] []
+
+Creating a couple of test cases; stack and memory, as well as some basic addition code
 
 > testStack :: Stack
 > testStack = [1,4,6,3]
 > testMem :: Mem
 > testMem = [('A',5),('B',3),('C',10),('D',0),('E',6)]
+> mulTest :: Int -> Int -> Prog
+> mulTest x y = Seqn [Assign 'A' (Val x),
+>                     Assign 'B' (Val y),
+>                     Assign 'A' (App Mul (Var 'A') (Var 'B'))]
 
-> instPush :: Int -> Stack -> Stack
-> instPush i is = i:is
+Push takes an int and puts it at the beginning of the stack
 
- instPushV :: Name -> Mem -> Stack -> Stack
- instPushV n [] [] = []
- instPushV n m []  = do ind <- elemIndex n names
-                        val <- vals !! ind
-                        return [val]
-                     where names = map fst m
-                           vals  = map snd m
+> instPush :: Int -> Stack -> Mem -> (Stack,Mem)
+> instPush i s m = (i:s,m)
 
-> instPop :: Name -> Stack -> Mem -> Mem
-> instPop n [] m = m
-> instPop n s m = if notElem n (map fst m) then (n,head s):m
->                                          else (n,head s):[x | x <- m, fst x /= n]
+PushV takes a name, looks it up in memory, and PUSHes the associated value to the stack
 
-> memNames :: Mem -> [Name]
-> memNames m = map fst m
-> memVals :: Mem -> [Int]
-> memVals m = map snd m
+> instPushV :: Name -> Mem -> Stack -> (Stack, Mem)
+> instPushV n m s = ((memSearch n m):s, m)
+
+To search the memory without going through `Maybe`s (I imagine this is a language like C where it just expects you to know what you're doing)
+construct a copy of memory where the `Name` section corresponds to the name given, return the first list item and take the second part of that
+
+> memSearch :: Name -> Mem -> Int
+> memSearch n m = snd $ [x | x <- m, fst x == n] !! 0
+
+Pop takes the head of the stack (an int), as well as a name, and puts it into memory as a tuple
+If the stack is empty, return the memory as-is
+
+> instPop :: Name -> Stack -> Mem -> (Stack,Mem)
+> instPop n [] m = ([],m)
+> instPop n s m = (s, (n,head s):[x | x <- m, fst x /= n])
+
+`Do`ing a mathematical operation means taking the top two stack items, performing the operation
+and returning the result to the head of the stack
+
+> instDo :: Op -> Stack -> Mem -> (Stack,Mem)
+> instDo Add s m = ((x+y):(drop 2 s), m)
+>                where [x,y] = take 2 s
+> instDo Sub s m = ((x-y):(drop 2 s), m)
+>                where [x,y] = take 2 s
+> instDo Mul s m = ((x*y):(drop 2 s), m)
+>                where [x,y] = take 2 s
+> instDo Div s m = ((quot x y):(drop 2 s), m)
+>                where [x,y] = take 2 s
+
+Executing individual instances, bar JUMP, JUMPZ, and LABEL, as I've not figured out how to do program flow yet
+
+> instExec :: Inst -> Stack -> Mem -> (Stack, Mem)
+> instExec (PUSH i) s m = instPush i s m
+> instExec (PUSHV n) s m = instPushV n m s
+> instExec (POP n) s m = instPop n s m
+> instExec (DO o) s m = instDo o s m
+
+> codeExec :: Code -> Stack -> Mem -> (Stack, Mem)
+> codeExec (i:[]) s m = instExec i s m
+> codeExec (i:is) s m = codeExec is s' m'
+>                       where (s',m') = instExec i s m
+
+> compExec :: Prog -> (Stack,Mem)
+> compExec p = codeExec (comp p) [] []
+
+TODO: Labels, program flow. To my understanding, a compiler/executor does two passes; the first goes through the labels and makes a note of where they are
+The second goes through the code using that information to jump as necessary. I've to figure out how to LABEL the code so that the JUMPs can happen
