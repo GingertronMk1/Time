@@ -82,7 +82,6 @@ State monad:
 
 --------------------------------------------------------------------------------
 
-
 'comp' goes from Prog to Code, where Code = [Inst]
 Therefore it goes from Prog -> [Inst]
 
@@ -90,7 +89,7 @@ Therefore it goes from Prog -> [Inst]
 > --comp p = fst $ progComp p 0
 > comp p = fst $ app (progCompST p) 0
 
-Compiling expressions first; building blocks
+Compiling expressions first; building blocks.
 
 > exprComp :: Expr -> Code
 > exprComp (Val i) = [PUSH i]   -- if it's just a value, PUSH that to the stack
@@ -132,15 +131,20 @@ And now, compiling programs using state
 >                              prog2 <- progCompST p2   -- another for the other
 >                              return $ exprComp e ++ [JUMPZ lab1] ++ prog1 ++ [JUMP lab2] ++ [LABEL lab1] ++ prog2 ++ [LABEL lab2]
 > progCompST (Seqn []) = return []
-> progCompST (Seqn (p:ps)) = do prog1 <- progCompST p
->                               progRest <- progCompST (Seqn ps)
->                               return $ prog1 ++ progRest
+> progCompST (Seqn (p:ps)) = do prog1 <- progCompST p               -- Compile the first bit (the first instruction)
+>                               progRest <- progCompST (Seqn ps)    -- Compile the rest of it
+>                               return $ prog1 ++ progRest          -- Concatenate the two together
 
 --------------------------------------------------------------------------------
 
 exec :: Code -> Mem
 
-> type Machine = (Int, Stack, Mem, Code, [Int])
+> type ProgCounter = Int    -- A program counter to keep track of where I am in the code
+
+The 'Machine': the program counter, Stack, Memory, a copy of all the code, and a list of `Int`s representing
+where all the labels are (this function comes later
+
+> type Machine = (ProgCounter, Stack, Mem, Code, [Int])   -- WELCOME MY SON
 
 > run :: Prog -> Mem
 > run p = exec $ comp p
@@ -164,8 +168,8 @@ Creating a couple of test cases; stack and memory, as well as some basic additio
 
 Push takes an int and puts it at the beginning of the stack
 
-> instPush :: Int -> Stack -> Mem -> (Stack,Mem)
-> instPush i s m = (i:s,m)
+> instPush :: Int -> Stack -> Stack
+> instPush i s = i:s
 
 PushV takes a name, looks it up in memory, and PUSHes the associated value to the stack
 
@@ -174,7 +178,6 @@ PushV takes a name, looks it up in memory, and PUSHes the associated value to th
 
 To search the memory without going through `Maybe`s (I imagine this is a language like C where it just expects you to know what you're doing)
 construct a copy of memory where the `Name` section corresponds to the name given, return the first list item and take the second part of that.
-This is probably one of the more inefficient ways of searching a list but oh well.
 
 > memSearch :: Name -> Mem -> Int
 > memSearch n m = snd $ head [x | x <- m, fst x == n]
@@ -189,47 +192,50 @@ If the stack is empty, return the memory as-is
 `Do`ing a mathematical operation means taking the top two stack items, performing the operation
 and returning the result to the head of the stack
 
-> instDo :: Op -> Stack -> Mem -> (Stack,Mem)
-> instDo Add s m = ((y+x):(drop 2 s), m)
+> instDo :: Op -> Stack -> Stack
+> instDo Add s = (y+x):(drop 2 s)
 >                where [x,y] = take 2 s
-> instDo Sub s m = ((y-x):(drop 2 s), m)
+> instDo Sub s = (y-x):(drop 2 s)
 >                where [x,y] = take 2 s
-> instDo Mul s m = ((y*x):(drop 2 s), m)
+> instDo Mul s = (y*x):(drop 2 s)
 >                where [x,y] = take 2 s
-> instDo Div s m = ((quot y x):(drop 2 s), m)   -- quot: integer division that rounds down
+> instDo Div s = (quot y x):(drop 2 s)    -- quot: integer division that rounds down
 >                where [x,y] = take 2 s
 
-Executing individual instances, bar JUMP, JUMPZ, and LABEL, as I've not figured out how to do program flow yet
+Executing individual instructions, which change the state of the machine
 
 > instExec :: Inst -> Machine -> Machine
-> instExec (PUSH i) (p,s,m,c,ls) = (p+1,s',m',c,ls)
->                               where (s',m') = instPush i s m
+> instExec (PUSH i) (p,s,m,c,ls) = (p+1,s',m,c,ls)
+>                               where s' = instPush i s   -- PUSH only updates the stack, but we're changing both so we may as well use them
 > instExec (PUSHV n) (p,s,m,c,ls) = (p+1,s', m',c,ls)
->                                where (s',m') = instPushV n m s
+>                                where (s',m') = instPushV n m s  -- PUSHV updates memory and stack
 > instExec (POP n) (p,s,m,c,ls) = (p+1,s', m',c,ls)
->                              where (s',m') = instPop n s m
-> instExec (DO o) (p,s,m,c,ls) = (p+1,s',m',c,ls)
->                             where (s',m') = instDo o s m
+>                              where (s',m') = instPop n s m      -- As does POP
+> instExec (DO o) (p,s,m,c,ls) = (p+1,s',m,c,ls)
+>                             where s' = instDo o s               -- DO only operated on Stack items
 > instExec (LABEL l) (p,s,m,c,ls) = skip (p,s,m,c,ls)
-> instExec (JUMP n) (p,s,m,c,ls) = (ls!!n,s,m,c,ls)
-> instExec (JUMPZ n) (p,s,m,c,ls) = if (head s) == 0 then instExec (JUMP n) (p,s,m,c,ls)
->                                                    else skip (p,s,m,c,ls)
+> instExec (JUMP n) (p,s,m,c,ls) = (ls!!n,s,m,c,ls)               -- JUMP changes the program counter, which changes out position in the code
+> instExec (JUMPZ n) (p,s,m,c,ls) = if (head s) == 0 then instExec (JUMP n) (p,s,m,c,ls)    -- JUMPZ is just JUMP with a predicate: if the predicate is fulfilled, JUMP
+>                                                    else skip (p,s,m,c,ls)                 -- Else, skip
 
 Little skip function for LABEL and JUMPZ if the predicate doesn't happen
 
 > skip :: Machine -> Machine
 > skip (p,s,m,c,ls) = (p+1,s,m,c,ls)
 
+To execute the code: if you're not at the last thing, do the next instruction, using the machine state from performing the
+current instruction. If you are at the last thing, just do this one.
+
 > codeExec :: Machine -> Machine
 > codeExec (p,s,m,c,ls) = if p < (length c)-1 then codeExec (p',s',m',c',ls')
->                         else (p,s,m,c,ls)
+>                         else instExec (c!!p) (p,s,m,c,ls)
 >                         where (p',s',m',c',ls') = instExec (c!!p) (p,s,m,c,ls)
 
 > compExec :: Prog -> Machine
 > compExec p = codeExec (0,[],[],c,firstPass c)
 >              where c = comp p
 
-To store labels, a list of (Label name, Index) tuples is generated in the first pass over the code
+To store labels, a list of (Label name, Index) tuples is generated in the first pass over the code.
 
 > firstPass :: Code -> [Int]
 > firstPass c = labelPos c 0 []
@@ -250,11 +256,3 @@ the next index. Otherwise, return the existing list and the next index.
 > labelPosHelp :: Inst -> (Int,[Int]) -> (Int,[Int])
 > labelPosHelp (LABEL l) (i, xs) = (i+1, xs++[i])
 > labelPosHelp _ (i, xs) = (i+1, xs)
-
-TODO: Labels, program flow. To my understanding, a compiler/executor does two passes; the first goes through the labels and makes a note of where they are
-The second goes through the code using that information to jump as necessary. I've to figure out how to LABEL the code so that the JUMPs can happen.
-The thought occurs that we don't need the label numbers to be stored explicitly; they're built in to the list as the indices at which they're stored.
-
-IDEA: lists of lists of instructions; the list of code is split at each label, and the jumps. This makes sense, as within a program the various loops and If/Else
-statements are simply subprograms, that's how they're compiled. First pass, now that I think about it, could turn the Code into [Code], get rid of the need of a
-list containing the indices of the various labels, and instead the value of the label would be the index... the (index - 1) of the relevant sublist.
