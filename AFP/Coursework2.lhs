@@ -81,12 +81,33 @@ State monad:
 >    st >>= f = S (\s -> let (x,s') = app st s in app (f x) s')
 
 --------------------------------------------------------------------------------
+MY CODE STARTS HERE:------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+TEST CASES:---------------------------------------------------------------------
+
+> testStack :: Stack
+> testStack = [1,4,6,3]
+> testMem :: Mem
+> testMem = [('A',5),('B',3),('C',10),('D',0),('E',6)]
+> mulTest :: Int -> Int -> Prog
+> mulTest x y = Seqn [Assign 'A' (Val x),
+>                     Assign 'B' (Val y),
+>                     Assign 'A' (App Mul (Var 'A') (Var 'B'))]
+> subTest :: Prog
+> subTest = Seqn [Assign 'A' (Val 4),
+>                 Assign 'B' (Val 1),
+>                 Assign 'A' (App Sub (Var 'A') (Var 'B'))]
+> labelTest :: Code
+> labelTest = [LABEL 0, PUSH 1, LABEL 1]
+
+COMPILER CODE:------------------------------------------------------------------
 
 'comp' goes from Prog to Code, where Code = [Inst]
 Therefore it goes from Prog -> [Inst]
 
 > comp :: Prog -> Code
-> --comp p = fst $ progComp p 0
+> --comp p = fst $ progComp p 0   -- Stateless compilation
 > comp p = fst $ app (progCompST p) 0
 
 Compiling expressions first; building blocks.
@@ -115,7 +136,7 @@ Stateful computation: State -> (a, State)
 
 Generation of new labels done here
 
-> fresh = S (\n -> (n, n+1))
+> fresh = S(\n -> (n, n+1))
 
 And now, compiling programs using state
 
@@ -135,16 +156,16 @@ And now, compiling programs using state
 >                               progRest <- progCompST (Seqn ps)    -- Compile the rest of it
 >                               return $ prog1 ++ progRest          -- Concatenate the two together
 
---------------------------------------------------------------------------------
+EXECUTOR CODE:------------------------------------------------------------------
 
 exec :: Code -> Mem
 
-> type ProgCounter = Int    -- A program counter to keep track of where I am in the code
+> type PC = Int    -- A program counter to keep track of where I am in the code
 
 The 'Machine': the program counter, Stack, Memory, a copy of all the code, and a list of `Int`s representing
-where all the labels are (this function comes later
+where all the labels are (this function comes later)
 
-> type Machine = (ProgCounter, Stack, Mem, Code, [Int])   -- WELCOME MY SON
+> type Machine = (PC, Stack, Mem, Code, [Int])   -- WELCOME MY SON
 
 > run :: Prog -> Mem
 > run p = exec $ comp p
@@ -152,19 +173,6 @@ where all the labels are (this function comes later
 > exec :: Code -> Mem
 > exec c = m
 >          where (p,s,m,c',ls) = codeExec (0,[],[],c,firstPass c)
-
-Creating a couple of test cases; stack and memory, as well as some basic addition code
-
-> testStack :: Stack
-> testStack = [1,4,6,3]
-> testMem :: Mem
-> testMem = [('A',5),('B',3),('C',10),('D',0),('E',6)]
-> mulTest :: Int -> Int -> Prog
-> mulTest x y = Seqn [Assign 'A' (Val x),
->                     Assign 'B' (Val y),
->                     Assign 'A' (App Mul (Var 'A') (Var 'B'))]
-> labelTest :: Code
-> labelTest = [LABEL 0, PUSH 1, LABEL 1]
 
 Push takes an int and puts it at the beginning of the stack
 
@@ -174,7 +182,7 @@ Push takes an int and puts it at the beginning of the stack
 PushV takes a name, looks it up in memory, and PUSHes the associated value to the stack
 
 > instPushV :: Name -> Mem -> Stack -> (Stack, Mem)
-> instPushV n m s = ((memSearch n m):s, m)
+> instPushV n m s = (instPush (memSearch n m) s, m)
 
 To search the memory without going through `Maybe`s (I imagine this is a language like C where it just expects you to know what you're doing)
 construct a copy of memory where the `Name` section corresponds to the name given, return the first list item and take the second part of that.
@@ -202,23 +210,23 @@ and returning the result to the head of the stack
 > instDo Div s = (quot y x):(drop 2 s)    -- quot: integer division that rounds down
 >                where [x,y] = take 2 s
 
-Executing individual instructions, which change the state of the machine
+Executing individual instructions, which change the state of the machine.
 
 > instExec :: Inst -> Machine -> Machine
-> instExec (PUSH i) (p,s,m,c,ls) = (p+1,s',m,c,ls)
->                               where s' = instPush i s   -- PUSH only updates the stack, but we're changing both so we may as well use them
-> instExec (PUSHV n) (p,s,m,c,ls) = (p+1,s', m',c,ls)
->                                where (s',m') = instPushV n m s  -- PUSHV updates memory and stack
-> instExec (POP n) (p,s,m,c,ls) = (p+1,s', m',c,ls)
->                              where (s',m') = instPop n s m      -- As does POP
-> instExec (DO o) (p,s,m,c,ls) = (p+1,s',m,c,ls)
->                             where s' = instDo o s               -- DO only operated on Stack items
-> instExec (LABEL l) (p,s,m,c,ls) = skip (p,s,m,c,ls)
+> instExec (PUSH i) (p,s,m,c,ls) = (p+1,s',m,c,ls)                -- PUSH updates the stack
+>                               where s' = instPush i s
+> instExec (PUSHV n) (p,s,m,c,ls) = (p+1,s', m',c,ls)             -- PUSHV updates both memory and stack
+>                                where (s',m') = instPushV n m s
+> instExec (POP n) (p,s,m,c,ls) = (p+1,s', m',c,ls)               -- As does POP
+>                              where (s',m') = instPop n s m
+> instExec (DO o) (p,s,m,c,ls) = (p+1,s',m,c,ls)                  -- DO updates the stack
+>                             where s' = instDo o s
+> instExec (LABEL l) (p,s,m,c,ls) = skip (p,s,m,c,ls)             -- LABEL instructions get skipped; this function comes later
 > instExec (JUMP n) (p,s,m,c,ls) = (ls!!n,s,m,c,ls)               -- JUMP changes the program counter, which changes out position in the code
 > instExec (JUMPZ n) (p,s,m,c,ls) = if (head s) == 0 then instExec (JUMP n) (p,s,m,c,ls)    -- JUMPZ is just JUMP with a predicate: if the predicate is fulfilled, JUMP
 >                                                    else skip (p,s,m,c,ls)                 -- Else, skip
 
-Little skip function for LABEL and JUMPZ if the predicate doesn't happen
+Little skip function for LABEL and JUMPZ if the predicate doesn't happen. It just updates the program counter
 
 > skip :: Machine -> Machine
 > skip (p,s,m,c,ls) = (p+1,s,m,c,ls)
@@ -226,33 +234,31 @@ Little skip function for LABEL and JUMPZ if the predicate doesn't happen
 To execute the code: if you're not at the last thing, do the next instruction, using the machine state from performing the
 current instruction. If you are at the last thing, just do this one.
 
+The intuition on that last part is that you're never going to get a JUMP as the last instruction, as any given loop or IF
+will put a label at the end as a place to JUMP to, and a straight-through program won't have JUMPs at all.
+
 > codeExec :: Machine -> Machine
 > codeExec (p,s,m,c,ls) = if p < (length c)-1 then codeExec (p',s',m',c',ls')
 >                         else instExec (c!!p) (p,s,m,c,ls)
 >                         where (p',s',m',c',ls') = instExec (c!!p) (p,s,m,c,ls)
 
-> compExec :: Prog -> Machine
-> compExec p = codeExec (0,[],[],c,firstPass c)
->              where c = comp p
+Generating a list of labels' positions in the code is the first pass of the executor. First, we make a function that looks at individual instructions
+and updates a list of positions based on that instructions' position in the code (passed in as an argument). If the Inst passed in is a LABEL, take its
+index and add it to the list of positions, else return the list of positions unchanged.
 
-To store labels, a list of (Label name, Index) tuples is generated in the first pass over the code.
+> labelPos' :: Inst -> Int -> [Int] -> [Int]
+> labelPos' (LABEL l) i xs = xs ++ [i]
+> labelPos' _ i xs = xs
+
+Applying this function over some Code, if you are at the end of the code, return the result of applying the helper to the last Inst. Otherwise, recursively
+apply yourself to the remainder of the code, passing in the list of positions that results from applying the helper to the current Inst.
+
+> labelPos :: Code -> Int -> [Int] -> [Int]
+> labelPos (i:[]) n s = labelPos' i n s
+> labelPos (i:is) n s = labelPos is (n+1) $ labelPos' i n s
+
+As the above two functions take an index and a list of positions as arguments, as well as the Code to scan through, we need to create a function that will take
+just code. This is trivially labelPos, with the Code to scan passed in as well as initial values of 0 for the index and the empty list for the list.
 
 > firstPass :: Code -> [Int]
 > firstPass c = labelPos c 0 []
-
-Finding the positions of the labels in the code is the first pass of the executor. It scans through the code and makes a list of (Label, Index)
-tuples, so the control flow instructions (JUMP, JUMPZ) know where to jump to within the code. It runs through the code recursively, applying the
-labelPosHelp function (defined later) to each instruction in turn, and returns a full list of (Label, Index) tuples
-
-> labelPos :: Code -> Int -> [Int] -> [Int]
-> labelPos (i:[]) n s = snd $ labelPosHelp i (n,s)
-> labelPos (i:is) n s = labelPos is n' s'
->                       where (n',s') = labelPosHelp i (n,s)
-
-Helper function: takes an Inst, and a tuple containing the current index of the Inst in code, and the existing list of (Label, Index) tuples
-If the Inst is a LABEL, add the number of the label and the index in the code to the list, and return a tuple containing the updated list and
-the next index. Otherwise, return the existing list and the next index.
-
-> labelPosHelp :: Inst -> (Int,[Int]) -> (Int,[Int])
-> labelPosHelp (LABEL l) (i, xs) = (i+1, xs++[i])
-> labelPosHelp _ (i, xs) = (i+1, xs)
