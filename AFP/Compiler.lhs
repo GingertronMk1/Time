@@ -5,7 +5,7 @@ psyje5@nottingham.ac.uk
 
 --------------------------------------------------------------------------------
 
-> import Data.List
+ import Data.List
 
 Imperative language:
 
@@ -126,6 +126,7 @@ progComp (If e p1 p2) l = (exprComp e ++ [JUMPZ 0] ++ x1 ++ [JUMP 1] ++ [LABEL 0
                                 (x2, y2) = progComp p2 y1
 progComp (While e p) l = ([LABEL l] ++ exprComp e ++ [JUMPZ (l+1)] ++ x ++ [JUMP l] ++ [LABEL (l+1)], y)
                           where (x,y) = progComp p (l+2)
+
 progComp (Seqn (p:ps)) l = (x ++ x2, y2)
                             where (x,y) = progComp p l
                                   (x2,y2) = progComp (Seqn ps) y
