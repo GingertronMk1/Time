@@ -220,14 +220,12 @@ If the stack is empty, return the memory as-is
 and returning the result to the head of the stack
 
 > instDo :: Op -> Stack -> Stack
-> instDo Add s = (y+x):(drop 2 s)
->                where [x,y] = take 2 s
-> instDo Sub s = (y-x):(drop 2 s)
->                where [x,y] = take 2 s
-> instDo Mul s = (y*x):(drop 2 s)
->                where [x,y] = take 2 s
-> instDo Div s = (quot y x):(drop 2 s)    -- quot: integer division that rounds down
->                where [x,y] = take 2 s
+> instDo o s = case o of Add -> (y+x):newStack
+>                        Sub -> (y-x):newStack
+>                        Mul -> (y*x):newStack
+>                        Div -> (quot y x):newStack
+>              where [x,y] = take 2 s
+>                    newStack = drop 2 s
 
 Jump takes a Label value, and a list of Label positions in code, and returns the index of the Label in the code
 
