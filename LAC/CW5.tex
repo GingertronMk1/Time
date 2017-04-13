@@ -1,0 +1,53 @@
+\title{G52LAC CW5}
+\author{
+  Jack Ellis\\
+  psyje5@nottingham.ac.uk\\
+  4262333
+}
+\documentclass[12pt]{article}
+\usepackage{amssymb}
+\usepackage{listings}
+\lstset{
+  frame=none,
+  tabsize=2
+}
+\usepackage{array}
+\usepackage[dvipsnames]{xcolor}
+\begin{document}
+\maketitle
+\begin{itemize}
+  \item \textbf{Question 1 (a):}\\
+  \item \textbf{Question 1 (b):}\\
+    P1 is recursively enumerable; the Halting Problem is.ww q
+    P4 is recursively enumerable; it is stated as such in the initial information.\\
+\item \textbf{Question 1 (c):}\\
+
+\item \textbf{Initial code:}
+\begin{lstlisting}
+import Data.List
+import Data.Maybe
+data SAT = Var Int
+         | Not SAT
+         | And SAT SAT
+         | Or SAT SAT
+         deriving Show
+
+type Assignment = [Bool]
+\end{lstlisting}
+
+\item \textbf{Question 2:}
+  \lstinputlisting[language=haskell, firstline=24, lastline=28]{CW5.hs}
+
+\item \textbf{Question 3 (a)}
+  \lstinputlisting[language=haskell, firstline=30, lastline=37]{CW5.hs}
+
+\item \textbf{Question 3 (b)}
+  \lstinputlisting[language=haskell, firstline=39, lastline=43]{CW5.hs}
+
+\item \textbf{Question 3(c)}
+  \lstinputlisting[language=haskell, firstline=45, lastline=49]{CW5.hs}
+
+\item \textbf{Question 3(d)}
+  \lstinputlisting[language=haskell, firstline=51]{CW5.hs}
+\end{itemize}
+\end{document}
