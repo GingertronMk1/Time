@@ -100,6 +100,10 @@ TEST CASES:---------------------------------------------------------------------
 >                 Assign 'A' (App Sub (Var 'A') (Var 'B'))]
 > labelTest :: Code
 > labelTest = [LABEL 0, PUSH 1, LABEL 1]
+> labelTestProg :: Prog
+> labelTestProg = Seqn [Assign 'A' (Val 1),
+>                       Assign 'B' (Val 2),
+>                       If (Var 'B') (fac 10) (fac 2)]
 
 COMPILER CODE:------------------------------------------------------------------
 
@@ -178,7 +182,7 @@ exec :: Code -> Mem
 The 'Machine': the program counter, Stack, Memory, a copy of all the code, and a list of `Int`s representing
 where all the labels are (this function comes later)
 
-> type Machine = (PC, Stack, Mem, Code, [Int])   -- WELCOME MY SON
+> type Machine = (PC, Stack, Mem, Code, [(Label,Int)])   -- WELCOME MY SON
 
 `run` is a function that compiles and executes the code; really just here so I don't have to keep typing in `exec (comp (fac 10))` when I want to test
 something.
@@ -207,14 +211,14 @@ To search the memory without going through `Maybe`s (I imagine this is a languag
 construct a copy of memory where the `Name` section corresponds to the name given, return the first list item and take the second part of that.
 
 > memSearch :: Name -> Mem -> Int
-> memSearch n m = snd $ head [x | x <- m, fst x == n]
+> memSearch n m = snd . head $ filter (\x -> fst x == n) m
 
 POP takes the head of the stack (an int), as well as a name, and puts it into memory as a tuple
 If the stack is empty, return the memory as-is
 
 > instPop :: Name -> Stack -> Mem -> (Stack, Mem)
 > instPop n [] m = ([], m)
-> instPop n s m = (tail s, (n,head s):[x | x <- m, fst x /= n])
+> instPop n s m = (tail s, (n,head s):(filter (\x -> fst x /= n) m))
 
 `DO`ing a mathematical operation means taking the top two stack items, performing the operation
 and returning the result to the head of the stack
@@ -223,19 +227,19 @@ and returning the result to the head of the stack
 > instDo o s = case o of Add -> (y+x):newStack
 >                        Sub -> (y-x):newStack
 >                        Mul -> (y*x):newStack
->                        Div -> (quot y x):newStack
+>                        Div -> (div y x):newStack
 >              where [x,y] = take 2 s
 >                    newStack = drop 2 s
 
 Jump takes a Label value, and a list of Label positions in code, and returns the index of the Label in the code
 
-> instJump :: Label -> [Int] -> PC
-> instJump l ls = ls!!l
+> instJump :: Label -> [(Label,Int)] -> PC
+> instJump l ils = snd . head $ filter (\x -> fst x == l) ils
 
 JumpZ takes all the things Jump does, as well as the current Stack and PC. If the head of the Stack == 0, it JUMPs using the Label value and list of Labels.
 Otherwise, it increments the PC by one.
 
-> instJumpZ :: Stack -> Label -> [Int] -> PC -> PC
+> instJumpZ :: Stack -> Label -> [(Label,Int)] -> PC -> PC
 > instJumpZ s l ls p = if (head s == 0) then instJump l ls
 >                                       else p+1
 
@@ -270,19 +274,19 @@ Generating a list of labels' positions in the code is the first pass of the exec
 and updates a list of positions based on that instructions' position in the code (passed in as an argument). If the Inst passed in is a LABEL, take its
 index and add it to the list of positions, else return the list of positions unchanged.
 
-> labelPos' :: Inst -> Int -> [Int] -> [Int]
-> labelPos' (LABEL l) i xs = xs ++ [i]
+> labelPos' :: Inst -> Int -> [(Label,Int)] -> [(Label,Int)]
+> labelPos' (LABEL l) i xs = (l,i):xs
 > labelPos' _ i xs = xs
 
 Applying this function over some Code, if you are at the end of the code, return the result of applying the helper to the last Inst. Otherwise, recursively
 apply yourself to the remainder of the code, passing in the list of positions that results from applying the helper to the current Inst.
 
-> labelPos :: Code -> Int -> [Int] -> [Int]
-> labelPos (i:[]) n s = labelPos' i n s
-> labelPos (i:is) n s = labelPos is (n+1) $ labelPos' i n s
+> labelPos :: Code -> Int -> [(Label,Int)] -> [(Label,Int)]
+> labelPos (i:[]) n ls = labelPos' i n ls
+> labelPos (i:is) n ls = labelPos is (n+1) $ labelPos' i n ls
 
 As the above two functions take an index and a list of positions as arguments, as well as the Code to scan through, we need to create a function that will take
 just code. This is trivially labelPos, with the Code to scan passed in as well as initial values of 0 for the index and the empty list for the list.
 
-> firstPass :: Code -> [Int]
+> firstPass :: Code -> [(Label,Int)]
 > firstPass c = labelPos c 0 []
