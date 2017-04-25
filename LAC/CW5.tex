@@ -16,38 +16,56 @@
 \begin{document}
 \maketitle
 \begin{itemize}
-  \item \textbf{Question 1 (a):}\\
-  \item \textbf{Question 1 (b):}\\
-    P1 is recursively enumerable; the Halting Problem is.ww q
-    P4 is recursively enumerable; it is stated as such in the initial information.\\
-\item \textbf{Question 1 (c):}\\
+  \item \textbf{Question 1}
+    \begin{itemize}
+      \item \textbf{(a)}\\
+      \item \textbf{(b)}\\
+        P1 is recursively enumerable; the Halting Problem is.\\
+        P4 is recursively enumerable; it is stated as such in the initial information.\\
+      \item \textbf{(c)}\\
+    \end{itemize}
 
-\item \textbf{Initial code:}
-\begin{lstlisting}
-import Data.List
-import Data.Maybe
-data SAT = Var Int
-         | Not SAT
-         | And SAT SAT
-         | Or SAT SAT
-         deriving Show
+    \pagebreak
+  \item \textbf{Question 2:}
+    \lstinputlisting[language=haskell, firstline=30, lastline=34]{CW5.hs}
+    \verb|evaluate| uses Haskell's built-in Boolean functions to evaluate, and pattern-matches until it finds a \verb|Var|
+    value.
 
-type Assignment = [Bool]
-\end{lstlisting}
+    \pagebreak
+  \item \textbf{Question 3}
+    \begin{itemize}
+      \item \textbf{(a)}
+        \lstinputlisting[language=haskell, firstline=36, lastline=43]{CW5.hs}
+        First we'll discuss \verb|varNum'|, which, similar to \verb|evaluate| uses pattern-matching to find only the
+        \verb|Var| values in a formula, and generates a list of them. \verb|varNum| takes this list and finds the largest
+        \verb|Var|, and returns it
 
-\item \textbf{Question 2:}
-  \lstinputlisting[language=haskell, firstline=24, lastline=28]{CW5.hs}
+      \item \textbf{(b)}
+        \lstinputlisting[language=haskell, firstline=45, lastline=49]{CW5.hs}
+        \verb|allAssign| creates a list of lists; namely a list of \verb|n [True,False| lists, where \verb|n| is passed in as
+        an argument. \verb|sequence|, when applied to a list of lists in Haskell, returns the Cartesian Product, which is what
+        we want.
 
-\item \textbf{Question 3 (a)}
-  \lstinputlisting[language=haskell, firstline=30, lastline=37]{CW5.hs}
+      \item \textbf{(c)}
+        \lstinputlisting[language=haskell, firstline=51, lastline=52]{CW5.hs}
+        \verb|satisfiable| takes a SAT, applies \verb|allAssign| to it, and then applies \verb|evaluate| to the resultant
+        list. This returns a list of Bools, with the Bool saying whether or not that assignment solved the SAT. Applying
+        \verb|or| to this list tells us if any of the assignments worked, and consequently if the SAT can be solved.
 
-\item \textbf{Question 3 (b)}
-  \lstinputlisting[language=haskell, firstline=39, lastline=43]{CW5.hs}
+      \item \textbf{(d)}
+        \lstinputlisting[language=haskell, firstline=54, lastline=57]{CW5.hs}
+        \verb|solution| uses \verb|elemIndex| to return a \verb|Maybe Int| with the index of the first \verb|True| in the list
+        generated as part of \verb|satisfiable|. Using the \verb|do| notation, we can then use that \verb|Maybe Int| to index the list of
+        all possible assignments returned by \verb|allAssign|, which will give us a working solution wrapped in a \verb|Maybe|.
+    \end{itemize}
 
-\item \textbf{Question 3(c)}
-  \lstinputlisting[language=haskell, firstline=45, lastline=49]{CW5.hs}
-
-\item \textbf{Question 3(d)}
-  \lstinputlisting[language=haskell, firstline=51]{CW5.hs}
+    \pagebreak
+  \item \textbf{Question 4}
+    \begin{itemize}
+      \item \textbf{(a):}\\
+      \item \textbf{(b):}
+      \item \textbf{(c):} SAT being NP-Complete means it is in NP, and every problem in NP can be reduced to it in
+        polynomial time.
+    \end{itemize}
 \end{itemize}
 \end{document}
