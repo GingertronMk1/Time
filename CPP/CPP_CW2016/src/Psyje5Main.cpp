@@ -1,6 +1,7 @@
 #include "header.h"
 #include "BaseEngine.h"
 #include "Psyje5Object.h"
+#include "Psyje5PlayerObject.h"
 #include "Psyje5Main.h"
 #include "JPGImage.h"
 #include "TileManager.h"
@@ -9,6 +10,7 @@
 Psyje5Main::Psyje5Main(void)
 	: BaseEngine(50)
 	, m_state(stateInit)
+	, m_iTimer(0)
 {
 }
 
@@ -73,18 +75,16 @@ int Psyje5Main::InitialiseObjects()
 	// Destroy any existing objects
 	DestroyOldObjects();
 
-	int i_NumberOfObjects = 2;
+	int i_ComputerObjects = 1;
 
-	// Creates an array one element larger than the number of objects that you want.
-	CreateObjectArray(i_NumberOfObjects + 1);
-
-	// You MUST set the array entry after the last one that you create to NULL, so that the system knows when to stop.
-	for (int i = 0; i < i_NumberOfObjects; i++){
+	CreateObjectArray(i_ComputerObjects + 2);		// Make an array to put our objects in (it's 2 larger than the number of computer objects so we can have the player object and the NULL at the end
+	StoreObjectInArray(0, new Psyje5PlayerObject(this, 0, 0));	// The first object is the player
+	for (int i = 1; i < i_ComputerObjects; i++){				// The remainder (bar 1) are the 'AI' objects
 		StoreObjectInArray(i, new Psyje5Object(this, i, i));
 	}
+	StoreObjectInArray(i_ComputerObjects, NULL);				// The last one is a NULL pointer
 
 	// i.e. The LAST entry has to be NULL. The fact that it is NULL is used in order to work out where the end of the array is.
-	StoreObjectInArray(i_NumberOfObjects, NULL);
 
 	// NOTE: We also need to destroy the objects, but the method at the 
 	// top of this function will destroy all objects pointed at by the 
@@ -101,12 +101,17 @@ void Psyje5Main::DrawStrings() {
 		break;
 
 	case stateMain:
+		char buf[128];
+		sprintf(buf, "Your score so far: %d", m_iTimer++);
 		CopyBackgroundPixels(0, 0, GetScreenWidth(), 30);
-		DrawScreenString(250, 10, "Running", 0xffffff, NULL);
+		DrawScreenString(250, 10, buf, 0xffffff, NULL);
 		break;
 
 	case statePaused:
 		CopyBackgroundPixels(0, 280, GetScreenWidth(), 40);
+		sprintf(buf, "Your score so far: %d", m_iTimer);
+		CopyBackgroundPixels(0, 0, GetScreenWidth(), 30);
+		DrawScreenString(250, 10, buf, 0xffffff, NULL);
 		DrawScreenString(200, 300, "Paused. Space continues", 0xffffff, NULL);
 		break;
 	}
@@ -167,3 +172,9 @@ void Psyje5Main::DrawObjects()
 	if (m_state != stateInit) // Not in initialise state
 		BaseEngine::DrawObjects();
 }
+
+/*
+TODO:	Figure out why stuff randomly teleports
+		Make it an actual, y'know, game
+		Change appearance so it's not blindingly obvious what I've done
+*/

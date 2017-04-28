@@ -26,10 +26,12 @@ private:
 	Psyje5TileMan m_oTiles;
 public:
 	// defining states
-	enum State { stateInit, stateMain, statePaused };
+	enum State { stateInit, stateMain, statePaused, stateOver };
 
 	int m_iPauseStarted;
 private:
 	State m_state;
+public:
+	int m_iTimer;
 };
 
