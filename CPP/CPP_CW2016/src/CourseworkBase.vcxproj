@@ -88,16 +88,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DemoAMain.h" />
     <ClInclude Include="header.h" />
     <ClInclude Include="BaseEngine.h" />
     <ClInclude Include="DisplayableObject.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="JPGImage.h" />
     <ClInclude Include="MovementPosition.h" />
-    <ClInclude Include="Psyje5DispObject1.h" />
-    <ClInclude Include="Psyje5DispObject2.h" />
-    <ClInclude Include="Psyje5Engine.h" />
+    <ClInclude Include="MovePos.h" />
+    <ClInclude Include="Psyje5Main.h" />
+    <ClInclude Include="Psyje5Object.h" />
     <ClInclude Include="Psyje5TileMan.h" />
     <ClInclude Include="templates.h" />
     <ClInclude Include="TileManager.h" />
@@ -117,15 +116,13 @@
     <ClInclude Include="SimpleDemo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DemoAMain.cpp" />
     <ClCompile Include="mainfunction.cpp" />
     <ClCompile Include="BaseEngine.cpp" />
     <ClCompile Include="DisplayableObject.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="JPGImage.cpp" />
-    <ClCompile Include="Psyje5DispObject1.cpp" />
-    <ClCompile Include="Psyje5DispObject2.cpp" />
-    <ClCompile Include="Psyje5Engine.cpp" />
+    <ClCompile Include="Psyje5Main.cpp" />
+    <ClCompile Include="Psyje5Object.cpp" />
     <ClCompile Include="Psyje5TileMan.cpp" />
     <ClCompile Include="SimpleDemo.cpp" />
     <ClCompile Include="TileManager.cpp" />

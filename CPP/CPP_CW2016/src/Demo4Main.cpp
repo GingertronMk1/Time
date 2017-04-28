@@ -1,14 +1,9 @@
 #include "header.h"
-
 #include "BaseEngine.h"
-
 #include "Demo4Object.h"
-
 #include "Demo4Main.h"
-
 #include "JPGImage.h"
-
-#include "Demo4TileManager.h"
+#include "TileManager.h"
 
 
 Demo4Main::Demo4Main(void)
@@ -92,9 +87,9 @@ int Demo4Main::InitialiseObjects()
 	// You MUST set the array entry after the last one that you create to NULL, so that the system knows when to stop.
 	StoreObjectInArray( 0, new Demo4Object(this, 1, 1) );
 	StoreObjectInArray( 1, new Demo4Object(this, 9, 9) );
-	StoreObjectInArray( 2, new Demo4Object(this, 13, 9) );
-	StoreObjectInArray( 3, new Demo4Object(this, 9, 5) );
-	StoreObjectInArray( 4, new Demo4Object(this, 13, 5) );
+	//StoreObjectInArray( 2, new Demo4Object(this, 13, 9) );
+	//StoreObjectInArray( 3, new Demo4Object(this, 9, 5) );
+	//StoreObjectInArray( 4, new Demo4Object(this, 13, 5) );
 
 	// i.e. The LAST entry has to be NULL. The fact that it is NULL is used in order to work out where the end of the array is.
 	StoreObjectInArray( 5, NULL);

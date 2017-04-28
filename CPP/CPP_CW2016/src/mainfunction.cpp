@@ -11,8 +11,7 @@
 #include "Demo2Main.h"
 #include "Demo3Main.h"
 #include "Demo4Main.h"
-#include "DemoAMain.h"
-#include "Psyje5Engine.h"
+#include "Psyje5Main.h"
 
 #define BASE_SCREEN_WIDTH 800
 #define BASE_SCREEN_HEIGHT 600
@@ -32,9 +31,8 @@ int main(int argc, char *argv[])
 	//Demo1Main oMain;
 	//Demo2Main oMain;
 	//Demo3Main oMain;
-	//Demo4Main oMain;
-	//DemoAMain oMain;
-	Psyje5Engine oMain;
+	Demo4Main oMain;
+	//Psyje5Main oMain;
 
 	char buf[1024];
 	sprintf( buf, "My Demonstration Program : Size %d x %d", BASE_SCREEN_WIDTH, BASE_SCREEN_HEIGHT );
