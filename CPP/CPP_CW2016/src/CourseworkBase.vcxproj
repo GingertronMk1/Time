@@ -97,6 +97,7 @@
     <ClInclude Include="MovePos.h" />
     <ClInclude Include="Psyje5Main.h" />
     <ClInclude Include="Psyje5Object.h" />
+    <ClInclude Include="Psyje5PlayerObject.h" />
     <ClInclude Include="Psyje5TileMan.h" />
     <ClInclude Include="templates.h" />
     <ClInclude Include="TileManager.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="JPGImage.cpp" />
     <ClCompile Include="Psyje5Main.cpp" />
     <ClCompile Include="Psyje5Object.cpp" />
+    <ClCompile Include="Psyje5PlayerObject.cpp" />
     <ClCompile Include="Psyje5TileMan.cpp" />
     <ClCompile Include="SimpleDemo.cpp" />
     <ClCompile Include="TileManager.cpp" />
