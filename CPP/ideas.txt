@@ -1,0 +1,121 @@
+Base Idea:
+
+Pac-Man clone?
+
+States: 
+  Game Start
+  Game in progress
+  Game end (Win/Game Over)
+
+Automated Moving Objects:
+  Enemies (faster than you)
+    1 moves towards
+    1 moves randomly
+  Object to grab (slower than you)
+    Moves away from you
+
+Animated Backgrounds:
+  TBD
+  Map
+
+Interaction between moving objects and backgrounds
+  Moving objects can't go past walls in background
+
+Multiple moving object interaction:
+  Enemies bounce off one another
+  You hit enemy
+you die
+
+BaseEngine.h
+BaseEngine.cpp
+DisplayableObject.h
+DisplayableObject.cpp
+FontManager.h
+FontManager.cpp
+JPGImage.h,
+JPGImage.cpp
+TileManager.h
+TileManager.cpp
+MovementPosition.h
+Templates.h
+
+British Bulldog-Style game?
+
+Rugby-style?
+States:
+  Start
+  Try Scored
+  Conversion
+  End
+
+User-Controlled Moving Object
+  Arrow keys move, goes past 50% of screen background moves
+  W,D to pass
+
+Automated moving objects:
+  Opposing players
+    Some go for player with ball, some stay in the d-line
+  Friendly players
+    Push up in support
+  The ball?
+    
+
+Animated backgrounds:
+  The field
+
+Interaction between AMOs and the background
+  Stay inside touch-lines
+
+Object interaction:
+  Player with ball tackled -> tackle, increase tackle count
+  Chance of break?
+
+
+SO FAR:
+--------------------------
+1.  Provide Attractive Backgrounds
+    1 mark so far: 1 stage has 1 background
+
+2.  Provide Multiple States/Stages
+    1 mark so far
+
+3.  Provide a User-Controlled Moving Object (UMO)
+    1 mark so far (?) pac-man style point an object that moves along that path
+
+4.  Provide Automated Moving Objects (AMO)
+    1 mark so far: a thing that moves
+
+5.  Provide some interaction between moving objects and the background
+    DONE
+
+
+6.  Provide some interaction between multiple moving objects
+    THIS IS THE PATH TO MARKS
+
+
+7.  Provide a tile manager that reacts to changes
+
+
+
+8.  Load/Save data
+
+
+
+9.  Display text on the screen
+    1 mark so far: text changes and provides a score
+
+
+10. Change BaseEngine to use a container class rather than an array of pointers
+    fuck this
+
+
+11. Provide a complex algorithm/AI
+
+
+
+12. Wow factor!
+    Not gonna happen
+
+
+
+Redownload source, modify demo4 based on what the framework spec says
