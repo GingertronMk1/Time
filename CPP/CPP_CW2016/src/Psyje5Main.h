@@ -19,6 +19,7 @@ public:
 	virtual void KeyDown(int iKeyCode);
 	virtual void UndrawObjects();
 	virtual void DrawObjects();
+	virtual void GameOver();
 
 	// get reference to tileman
 	Psyje5TileMan& GetTileManager() { return m_oTiles; }
@@ -33,5 +34,8 @@ private:
 	State m_state;
 public:
 	int m_iTimer;
+	int m_iHiScore;
+	void DrawBackgroundSquares(int iColour1, int iColour2);
+	int CurrentState();
 };
 

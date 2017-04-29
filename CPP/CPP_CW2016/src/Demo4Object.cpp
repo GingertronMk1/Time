@@ -88,8 +88,7 @@ void Demo4Object::DoUpdate( int iCurrentTime )
 		int iSizeOther = iSize; // Assume both the same size
 
 		// Pythagorus' theorum:
-		if ( ((iXDiff*iXDiff)+(iYDiff*iYDiff)) 
-				< ((iSizeOther+iSize)*(iSizeOther+iSize)) )
+		if ( ((iXDiff*iXDiff)+(iYDiff*iYDiff)) < ((iSizeOther+iSize)*(iSizeOther+iSize)) )
 		{
 			// Move us to 1,1 and set direction right
 			m_iMapX = 1+rand()%13;

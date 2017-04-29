@@ -34,7 +34,7 @@ Psyje5Object::~Psyje5Object(void)
 }
 
 void Psyje5Object::Draw() {
-	if (!IsVisible())
+	if (!IsVisible() || m_pMainEngine->CurrentState() == 2)
 		return;
 
 	int iTick = m_pMainEngine->GetModifiedTime() / 20;
@@ -58,8 +58,7 @@ void Psyje5Object::DoUpdate(int iCurrentTime) {
 
 	DisplayableObject* pObject;
 	for (int iObjectId = 0; 
-		(pObject = m_pMainEngine->GetDisplayableObject(iObjectId)) != NULL; 
-		iObjectId++) {
+		(pObject = m_pMainEngine->GetDisplayableObject(iObjectId)) != NULL; iObjectId++) {
 		if (pObject == this)
 			continue;
 		int iXDiff = pObject->GetXCentre() - m_iCurrentScreenX;
@@ -73,21 +72,26 @@ void Psyje5Object::DoUpdate(int iCurrentTime) {
 		int iSizeOther = iSize;
 
 		// Old Mate Pythagorus
-		if ((iXDiff ^ 2 + iYDiff ^ 2) < ((iSizeOther + iSize) ^ 2)) {
+		if (((iXDiff*iXDiff) + (iYDiff*iYDiff)) < ((iSizeOther + iSize)*(iSizeOther + iSize))) {
+			if (iObjectId == 0) {
+				m_pMainEngine->GameOver();
+			}
+			else {
 			m_iMapX = 1 + rand() % 13;
 			m_iMapY = 1 + (rand() % 2) * 8;
 			m_iDir = 1;
 			m_oMover.Setup(
-				m_iMapX *50 + 25 + 25, //m_iCurrentScreenX,
-				m_iMapY *50 + 25 + 40, //m_iCurrentScreenY,
-				m_iMapX *50 + 25 + 25,
-				m_iMapY *50 + 25 + 40,
+				m_iMapX * 50 + 25 + 25, //m_iCurrentScreenX,
+				m_iMapY * 50 + 25 + 40, //m_iCurrentScreenY,
+				m_iMapX * 50 + 25 + 25,
+				m_iMapY * 50 + 25 + 40,
 				iCurrentTime,
 				iCurrentTime + 400 + rand() % 200);
 			m_oMover.Calculate(iCurrentTime);
 			m_iCurrentScreenX = m_oMover.GetX();
 			m_iCurrentScreenY = m_oMover.GetY();
 			RedrawObjects();
+		}
 			return;
 		}
 
@@ -125,17 +129,6 @@ void Psyje5Object::DoUpdate(int iCurrentTime) {
 			m_iDir = (m_iDir + 3) % 4;
 			break;
 		}
-
-		// Allow some control over the object by the player
-		if (m_pMainEngine->IsKeyPressed(SDLK_UP))
-			m_iDir = 0;
-		if (m_pMainEngine->IsKeyPressed(SDLK_RIGHT))
-			m_iDir = 1;
-		if (m_pMainEngine->IsKeyPressed(SDLK_DOWN))
-			m_iDir = 2;
-		if (m_pMainEngine->IsKeyPressed(SDLK_LEFT))
-			m_iDir = 3;
-
 
 		switch (tm.GetValue(
 			m_iMapX + GetXDiffForDirection(m_iDir),

@@ -36,5 +36,7 @@ private:
 	int m_iMapX;
 	int m_iMapY;
 	int m_iDir;
+public:
+	int ObjectKind();
 };
 

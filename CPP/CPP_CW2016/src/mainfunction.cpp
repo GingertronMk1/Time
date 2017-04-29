@@ -25,12 +25,14 @@ int main(int argc, char *argv[])
 	// Send random number generator with current time
 	::srand(time(0));
 
+
 	// Needs just one of the two following lines:
 	//BouncingBallMain oMain;
 	//SimpleDemo oMain;
 	//Demo1Main oMain;
 	//Demo2Main oMain;
 	//Demo3Main oMain;
+
 	//Demo4Main oMain;
 	Psyje5Main oMain;
 

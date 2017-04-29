@@ -28,36 +28,40 @@ Psyje5PlayerObject::~Psyje5PlayerObject()
 }
 
 void Psyje5PlayerObject::Draw() {
-	if (!IsVisible())
+	if (!IsVisible() || m_pMainEngine->CurrentState() == 2)
 		return;
 
 	int iTick = m_pMainEngine->GetModifiedTime() / 20;
 	int iFrame = iTick % 30;
-	int iSize = 10 + iFrame;
-	if (iFrame > 15)
-		iSize = 10 + (30 - iFrame);
-
+	int iSize = 20;
 	m_pMainEngine->DrawScreenOval(
 		m_iCurrentScreenX - iSize, m_iCurrentScreenY - iSize,
 		m_iCurrentScreenX + iSize - 1, m_iCurrentScreenY + iSize - 1,
 		0xff0000);
 
 	StoreLastScreenPositionForUndraw();
-
 };
 
 void Psyje5PlayerObject::DoUpdate(int iCurrentTime) {
+
+	// Allow some control over the object by the player
+	if (m_pMainEngine->IsKeyPressed(SDLK_UP))
+		m_iDir = 0;
+	if (m_pMainEngine->IsKeyPressed(SDLK_RIGHT))
+		m_iDir = 1;
+	if (m_pMainEngine->IsKeyPressed(SDLK_DOWN))
+		m_iDir = 2;
+	if (m_pMainEngine->IsKeyPressed(SDLK_LEFT))
+		m_iDir = 3;
 	m_iPreviousScreenX = m_iCurrentScreenX;
 	m_iPreviousScreenY = m_iCurrentScreenY;
 
 	DisplayableObject* pObject;
-	for (int iObjectId = 0;
-		(pObject = m_pMainEngine->GetDisplayableObject(iObjectId)) != NULL;
-		iObjectId++) {
+	for (int iObjectId = 0; (pObject = m_pMainEngine->GetDisplayableObject(iObjectId)) != NULL; iObjectId++) {
 		if (pObject == this)
 			continue;
-		int iXDiff = pObject->GetXCentre() - m_iCurrentScreenX;
-		int iYDiff = pObject->GetYCentre() - m_iCurrentScreenY;
+		int iXDiff = pObject->GetXCentre() - m_iCurrentScreenX;		// get the centre of the object we're looking at in X
+		int iYDiff = pObject->GetYCentre() - m_iCurrentScreenY;		// same in Y
 
 		int iTick = iCurrentTime / 20;
 		int iFrame = iTick % 30;
@@ -67,10 +71,8 @@ void Psyje5PlayerObject::DoUpdate(int iCurrentTime) {
 		int iSizeOther = iSize;
 
 		// Old Mate Pythagorus
-		if ((iXDiff ^ 2 + iYDiff ^ 2) < ((iSizeOther + iSize) ^ 2)) {
-			m_iMapX = 1 + rand() % 13;
-			m_iMapY = 1 + (rand() % 2) * 8;
-			m_iDir = 1;
+		
+		if (((iXDiff*iXDiff) + (iYDiff*iYDiff)) < ((iSizeOther + iSize)*(iSizeOther + iSize))) {		// if the difference between the centres of us and the other thing are bigger less than the radii:
 			m_oMover.Setup(
 				m_iMapX * 50 + 25 + 25, //m_iCurrentScreenX,
 				m_iMapY * 50 + 25 + 40, //m_iCurrentScreenY,
@@ -82,9 +84,12 @@ void Psyje5PlayerObject::DoUpdate(int iCurrentTime) {
 			m_iCurrentScreenX = m_oMover.GetX();
 			m_iCurrentScreenY = m_oMover.GetY();
 			RedrawObjects();
+			printf("Player Collision\n");
+			
+			m_pMainEngine->GameOver();
 			return;
 		}
-
+	
 	}
 
 	// If movement has finished
@@ -108,27 +113,6 @@ void Psyje5PlayerObject::DoUpdate(int iCurrentTime) {
 			tm.UpdateTile(m_pMainEngine, m_iMapX, m_iMapY, 0);
 			break;
 		}
-		/*
-		// Set off a new movement
-		switch (rand() % 10)
-		{
-		case 0: // Increase dir by 1
-			m_iDir = (m_iDir + 1) % 4;
-			break;
-		case 1: // Reduce dir by 1
-			m_iDir = (m_iDir + 3) % 4;
-			break;
-		}
-		*/
-		// Allow some control over the object by the player
-		if (m_pMainEngine->IsKeyPressed(SDLK_UP))
-			m_iDir = 0;
-		if (m_pMainEngine->IsKeyPressed(SDLK_RIGHT))
-			m_iDir = 1;
-		if (m_pMainEngine->IsKeyPressed(SDLK_DOWN))
-			m_iDir = 2;
-		if (m_pMainEngine->IsKeyPressed(SDLK_LEFT))
-			m_iDir = 3;
 
 
 		switch (tm.GetValue(
@@ -156,7 +140,12 @@ void Psyje5PlayerObject::DoUpdate(int iCurrentTime) {
 				iCurrentTime + 400 + rand() % 200);
 			break;
 		case 1: // Wall
-			m_iDir = rand() % 4; // Rotate randomly
+			switch (m_iDir) {
+			case 0: m_iDir = 2; break;
+			case 1: m_iDir = 3; break;
+			case 2: m_iDir = 0; break;
+			case 3: m_iDir = 1; break;
+			}
 			break;
 		}
 	}
