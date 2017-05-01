@@ -1,7 +1,9 @@
 #include "header.h"
 #include "BaseEngine.h"
 #include "Psyje5Object.h"
+#include "Psyje5EnemyObject.h"
 #include "Psyje5PlayerObject.h"
+#include "Psyje5FriendObject.h"
 #include "Psyje5Main.h"
 #include "JPGImage.h"
 #include "TileManager.h"
@@ -18,6 +20,7 @@ Psyje5Main::Psyje5Main(void)
 	, m_state(stateInit)
 	, m_iTimer(0)
 	, m_iHiScore(0)
+	, m_iScore(0)
 {
 }
 
@@ -75,9 +78,9 @@ void Psyje5Main::SetupBackgroundBuffer() {
 			break;
 
 		case statePaused:
-			FillBackground(RED);
+			DrawBackgroundSquares(BLUE, BLACK);
 			Redraw(true);
-			//m_oTiles.DrawAllTiles(this, this->GetBackground(), 0, 0, 14, 10);
+			m_oTiles.DrawAllTiles(this, this->GetBackground(), 0, 0, 14, 10);
 			break;
 		case stateOver:
 			FillBackground(RED);
@@ -97,21 +100,22 @@ int Psyje5Main::InitialiseObjects()
 
 	int i_ComputerObjects = 2;			// UPDATE THIS ONE TO INCREASE/DECREASE HOW MANY COMPUTER OBJECTS THERE ARE
 
-	i_ComputerObjects ++;				// For the array
+	i_ComputerObjects += 2;				// For the array
 
+	
 	CreateObjectArray(i_ComputerObjects);		// Make an array to put our objects in (it's 2 larger than the number of computer objects so we can have the player object and the NULL at the end
 	StoreObjectInArray(0, new Psyje5PlayerObject(this, 1, 1));	// The first object is the player
-	for (int i = 1; i <= i_ComputerObjects; i++){				// The remainder (bar 1) are the 'AI' objects
-		int compX = (rand() % 13) + 1;		// computer x (a number between 1 and 13)
-		int compY = (rand() % 9) + 1;		// computer y (a number between 1 and 9)
-		// if the chosen X coordinate is even, and the Y is odd, it's somewhere it can't be
-		if (compX % 2 == 0 && compY % 2 != 0)
-				compY++;
-
-		StoreObjectInArray(i, new Psyje5Object(this, compX, compY));
+	StoreObjectInArray(1, new Psyje5FriendObject(this, 13, 9));
+	for (int i = 2; i <= i_ComputerObjects; i++){				// The remainder (bar 1) are the 'AI' objects
+		int compX = (rand() % 13) + 1;		// random no between 1 and 13
+		int compY = (rand() % 9) + 1;		// random no between 1 and 9
+		if (compX % 2 == 0 && compX % 2 == 0)
+			compY += 1;
+		
+		printf("Computer object %d starts at %d, %d\n", i - 1, compX, compY);
+		StoreObjectInArray(i, new Psyje5EnemyObject(this, compX, compY));
 	}
 	StoreObjectInArray(i_ComputerObjects, NULL);				// The last one is a NULL pointer so we know where the array ends
-
 
 	return 0;
 }
@@ -121,27 +125,30 @@ void Psyje5Main::DrawStrings() {
 	case stateInit:	
 		CopyBackgroundPixels(0, 0, GetScreenWidth(), GetScreenHeight());
 		DrawScreenString(100, 200, "You are red.", BLACK, NULL);
-		DrawScreenString(100, 250, "Avoid Blue for as long as you can.", BLACK, NULL);
-		DrawScreenString(100, 300, "Space begins the game.", BLACK, NULL);
+		DrawScreenString(100, 240, "Avoid Blue for as long as you can.", BLACK, NULL);
+		DrawScreenString(100, 280, "Green boosts your score.", BLACK, NULL);
+		DrawScreenString(100, 320, "Space begins the game.", BLACK, NULL);
 		break;
 
 	case stateMain:
 		CopyBackgroundPixels(0, 0, GetScreenWidth(), 100);
 		char buf[128];
-		sprintf(buf, "Your score so far: %d", m_iTimer++);
+		sprintf(buf, "Your score so far: %d", m_iScore);
+		m_iTimer++;
+		m_iScore = m_iTimer / 10;
 		DrawScreenString(250, 10, buf, WHITE, NULL);
 		break;
 
 	case statePaused:
 		CopyBackgroundPixels(0, 280, GetScreenWidth(), 40);
-		sprintf(buf, "Your score so far: %d", m_iTimer);
+		sprintf(buf, "Your score so far: %d", m_iScore);
 		DrawScreenString(250, 10, buf, WHITE, NULL);
 		DrawScreenString(100, 300, "Paused. SPACE continues, ESC quits.", WHITE, NULL);
 		break;
 
 	case stateOver:
 		CopyBackgroundPixels(0, 0, GetScreenWidth(), GetScreenHeight());
-		sprintf(buf, "Final Score: %d", m_iTimer);
+		sprintf(buf, "Final Score: %d", m_iScore);
 		DrawScreenString(250, 10, buf, WHITE, NULL);
 		sprintf(buf, "Reigning High Score: %d", m_iHiScore);
 		DrawScreenString(250, 50, buf, WHITE, NULL);
@@ -211,9 +218,9 @@ void Psyje5Main::KeyDown(int iKeyCode) {
 		case stateOver:
 			InitialiseObjects();
 			m_state = stateInit;
-			if (m_iTimer > m_iHiScore)
-				m_iHiScore = m_iTimer;
-			m_iTimer = 0;
+			if (m_iScore > m_iHiScore)
+				m_iHiScore = m_iScore;
+			m_iTimer = m_iScore = 0;
 			SetupBackgroundBuffer();
 			break;
 		}
@@ -266,4 +273,10 @@ int Psyje5Main::CurrentState()
 	case statePaused: return 2; break;
 	case stateOver: return 3; break;
 	}
+}
+
+
+void Psyje5Main::ScoreUpdate(int iScoreUpdate)
+{
+	m_iTimer += iScoreUpdate;
 }

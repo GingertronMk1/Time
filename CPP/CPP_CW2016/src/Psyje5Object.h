@@ -41,6 +41,6 @@ private:
 	int m_iMapY;
 	int m_iDir;
 public:
-	int ObjectKind();
+	bool IsVisible();
 };
 

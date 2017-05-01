@@ -95,6 +95,8 @@
     <ClInclude Include="JPGImage.h" />
     <ClInclude Include="MovementPosition.h" />
     <ClInclude Include="MovePos.h" />
+    <ClInclude Include="Psyje5EnemyObject.h" />
+    <ClInclude Include="Psyje5FriendObject.h" />
     <ClInclude Include="Psyje5Main.h" />
     <ClInclude Include="Psyje5Object.h" />
     <ClInclude Include="Psyje5PlayerObject.h" />
@@ -122,6 +124,8 @@
     <ClCompile Include="DisplayableObject.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="JPGImage.cpp" />
+    <ClCompile Include="Psyje5EnemyObject.cpp" />
+    <ClCompile Include="Psyje5FriendObject.cpp" />
     <ClCompile Include="Psyje5Main.cpp" />
     <ClCompile Include="Psyje5Object.cpp" />
     <ClCompile Include="Psyje5PlayerObject.cpp" />
@@ -141,6 +145,9 @@
     <ClCompile Include="Demo4Main.cpp" />
     <ClCompile Include="Demo4Object.cpp" />
     <ClCompile Include="Demo4TileManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

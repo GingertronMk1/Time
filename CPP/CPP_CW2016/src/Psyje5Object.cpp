@@ -1,3 +1,6 @@
+#ifndef PSYJE5_OBJECT_H
+#define PSYJE5_OBJECT_H
+
 #include "header.h"
 
 #include "Psyje5Object.h"
@@ -34,7 +37,7 @@ Psyje5Object::~Psyje5Object(void)
 }
 
 void Psyje5Object::Draw() {
-	if (!IsVisible() || m_pMainEngine->CurrentState() == 2)
+	if (!IsVisible())
 		return;
 
 	int iTick = m_pMainEngine->GetModifiedTime() / 20;
@@ -171,3 +174,11 @@ void Psyje5Object::DoUpdate(int iCurrentTime) {
 
 
 }
+
+bool Psyje5Object::IsVisible()
+{
+	// Updating isVisible() so things disappear on pauses
+	return (m_bVisible && m_pMainEngine->CurrentState() != 2);
+}
+
+#endif

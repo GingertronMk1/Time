@@ -37,5 +37,7 @@ public:
 	int m_iHiScore;
 	void DrawBackgroundSquares(int iColour1, int iColour2);
 	int CurrentState();
+	void ScoreUpdate(int iScoreUpdate);
+	int m_iScore;
 };
 

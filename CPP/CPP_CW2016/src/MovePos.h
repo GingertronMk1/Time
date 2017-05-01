@@ -1,3 +1,4 @@
+#ifndef MOVE_POS_H
 #define MOVE_POS_H
 
 #include "templates.h"
@@ -48,7 +49,7 @@ public:
 		m_iEndX = iXEnd;
 		m_iEndY = iYEnd;
 		m_iStartTime = iStartTime;
-		m_iEndTime = iEndTime;
+		m_iEndTime = iEndTime;		// Higher iEndTime = slower movement
 		// Initially put position at start
 		m_iCurrentX = m_iStartX;
 		m_iCurrentY = m_iStartY;
@@ -88,3 +89,4 @@ public:
 	inline bool HasMovementFinished(int iCurrentTime) const { return iCurrentTime >= m_iEndTime; }
 };
 
+#endif
