@@ -21,6 +21,7 @@ Psyje5Main::Psyje5Main(void)
 	, m_iTimer(0)
 	, m_iHiScore(0)
 	, m_iScore(0)
+	, m_iTilesDone(0)
 {
 }
 
@@ -44,22 +45,23 @@ void Psyje5Main::SetupBackgroundBuffer() {
 			{
 				char* data[] = {
 					"bbbbbbbbbbbbbbb",
-					"baeaeadadaeaeab",
-					"babcbcbcbcbibeb",
-					"badadgdadhdadhb",
-					"bgbcbcbcbibcbeb",
-					"badadadadadadab",
-					"bfbcbibcbcbcbeb",
-					"bahadadhdadadab",
-					"bfbcbcbibcbibeb",
-					"badadadadadadab",
+					"baaaaaaaaaaaaab",
+					"bababababababab",
+					"baaaaaaaaaaaaab",
+					"bababababababab",
+					"baaaaaaaaaaaaab",
+					"bababababababab",
+					"baaaaaaaaaaaaab",
+					"bababababababab",
+					"baaaaaaaaaaaaab",
 					"bbbbbbbbbbbbbbb" 
 				};
 			m_oTiles.SetSize(xVal, yVal);
+			
 			for (int x = 0; x < xVal; x++)
 				for (int y = 0; y < yVal; y++)
 					m_oTiles.SetValue(x, y, data[y][x] - 'a');
-				
+
 			for (int y = 0; y < yVal; y++) {
 				for (int x = 0; x < xVal; x++)
 					printf("%d", m_oTiles.GetValue(x, y));
@@ -82,7 +84,11 @@ void Psyje5Main::SetupBackgroundBuffer() {
 			Redraw(true);
 			m_oTiles.DrawAllTiles(this, this->GetBackground(), 0, 0, 14, 10);
 			break;
-		case stateOver:
+		case stateFailed:
+			FillBackground(RED);
+			DrawBackgroundSquares(BLACK, RED);
+			break;
+		case stateWon:
 			FillBackground(RED);
 			DrawBackgroundSquares(BLACK, RED);
 			break;
@@ -136,26 +142,34 @@ void Psyje5Main::DrawStrings() {
 		sprintf(buf, "Your score so far: %d", m_iScore);
 		m_iTimer++;
 		m_iScore = m_iTimer / 10;
-		DrawScreenString(250, 10, buf, WHITE, NULL);
+		DrawScreenString(20, 10, buf, WHITE, NULL);
+		sprintf(buf, "Tiles taken: %d", m_iTilesDone);
+		DrawScreenString(500, 10, buf, WHITE, NULL);
 		break;
 
 	case statePaused:
 		CopyBackgroundPixels(0, 280, GetScreenWidth(), 40);
-		sprintf(buf, "Your score so far: %d", m_iScore);
-		DrawScreenString(250, 10, buf, WHITE, NULL);
+		sprintf(buf, "Your score so far: %d. Tiles taken: %d", m_iScore, m_iTilesDone);
+		DrawScreenString(200, 10, buf, WHITE, NULL);
 		DrawScreenString(100, 300, "Paused. SPACE continues, ESC quits.", WHITE, NULL);
 		break;
 
-	case stateOver:
+	case stateFailed:
 		CopyBackgroundPixels(0, 0, GetScreenWidth(), GetScreenHeight());
-		sprintf(buf, "Final Score: %d", m_iScore);
-		DrawScreenString(250, 10, buf, WHITE, NULL);
+		sprintf(buf, "Final Score: %d. Tiles taken: %d", m_iScore, m_iTilesDone);
+		DrawScreenString(200, 10, buf, WHITE, NULL);
 		sprintf(buf, "Reigning High Score: %d", m_iHiScore);
-		DrawScreenString(250, 50, buf, WHITE, NULL);
+		DrawScreenString(200, 50, buf, WHITE, NULL);
 
 		DrawScreenString(100, 200, "Game Over.", WHITE, NULL);
 		DrawScreenString(100, 250, "SPACE twice restarts.", WHITE, NULL);
 		DrawScreenString(100, 300, "ESC exits.", WHITE, NULL);
+		DestroyOldObjects();
+		break;
+
+	case stateWon:
+		CopyBackgroundPixels(0, 0, GetScreenWidth(), GetScreenHeight());
+		DrawScreenString(100, 200, "You win!", WHITE, NULL);
 		DestroyOldObjects();
 		break;
 	}
@@ -168,9 +182,10 @@ void Psyje5Main::GameAction() {
 	SetTimeToAct(1);
 	switch (m_state){
 	case stateInit:
+	case stateFailed:
+	case stateWon:
 	case statePaused: break;
 	case stateMain: UpdateAllObjects(GetModifiedTime()); break;
-	case stateOver: break;
 	}
 }
 
@@ -187,11 +202,11 @@ void Psyje5Main::KeyDown(int iKeyCode) {
 		case stateMain: 
 			break;
 		case statePaused:
-			m_state = stateOver;
+			m_state = stateFailed;
 			SetupBackgroundBuffer();
 			Redraw(true);
 			break;
-		case stateOver:
+		case stateFailed:
 			SetExitWithCode(0);
 			break;
 		};
@@ -215,7 +230,7 @@ void Psyje5Main::KeyDown(int iKeyCode) {
 			SetupBackgroundBuffer();
 			Redraw(true);
 			break;
-		case stateOver:
+		case stateFailed:
 			InitialiseObjects();
 			m_state = stateInit;
 			if (m_iScore > m_iHiScore)
@@ -224,6 +239,9 @@ void Psyje5Main::KeyDown(int iKeyCode) {
 			SetupBackgroundBuffer();
 			break;
 		}
+		break;
+	case SDLK_RETURN:
+		m_state = stateWon;
 		break;
 	}
 }
@@ -241,7 +259,14 @@ void Psyje5Main::DrawObjects()
 }
 
 void Psyje5Main::GameOver() {
-	m_state = stateOver;
+	m_state = stateFailed;
+	SetupBackgroundBuffer();
+	Redraw(true);
+}
+
+void Psyje5Main::GameWon()
+{
+	m_state = stateWon;
 	SetupBackgroundBuffer();
 	Redraw(true);
 }
@@ -271,7 +296,8 @@ int Psyje5Main::CurrentState()
 	case stateInit: return 0; break;
 	case stateMain: return 1; break;
 	case statePaused: return 2; break;
-	case stateOver: return 3; break;
+	case stateFailed: return 3; break;
+	case stateWon: return 4; break;
 	}
 }
 
@@ -280,3 +306,12 @@ void Psyje5Main::ScoreUpdate(int iScoreUpdate)
 {
 	m_iTimer += iScoreUpdate;
 }
+
+
+void Psyje5Main::TileTableUpdate(int iMapX, int iMapY)
+{
+	printf("Tile at %d, %d taken! Total taken: %d\n", iMapX, iMapY, m_iTilesDone++);
+	if (m_iTilesDone == 93)
+		GameWon();
+}
+

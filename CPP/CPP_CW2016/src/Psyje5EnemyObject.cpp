@@ -85,8 +85,9 @@ void Psyje5EnemyObject::DoUpdate(int iCurrentTime) {
 	// If movement has finished
 	if (m_oMover.HasMovementFinished(iCurrentTime))
 	{
+		
 		Psyje5TileMan& tm = m_pMainEngine->GetTileManager();
-
+		/*
 		// Handle any tile that we just moved onto
 		switch (tm.GetValue(m_iMapX, m_iMapY))
 		{
@@ -103,7 +104,7 @@ void Psyje5EnemyObject::DoUpdate(int iCurrentTime) {
 			tm.UpdateTile(m_pMainEngine, m_iMapX, m_iMapY, 0);
 			break;
 		}
-
+		*/
 		// Set off a new movement
 		switch (rand() % 10)
 		{

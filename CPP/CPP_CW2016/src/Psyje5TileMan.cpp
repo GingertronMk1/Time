@@ -43,7 +43,6 @@ void Psyje5TileMan::DrawTileAt(
 			iStartPositionScreenY + GetTileHeight() - 1,
 			pEngine->GetColour(0),
 			pSurface);
-		/*
 		pEngine->DrawOval(
 			iStartPositionScreenX + GetValue(iMapX, iMapY) * 2 + 5,
 			iStartPositionScreenY + GetValue(iMapX, iMapY) * 2 + 5,
@@ -51,7 +50,6 @@ void Psyje5TileMan::DrawTileAt(
 			iStartPositionScreenY + GetTileHeight() - GetValue(iMapX, iMapY) * 2 - 6,
 			pEngine->GetColour(GetValue(iMapX, iMapY)),
 			pSurface);
-			*/
 		break;
 	}
 }

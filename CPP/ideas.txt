@@ -10,3 +10,12 @@
 The rest: lolno
 
 TOTAL: 11
+
+
+
+
+
+TOTAL TILES TAKABLE:
+9*13 - 6*4
+117-24
+93

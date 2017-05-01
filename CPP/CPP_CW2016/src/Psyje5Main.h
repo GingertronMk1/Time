@@ -27,7 +27,7 @@ private:
 	Psyje5TileMan m_oTiles;
 public:
 	// defining states
-	enum State { stateInit, stateMain, statePaused, stateOver };
+	enum State { stateInit, stateMain, statePaused, stateFailed, stateWon };
 
 	int m_iPauseStarted;
 private:
@@ -39,5 +39,8 @@ public:
 	int CurrentState();
 	void ScoreUpdate(int iScoreUpdate);
 	int m_iScore;
+	void TileTableUpdate(int iMapX, int iMapY);
+	int m_iTilesDone;
+	void GameWon();
 };
 
