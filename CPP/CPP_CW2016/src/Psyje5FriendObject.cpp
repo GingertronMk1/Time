@@ -83,22 +83,6 @@ void Psyje5FriendObject::DoUpdate(int iCurrentTime) {
 	{
 		Psyje5TileMan& tm = m_pMainEngine->GetTileManager();
 
-		// Handle any tile that we just moved onto
-		switch (tm.GetValue(m_iMapX, m_iMapY))
-		{
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-		case 6:
-		case 7:
-			tm.UpdateTile(m_pMainEngine, m_iMapX, m_iMapY,
-				tm.GetValue(m_iMapX, m_iMapY) + 1);
-			break;
-		case 8:
-			tm.UpdateTile(m_pMainEngine, m_iMapX, m_iMapY, 0);
-			break;
-		}
 
 		// Set off a new movement
 		switch (rand() % 10)

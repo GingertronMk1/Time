@@ -33,14 +33,16 @@ public:
 private:
 	State m_state;
 public:
-	int m_iTimer;
 	int m_iHiScore;
 	void DrawBackgroundSquares(int iColour1, int iColour2);
 	int CurrentState();
 	void ScoreUpdate(int iScoreUpdate);
 	int m_iScore;
-	void TileTableUpdate(int iMapX, int iMapY);
+	void TileUpdate(int iTaken);
 	int m_iTilesDone;
 	void GameWon();
+	int m_Level;
+	int GetLevel();
+	void DrawGameInfo(int m_CurrentState);
 };
 

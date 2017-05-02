@@ -72,8 +72,7 @@ void Psyje5PlayerObject::DoUpdate(int iCurrentTime) {
 
 		if (tm.GetValue(m_iMapX, m_iMapY) != 7) {
 			tm.UpdateTile(m_pMainEngine, m_iMapX, m_iMapY, 7);
-			m_pMainEngine->ScoreUpdate(100);
-			m_pMainEngine->TileTableUpdate(m_iMapX, m_iMapY);
+			m_pMainEngine->TileUpdate(1);
 		}
 
 

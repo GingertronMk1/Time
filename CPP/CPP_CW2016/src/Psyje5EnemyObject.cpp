@@ -87,7 +87,7 @@ void Psyje5EnemyObject::DoUpdate(int iCurrentTime) {
 	{
 		
 		Psyje5TileMan& tm = m_pMainEngine->GetTileManager();
-		/*
+		
 		// Handle any tile that we just moved onto
 		switch (tm.GetValue(m_iMapX, m_iMapY))
 		{
@@ -97,14 +97,14 @@ void Psyje5EnemyObject::DoUpdate(int iCurrentTime) {
 		case 5:
 		case 6:
 		case 7:
-			tm.UpdateTile(m_pMainEngine, m_iMapX, m_iMapY,
-				tm.GetValue(m_iMapX, m_iMapY) + 1);
-			break;
 		case 8:
-			tm.UpdateTile(m_pMainEngine, m_iMapX, m_iMapY, 0);
+			if (rand() % 10 == 0) {
+				tm.UpdateTile(m_pMainEngine, m_iMapX, m_iMapY, 0);
+				m_pMainEngine->TileUpdate(-1);
+			}
 			break;
 		}
-		*/
+		
 		// Set off a new movement
 		switch (rand() % 10)
 		{
@@ -138,7 +138,7 @@ void Psyje5EnemyObject::DoUpdate(int iCurrentTime) {
 				m_iMapX * 50 + 25 + 25,
 				m_iMapY * 50 + 25 + 40,
 				iCurrentTime,
-				iCurrentTime + 400 + rand() % 200);
+				iCurrentTime + 400 - (5 * m_pMainEngine->GetLevel()));
 			break;
 		case 1: // Wall
 			m_iDir = rand() % 4; // Rotate randomly
