@@ -20,6 +20,13 @@ public:
 	virtual void UndrawObjects();
 	virtual void DrawObjects();
 	virtual void GameOver();
+	void GameWon();
+	void DrawGameInfo(int m_CurrentState);
+	void TileUpdate(int iTaken);
+	void ScoreUpdate(int iScoreUpdate);
+	void DrawBackgroundSquares(int iColour1, int iColour2);
+	int CurrentState();
+	int GetLevel() { return m_Level; }
 
 	// get reference to tileman
 	Psyje5TileMan& GetTileManager() { return m_oTiles; }
@@ -34,15 +41,13 @@ private:
 	State m_state;
 public:
 	int m_iHiScore;
-	void DrawBackgroundSquares(int iColour1, int iColour2);
-	int CurrentState();
-	void ScoreUpdate(int iScoreUpdate);
 	int m_iScore;
-	void TileUpdate(int iTaken);
 	int m_iTilesDone;
-	void GameWon();
 	int m_Level;
-	int GetLevel();
-	void DrawGameInfo(int m_CurrentState);
+	void GameRender(void);
+private:
+	bool m_bInsideDraw;
+public:
+	void AnimatedBG();
 };
 

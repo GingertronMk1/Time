@@ -1,21 +1,14 @@
-1: 1/3
-2: 2/3
-3: 1/2
-4: 2/3
-5: 1/1
-6: 2/2 (?)
-7: 0/2
-8: 1/2
-9: 1/2
+1 - Attractive Backgrounds:         2/3       2
+2 - Multiple States/Stages:         2/3       4
+3 - User-controlled moving object:  1/2       5
+4 - Automated Moving Objects:       2/3       7
+5 - Interaction with Background:    1/1       9
+6 - Interaction Between Objects:    2/2 (?)   11
+7 - Reactive Tile Manager:          1/2       12
+8 - Load/Save Data:                 1/2       13
+9 - Display Text On Screen:         2/2       15
+10 - STL Container Class:           Not Happening
+11 - Basic AI/Complex Algorithm:    2/3       17
 The rest: lolno
 
 TOTAL: 11
-
-
-
-
-
-TOTAL TILES TAKABLE:
-9*13 - 6*4
-117-24
-93

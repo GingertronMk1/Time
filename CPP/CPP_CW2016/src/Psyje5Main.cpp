@@ -22,6 +22,7 @@ Psyje5Main::Psyje5Main(void)
 	, m_iScore(0)
 	, m_iTilesDone(0)
 	, m_Level(1)
+	, m_bInsideDraw(false)
 {
 }
 
@@ -41,21 +42,22 @@ void Psyje5Main::SetupBackgroundBuffer() {
 	case stateInit:
 		FillBackground(GREEN);
 		DrawBackgroundSquares(RED, BLUE);
-
+		{
+			char* data[] =
 			{
-				char* data[] = {
-					"bbbbbbbbbbbbbbb",
-					"baaaaaaaaaaaaab",
-					"bababababababab",
-					"baaaaaaaaaaaaab",
-					"bababababababab",
-					"baaaaaaaaaaaaab",
-					"bababababababab",
-					"baaaaaaaaaaaaab",
-					"bababababababab",
-					"baaaaaaaaaaaaab",
-					"bbbbbbbbbbbbbbb" 
-				};
+
+				"bbbbbbbbbbbbbbb",
+				"baaaaaaaaaaaaab",
+				"bababababababab",
+				"baaaaaaaaaaaaab",
+				"bababababababab",
+				"baaaaaaaaaaaaab",
+				"bababababababab",
+				"baaaaaaaaaaaaab",
+				"bababababababab",
+				"baaaaaaaaaaaaab",
+				"bbbbbbbbbbbbbbb"
+			};
 			m_oTiles.SetSize(xVal, yVal);
 			
 			for (int x = 0; x < xVal; x++)
@@ -77,8 +79,9 @@ void Psyje5Main::SetupBackgroundBuffer() {
 			DrawBackgroundSquares(RED, BLACK);
 			// Tile based stuff
 			m_oTiles.DrawAllTiles(this, this->GetBackground(), 0, 0, 14, 10);
+			
 			break;
-
+			
 		case statePaused:
 			DrawBackgroundSquares(BLUE, BLACK);
 			Redraw(true);
@@ -105,7 +108,7 @@ int Psyje5Main::InitialiseObjects()
 	// Destroy any existing objects
 	DestroyOldObjects();
 
-	int i_ComputerObjects = 2;			// UPDATE THIS ONE TO INCREASE/DECREASE HOW MANY COMPUTER OBJECTS THERE ARE
+	int i_ComputerObjects = 1;			// UPDATE THIS ONE TO INCREASE/DECREASE HOW MANY COMPUTER OBJECTS THERE ARE
 
 	i_ComputerObjects += 2;				// For the array
 
@@ -149,13 +152,6 @@ void Psyje5Main::DrawStrings() {
 		break;
 
 	case stateFailed:
-		/*
-		CopyBackgroundPixels(0, 0, GetScreenWidth(), GetScreenHeight());
-		sprintf(buf, "Final Score: %d. Tiles taken: %d", m_iScore, m_iTilesDone);
-		DrawScreenString(200, 10, buf, WHITE, NULL);
-		sprintf(buf, "Reigning High Score: %d", m_iHiScore);
-		DrawScreenString(200, 50, buf, WHITE, NULL);
-		*/
 		DrawGameInfo(CurrentState());
 		DrawScreenString(100, 200, "Game Over.", WHITE, NULL);
 		DrawScreenString(100, 250, "SPACE twice restarts.", WHITE, NULL);
@@ -163,13 +159,6 @@ void Psyje5Main::DrawStrings() {
 		DestroyOldObjects();
 		break;
 	case stateWon:
-		/*
-		CopyBackgroundPixels(0, 0, GetScreenWidth(), GetScreenHeight());
-		sprintf(buf, "Score: %d. Tiles taken: %d", m_iScore, m_iTilesDone);
-		DrawScreenString(200, 10, buf, WHITE, NULL);
-		sprintf(buf, "Reigning High Score: %d", m_iHiScore);
-		DrawScreenString(200, 50, buf, WHITE, NULL);
-		*/
 		DrawGameInfo(CurrentState());
 		DrawScreenString(100, 250, "SPACE twice for next level.", WHITE, NULL);
 		DrawScreenString(100, 300, "ESC exits.", WHITE, NULL);
@@ -322,14 +311,6 @@ void Psyje5Main::TileUpdate(int iTaken)
 		GameWon();
 }
 
-
-
-int Psyje5Main::GetLevel()
-{
-	return m_Level;
-}
-
-
 void Psyje5Main::DrawGameInfo(int m_CurrentState)
 {
 	char buf[128];
@@ -355,4 +336,102 @@ void Psyje5Main::DrawGameInfo(int m_CurrentState)
 	DrawScreenString(400, 10, buf, WHITE, NULL);
 	sprintf(buf, "Tiles taken: %d", m_iTilesDone);
 	DrawScreenString(550, 10, buf, WHITE, NULL);
+}
+
+
+void Psyje5Main::GameRender(void)
+{
+	if (!m_bNeedsRedraw)
+		return;
+
+	// Just drawn so no more redraw needed
+	m_bNeedsRedraw = false;
+	// Note: the redraw flags must only be set early in this method, not at the end, since the drawing/moving of the moving objects may
+	// potentially flag a win/lose condition and a state change, which will set the redraw flag again to force a full draw after the 
+	// state changes.
+
+	if (m_bWholeScreenUpdate)
+	{
+		// Drawn whole screen now, so no need to draw it again. See note above about the importance of not resetting this after DrawChangingObjects()
+		m_bWholeScreenUpdate = false;
+
+		// Lock surface if needed
+		if (SDL_MUSTLOCK(m_pActualScreen))
+		{
+			m_bInsideDraw = true;
+			if (SDL_LockSurface(m_pActualScreen) < 0)
+				return;
+		}
+
+		// Draw the screen as it should appear now.
+		// First draw the background
+		CopyAllBackgroundBuffer();
+		// Draw the text for the user
+		DrawStrings(); // Single function in case people want to use that instead
+		DrawStringsUnderneath();	// Draw the string underneath the other objects here
+		// Then draw the changing objects
+		DrawObjects();
+		// Another option for where to put the draw strings code - if you want it on top of the moving objects
+		DrawStringsOnTop();
+
+		// Unlock if needed
+		if (SDL_MUSTLOCK(m_pActualScreen))
+			SDL_UnlockSurface(m_pActualScreen);
+		m_bInsideDraw = false;
+
+		SDL_UpdateTexture(m_pSDL2Texture, NULL, m_pActualScreen->pixels, m_pActualScreen->pitch);
+		//SDL_RenderClear( m_pSDL2Renderer );
+		SDL_RenderCopy(m_pSDL2Renderer, m_pSDL2Texture, NULL, NULL);
+		SDL_RenderPresent(m_pSDL2Renderer);
+
+		//SDL_UpdateRect(m_pActualScreen, 0, 0, m_iScreenWidth, m_iScreenHeight);    
+	}
+	else
+	{
+		// Here we assume that the background buffer has already been set up
+
+		// Lock surface if needed
+		if (SDL_MUSTLOCK(m_pActualScreen))
+		{
+			m_bInsideDraw = true;
+			if (SDL_LockSurface(m_pActualScreen) < 0)
+				return;
+		}
+
+		// Remove objects from their old positions
+		UndrawObjects();
+		// Remove the old strings be re-drawing the background
+		UnDrawStrings();
+		AnimatedBG();
+		// Draw the text for the user
+		DrawStrings(); // Single function in case people want to use that instead
+		DrawStringsUnderneath();	// Draw the string underneath the other objects here
+		// Draw objects at their new positions
+		DrawObjects();
+		// Another option for where to put the draw strings code - if you want it on top of the moving objects
+		DrawStringsOnTop();
+
+		// Unlock if needed
+		if (SDL_MUSTLOCK(m_pActualScreen))
+			SDL_UnlockSurface(m_pActualScreen);
+		m_bInsideDraw = false;
+
+		// Copy the screen display into the window and display it
+		SDL_UpdateTexture(m_pSDL2Texture, NULL, m_pActualScreen->pixels, m_pActualScreen->pitch);
+		SDL_RenderCopy(m_pSDL2Renderer, m_pSDL2Texture, NULL, NULL);
+		SDL_RenderPresent(m_pSDL2Renderer);
+	}
+}
+
+
+void Psyje5Main::AnimatedBG()
+{
+	CopyBackgroundPixels(0, 0, this->GetScreenWidth(), this->GetScreenHeight());
+	FillBackground(BLACK);
+	switch ((m_iScore/100) % 2) {
+	case 0: DrawBackgroundSquares(RED, BLACK); break;
+	case 1: DrawBackgroundSquares(BLACK, RED); break;
+	};
+	// Tile based stuff
+	m_oTiles.DrawAllTiles(this, this->GetBackground(), 0, 0, 14, 10);
 }

@@ -30,23 +30,28 @@ void Psyje5PlayerObject::Draw() {
 		m_iCurrentScreenX + iSize - 1, m_iCurrentScreenY + iSize - 1,
 		0xff0000);
 
+	m_pMainEngine->DrawScreenString(m_iCurrentScreenX - 10,
+									m_iCurrentScreenY - 10, 
+									"P", 0x00ffff, NULL);
+
+
 	StoreLastScreenPositionForUndraw();
 };
 
 void Psyje5PlayerObject::DoUpdate(int iCurrentTime) {
 
 	// Allow some control over the object by the player
-	if (m_pMainEngine->IsKeyPressed(SDLK_w))
+	if (m_pMainEngine->IsKeyPressed(SDLK_w))	// UP
 		m_iDir = 0;
-	if (m_pMainEngine->IsKeyPressed(SDLK_d))
+	if (m_pMainEngine->IsKeyPressed(SDLK_d))	// RIGHT
 		m_iDir = 1;
-	if (m_pMainEngine->IsKeyPressed(SDLK_s))
+	if (m_pMainEngine->IsKeyPressed(SDLK_s))	// DOWN
 		m_iDir = 2;
-	if (m_pMainEngine->IsKeyPressed(SDLK_a))
+	if (m_pMainEngine->IsKeyPressed(SDLK_a))	// LEFT
 		m_iDir = 3;
 	m_iPreviousScreenX = m_iCurrentScreenX;
 	m_iPreviousScreenY = m_iCurrentScreenY;
-
+	/*
 	DisplayableObject* pObject;
 	for (int iObjectId = 0; (pObject = m_pMainEngine->GetDisplayableObject(iObjectId)) != NULL; iObjectId++) {
 		if (pObject == this)
@@ -64,7 +69,7 @@ void Psyje5PlayerObject::DoUpdate(int iCurrentTime) {
 		// All the collision handling is done by the other objects; this saves us having
 		// to code all of the possible scenarios
 	}
-
+	*/
 	// If movement has finished
 	if (m_oMover.HasMovementFinished(iCurrentTime))
 	{

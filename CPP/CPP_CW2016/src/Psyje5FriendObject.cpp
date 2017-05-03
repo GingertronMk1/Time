@@ -47,17 +47,30 @@ void Psyje5FriendObject::DoUpdate(int iCurrentTime) {
 		int iXDiff = pObject->GetXCentre() - m_iCurrentScreenX;
 		int iYDiff = pObject->GetYCentre() - m_iCurrentScreenY;
 
-		int iTick = iCurrentTime / 20;
-		int iFrame = iTick % 30;
-		int iSize = 10 + iFrame;
-		if (iFrame > 15)
-			iSize = 10 + (30 - iFrame);
-		int iSizeOther = iSize;
+		int iSize = 10;
+
+		int iTick, iFrame, iSizeOther;
+
+		switch (iObjectId) {		// If it's the player object, that doesn't change size
+		case 0: 
+			iSizeOther = 20; 
+			break;
+		case 1: 
+			iSizeOther = 10;
+			break;
+		default:
+			iTick = iCurrentTime / 20;
+			iFrame = iTick % 30;
+			iSizeOther = 10 + iFrame;
+			if (iFrame > 15)
+				iSizeOther = 10 + (30 - iFrame);
+			break;
+		}
 
 		// Old Mate Pythagorus
 		if (((iXDiff*iXDiff) + (iYDiff*iYDiff)) < ((iSizeOther + iSize)*(iSizeOther + iSize))) {
 			if (iObjectId == 0) {
-				m_pMainEngine->ScoreUpdate(10000);
+				m_pMainEngine->ScoreUpdate(1000);
 			}
 				m_iMapX = 1 + rand() % 13;
 				m_iMapY = 1 + (rand() % 2) * 8;
@@ -68,7 +81,7 @@ void Psyje5FriendObject::DoUpdate(int iCurrentTime) {
 					m_iMapX * 50 + 25 + 25,
 					m_iMapY * 50 + 25 + 40,
 					iCurrentTime,
-					iCurrentTime + 400 + rand() % 200);
+					iCurrentTime + 400);
 				m_oMover.Calculate(iCurrentTime);
 				m_iCurrentScreenX = m_oMover.GetX();
 				m_iCurrentScreenY = m_oMover.GetY();
