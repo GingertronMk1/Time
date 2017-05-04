@@ -1,6 +1,6 @@
  CourseworkBase
 
- Timestamp is 5909d5ab (Wed May 03 14:05:47 2017)
+ Timestamp is 590b1f70 (Thu May 04 13:32:48 2017)
 
  Preferred load address is 00400000
 
@@ -39,13 +39,13 @@
 
   Address         Publics by Value              Rva+Base       Lib:Object
 
- 0000:00000000       ___guard_flags             00000000     <absolute>
- 0000:00000000       __except_list              00000000     <absolute>
  0000:00000000       ___guard_fids_table        00000000     <absolute>
+ 0000:00000000       __except_list              00000000     <absolute>
+ 0000:00000000       ___guard_flags             00000000     <absolute>
  0000:00000000       ___guard_fids_count        00000000     <absolute>
- 0000:0000001d       ___safe_se_handler_count   0000001d     <absolute>
- 0000:00009876       __ldused                   00009876     <absolute>
+ 0000:0000001e       ___safe_se_handler_count   0000001e     <absolute>
  0000:00009876       __fltused                  00009876     <absolute>
+ 0000:00009876       __ldused                   00009876     <absolute>
  0000:00000000       ___ImageBase               00400000     <linker-defined>
  0001:00000c90       _main                      00401c90 f   SDL2main:SDL_windows_main.obj
  0001:00000cc0       _WinMain@16                00401cc0 f   SDL2main:SDL_windows_main.obj
@@ -81,6 +81,7 @@
  0001:000034d0       ?UpdateTile@TileManager@@QAEXPAVBaseEngine@@HHH@Z 004044d0 f i Psyje5EnemyObject.obj
  0001:00003540       ?DrawRectangle@BaseEngine@@QAEXHHHHIPAUSDL_Surface@@@Z 00404540 f   BaseEngine.obj
  0001:00003610       ?DrawShortenedArrow@BaseEngine@@QAEXHHHHHHIHHPAUSDL_Surface@@@Z 00404610 f   BaseEngine.obj
+ 0001:00003b30       ?AnimatedBG@Psyje5Main@@QAEXHH@Z 00404b30 f   Psyje5Main.obj
  0001:00003c80       ?DrawShortenedLine@BaseEngine@@QAEXHHHHHHIHPAUSDL_Surface@@@Z 00404c80 f   BaseEngine.obj
  0001:00004190       ?DrawString@BaseEngine@@QAEXHHPBDIPAVFont@@PAUSDL_Surface@@@Z 00405190 f   BaseEngine.obj
  0001:00004310       ?DrawStrings@BaseEngine@@UAEXXZ 00405310 f   BaseEngine.obj
@@ -182,9 +183,8 @@
  0001:00009860       ?Draw@Psyje5FriendObject@@UAEXXZ 0040a860 f   Psyje5FriendObject.obj
  0001:00009930       ??0Psyje5Main@@QAE@XZ      0040a930 f   Psyje5Main.obj
  0001:00009a10       ??1Psyje5Main@@UAE@XZ      0040aa10 f   Psyje5Main.obj
- 0001:00009a90       ??_GPsyje5Main@@UAEPAXI@Z  0040aa90 f i Psyje5Main.obj
  0001:00009a90       ??_EPsyje5Main@@UAEPAXI@Z  0040aa90 f i Psyje5Main.obj
- 0001:00009ae0       ?AnimatedBG@Psyje5Main@@QAEXXZ 0040aae0 f   Psyje5Main.obj
+ 0001:00009a90       ??_GPsyje5Main@@UAEPAXI@Z  0040aa90 f i Psyje5Main.obj
  0001:00009bd0       ?DrawAllTiles@TileManager@@QBEXPAVBaseEngine@@PAUSDL_Surface@@HHHH@Z 0040abd0 f i Psyje5Main.obj
  0001:00009c20       ?DrawBackgroundRectangle@BaseEngine@@QAEXHHHHI@Z 0040ac20 f i Psyje5Main.obj
  0001:00009d40       ?DrawBackgroundSquares@Psyje5Main@@QAEXHH@Z 0040ad40 f   Psyje5Main.obj
@@ -205,16 +205,16 @@
  0001:0000ac40       ?TileUpdate@Psyje5Main@@QAEXH@Z 0040bc40 f   Psyje5Main.obj
  0001:0000afe0       ??0Psyje5Object@@QAE@PAVPsyje5Main@@HH@Z 0040bfe0 f   Psyje5Object.obj
  0001:0000b120       ??1Psyje5Object@@UAE@XZ    0040c120 f   Psyje5Object.obj
- 0001:0000b150       ??_GPsyje5Object@@UAEPAXI@Z 0040c150 f i Psyje5Object.obj
  0001:0000b150       ??_EPsyje5Object@@UAEPAXI@Z 0040c150 f i Psyje5Object.obj
+ 0001:0000b150       ??_GPsyje5Object@@UAEPAXI@Z 0040c150 f i Psyje5Object.obj
  0001:0000b1a0       ?DoUpdate@Psyje5Object@@UAEXH@Z 0040c1a0 f   Psyje5Object.obj
  0001:0000b6f0       ?Draw@Psyje5Object@@UAEXXZ 0040c6f0 f   Psyje5Object.obj
  0001:0000b7e0       ?IsVisible@Psyje5Object@@QAE_NXZ 0040c7e0 f   Psyje5Object.obj
  0001:0000b840       ?SetVisible@DisplayableObject@@QAEX_N@Z 0040c840 f i Psyje5Object.obj
  0001:0000b870       ??0Psyje5PlayerObject@@QAE@PAVPsyje5Main@@HH@Z 0040c870 f   Psyje5PlayerObject.obj
  0001:0000b940       ??1Psyje5PlayerObject@@UAE@XZ 0040c940 f   Psyje5PlayerObject.obj
- 0001:0000b970       ??_EPsyje5PlayerObject@@UAEPAXI@Z 0040c970 f i Psyje5PlayerObject.obj
  0001:0000b970       ??_GPsyje5PlayerObject@@UAEPAXI@Z 0040c970 f i Psyje5PlayerObject.obj
+ 0001:0000b970       ??_EPsyje5PlayerObject@@UAEPAXI@Z 0040c970 f i Psyje5PlayerObject.obj
  0001:0000b9c0       ?DoUpdate@Psyje5PlayerObject@@UAEXH@Z 0040c9c0 f   Psyje5PlayerObject.obj
  0001:0000be20       ?Draw@Psyje5PlayerObject@@UAEXXZ 0040ce20 f   Psyje5PlayerObject.obj
  0001:0000bef0       ??0Psyje5TileMan@@QAE@XZ   0040cef0 f   Psyje5TileMan.obj
@@ -226,8 +226,8 @@
  0001:0000c100       ?DrawTileAt@Psyje5TileMan@@UBEXPAVBaseEngine@@PAUSDL_Surface@@HHHH@Z 0040d100 f   Psyje5TileMan.obj
  0001:0000c2f0       ??0SimpleShape@@QAE@PAVSimpleDemo@@@Z 0040d2f0 f i SimpleDemo.obj
  0001:0000c440       ??1SimpleShape@@UAE@XZ     0040d440 f i SimpleDemo.obj
- 0001:0000c470       ??_ESimpleShape@@UAEPAXI@Z 0040d470 f i SimpleDemo.obj
  0001:0000c470       ??_GSimpleShape@@UAEPAXI@Z 0040d470 f i SimpleDemo.obj
+ 0001:0000c470       ??_ESimpleShape@@UAEPAXI@Z 0040d470 f i SimpleDemo.obj
  0001:0000c4c0       ?DoUpdate@SimpleShape@@UAEXH@Z 0040d4c0 f i SimpleDemo.obj
  0001:0000c940       ?Draw@SimpleShape@@UAEXXZ  0040d940 f i SimpleDemo.obj
  0001:0000c9f0       ?DrawScreenRectangle@BaseEngine@@QAEXHHHHI@Z 0040d9f0 f i SimpleDemo.obj
@@ -254,8 +254,8 @@
  0001:0000d6d0       ??1BouncingBall@@UAE@XZ    0040e6d0 f   BouncingBall.obj
  0001:0000d700       ??_GBouncingBall1@@UAEPAXI@Z 0040e700 f i BouncingBall.obj
  0001:0000d700       ??_EBouncingBall1@@UAEPAXI@Z 0040e700 f i BouncingBall.obj
- 0001:0000d750       ??_EBouncingBall2@@UAEPAXI@Z 0040e750 f i BouncingBall.obj
  0001:0000d750       ??_GBouncingBall2@@UAEPAXI@Z 0040e750 f i BouncingBall.obj
+ 0001:0000d750       ??_EBouncingBall2@@UAEPAXI@Z 0040e750 f i BouncingBall.obj
  0001:0000d7a0       ??_EBouncingBall@@UAEPAXI@Z 0040e7a0 f i BouncingBall.obj
  0001:0000d7a0       ??_GBouncingBall@@UAEPAXI@Z 0040e7a0 f i BouncingBall.obj
  0001:0000d7f0       ?Calculate@MovementPosition@@QAEXH@Z 0040e7f0 f i BouncingBall.obj
@@ -297,8 +297,8 @@
  0001:0000f890       ?SetupBackgroundBuffer@Demo1Main@@UAEXXZ 00410890 f   Demo1Main.obj
  0001:0000f8c0       ??0Demo2Main@@QAE@XZ       004108c0 f   Demo2Main.obj
  0001:0000f950       ??1Demo2Main@@UAE@XZ       00410950 f   Demo2Main.obj
- 0001:0000f9d0       ??_GDemo2Main@@UAEPAXI@Z   004109d0 f i Demo2Main.obj
  0001:0000f9d0       ??_EDemo2Main@@UAEPAXI@Z   004109d0 f i Demo2Main.obj
+ 0001:0000f9d0       ??_GDemo2Main@@UAEPAXI@Z   004109d0 f i Demo2Main.obj
  0001:0000fa20       ?DrawStrings@Demo2Main@@UAEXXZ 00410a20 f   Demo2Main.obj
  0001:0000fa80       ?GameAction@Demo2Main@@UAEXXZ 00410a80 f   Demo2Main.obj
  0001:0000fae0       ?InitialiseObjects@Demo2Main@@UAEHXZ 00410ae0 f   Demo2Main.obj
@@ -307,8 +307,8 @@
  0001:0000fc40       ?SetupBackgroundBuffer@Demo2Main@@UAEXXZ 00410c40 f   Demo2Main.obj
  0001:0000fd30       ??0Demo2Object@@QAE@PAVDemo2Main@@@Z 00410d30 f   Demo2Object.obj
  0001:0000fe90       ??1Demo2Object@@UAE@XZ     00410e90 f   Demo2Object.obj
- 0001:0000fec0       ??_GDemo2Object@@UAEPAXI@Z 00410ec0 f i Demo2Object.obj
  0001:0000fec0       ??_EDemo2Object@@UAEPAXI@Z 00410ec0 f i Demo2Object.obj
+ 0001:0000fec0       ??_GDemo2Object@@UAEPAXI@Z 00410ec0 f i Demo2Object.obj
  0001:0000ff10       ?DoUpdate@Demo2Object@@UAEXH@Z 00410f10 f   Demo2Object.obj
  0001:00010020       ?Draw@Demo2Object@@UAEXXZ  00411020 f   Demo2Object.obj
  0001:000100a0       ??0Demo2TileManager@@QAE@XZ 004110a0 f   Demo2TileManager.obj
@@ -326,8 +326,8 @@
  0001:00010690       ?SetupBackgroundBuffer@Demo3Main@@UAEXXZ 00411690 f   Demo3Main.obj
  0001:00010880       ??0Demo3Object@@QAE@PAVDemo3Main@@HH@Z 00411880 f   Demo3Object.obj
  0001:000109c0       ??1Demo3Object@@UAE@XZ     004119c0 f   Demo3Object.obj
- 0001:000109f0       ??_GDemo3Object@@UAEPAXI@Z 004119f0 f i Demo3Object.obj
  0001:000109f0       ??_EDemo3Object@@UAEPAXI@Z 004119f0 f i Demo3Object.obj
+ 0001:000109f0       ??_GDemo3Object@@UAEPAXI@Z 004119f0 f i Demo3Object.obj
  0001:00010a40       ?DoUpdate@Demo3Object@@UAEXH@Z 00411a40 f   Demo3Object.obj
  0001:00010cd0       ?Draw@Demo3Object@@UAEXXZ  00411cd0 f   Demo3Object.obj
  0001:00010d60       ?GetTileManager@Demo3Main@@QAEAAVDemo3TileManager@@XZ 00411d60 f i Demo3Object.obj
@@ -346,8 +346,8 @@
  0001:00011660       ?DrawTileAt@Demo3TileManager@@UBEXPAVBaseEngine@@PAUSDL_Surface@@HHHH@Z 00412660 f   Demo3TileManager.obj
  0001:00011850       ??0Demo4Main@@QAE@XZ       00412850 f   Demo4Main.obj
  0001:000118f0       ??1Demo4Main@@UAE@XZ       004128f0 f   Demo4Main.obj
- 0001:00011970       ??_GDemo4Main@@UAEPAXI@Z   00412970 f i Demo4Main.obj
  0001:00011970       ??_EDemo4Main@@UAEPAXI@Z   00412970 f i Demo4Main.obj
+ 0001:00011970       ??_GDemo4Main@@UAEPAXI@Z   00412970 f i Demo4Main.obj
  0001:000119c0       ?DrawObjects@Demo4Main@@UAEXXZ 004129c0 f   Demo4Main.obj
  0001:000119f0       ?DrawStrings@Demo4Main@@UAEXXZ 004129f0 f   Demo4Main.obj
  0001:00011b00       ?GameAction@Demo4Main@@UAEXXZ 00412b00 f   Demo4Main.obj
@@ -358,8 +358,8 @@
  0001:000120b0       ?UndrawObjects@Demo4Main@@UAEXXZ 004130b0 f   Demo4Main.obj
  0001:000120e0       ??0Demo4Object@@QAE@PAVDemo4Main@@HH@Z 004130e0 f   Demo4Object.obj
  0001:00012220       ??1Demo4Object@@UAE@XZ     00413220 f   Demo4Object.obj
- 0001:00012250       ??_GDemo4Object@@UAEPAXI@Z 00413250 f i Demo4Object.obj
  0001:00012250       ??_EDemo4Object@@UAEPAXI@Z 00413250 f i Demo4Object.obj
+ 0001:00012250       ??_GDemo4Object@@UAEPAXI@Z 00413250 f i Demo4Object.obj
  0001:000122a0       ?DoUpdate@Demo4Object@@UAEXH@Z 004132a0 f   Demo4Object.obj
  0001:00012870       ?Draw@Demo4Object@@UAEXXZ  00413870 f   Demo4Object.obj
  0001:00012960       ?GetTileManager@Demo4Main@@QAEAAVDemo4TileManager@@XZ 00413960 f i Demo4Object.obj
@@ -493,13 +493,11 @@
  0002:00000880       ??_C@_01EJNLAFE@P?$AA@     00418880     Psyje5PlayerObject.obj
  0002:00000888       ??_C@_0BI@NHFDFHOB@Cornerstone?5Regular?4ttf?$AA@ 00418888     mainfunction.obj
  0002:000008a8       ??_7BaseEngine@@6B@        004188a8     BaseEngine.obj
- 0002:00000900       ??_C@_02DPKJAMEF@?$CFd?$AA@ 00418900     Psyje5Main.obj
- 0002:00000904       ??_C@_0N@FEAGDBMM@You?5are?5red?4?$AA@ 00418904     Psyje5Main.obj
  0002:00000914       ??_C@_0BI@FBLGJKMC@Unable?5to?5init?5SDL?3?5?$CFs?6?$AA@ 00418914     BaseEngine.obj
  0002:00000930       ??_C@_0CM@IHOJMAHM@Draw?5for?5points?5?$CFd?0?5?$CFd?0?5?$CFd?5of?5?$CFd@ 00418930     BaseEngine.obj
  0002:00000964       ??_C@_0BG@KPFFDCIH@?7Copy?5point?5?$CFd?5to?5?$CFd?6?$AA@ 00418964     BaseEngine.obj
  0002:00000980       ??_C@_0EG@PFCKNAL@Draw?5shortened?5line?5?$CFd?0?$CFd?5to?5?$CFd?0@ 00418980     BaseEngine.obj
- 0002:000009c8       ??_C@_01EEMJAFIK@?6?$AA@   004189c8     Psyje5Main.obj
+ 0002:000009c8       ??_C@_02DPKJAMEF@?$CFd?$AA@ 004189c8     Psyje5Main.obj
  0002:000009d8       __real@0000000000000000    004189d8     BaseEngine.obj
  0002:000009e8       __real@3fe0000000000000    004189e8     BaseEngine.obj
  0002:000009f8       __real@3fe0c152382d7365    004189f8     BaseEngine.obj
@@ -519,27 +517,25 @@
  0002:00000b08       __real@3f50624dd2f1a9fc    00418b08     JPGImage.obj
  0002:00000b18       __real@4059000000000000    00418b18     JPGImage.obj
  0002:00000b28       __real@406fe00000000000    00418b28     JPGImage.obj
+ 0002:00000b30       ??_C@_0BA@PCBPLHFO@bababababababab?$AA@ 00418b30     Psyje5Main.obj
  0002:00000b40       __xmm@41f00000000000000000000000000000 00418b40     JPGImage.obj
  0002:00000b58       ??_7Psyje5EnemyObject@@6B@ 00418b58     Psyje5EnemyObject.obj
  0002:00000b74       ??_7Psyje5FriendObject@@6B@ 00418b74     Psyje5FriendObject.obj
  0002:00000b90       ??_7Psyje5Main@@6B@        00418b90     Psyje5Main.obj
- 0002:00000c00       ??_C@_0BA@IKMJDFDJ@bbbbbbbbbbbbbbb?$AA@ 00418c00     Psyje5Main.obj
- 0002:00000c14       ??_C@_0BA@IHJCBNF@baaaaaaaaaaaaab?$AA@ 00418c14     Psyje5Main.obj
- 0002:00000c28       ??_C@_0BA@PCBPLHFO@bababababababab?$AA@ 00418c28     Psyje5Main.obj
- 0002:00000c38       ??_C@_0BA@PNCDONGO@Tiles?5taken?3?5?$CFd?$AA@ 00418c38     Psyje5Main.obj
- 0002:00000c58       ??_C@_0L@HHKCMDHE@Game?5Over?4?$AA@ 00418c58     Psyje5Main.obj
- 0002:00000c64       ??_C@_0BM@ODDHIJIC@SPACE?5twice?5for?5next?5level?4?$AA@ 00418c64     Psyje5Main.obj
- 0002:00000c84       ??_C@_0BG@PNHHHHJF@Your?5score?5so?5far?3?5?$CFd?$AA@ 00418c84     Psyje5Main.obj
- 0002:00000ca4       ??_C@_0BG@GKDFALMN@SPACE?5twice?5restarts?4?$AA@ 00418ca4     Psyje5Main.obj
- 0002:00000cbc       ??_C@_0BH@CMEJAHKH@Space?5begins?5the?5game?4?$AA@ 00418cbc     Psyje5Main.obj
- 0002:00000cd4       ??_C@_0BG@EBOLLLKP@Better?5Luck?5Next?5Time?$AA@ 00418cd4     Psyje5Main.obj
- 0002:00000d0c       ??_C@_0BA@MHMEGHD@Final?5Score?3?5?$CFd?$AA@ 00418d0c     Psyje5Main.obj
- 0002:00000d28       ??_C@_0L@GMBNIKFN@ESC?5exits?4?$AA@ 00418d28     Psyje5Main.obj
- 0002:00000d5c       ??_C@_0CD@PNPNEEBL@Avoid?5Blue?5for?5as?5long?5as?5you?5ca@ 00418d5c     Psyje5Main.obj
- 0002:00000d80       ??_C@_08KNDNNBLP@Level?5?$CFd?$AA@ 00418d80     Psyje5Main.obj
- 0002:00000da4       ??_C@_0BI@KJMMPKL@Reigning?5High?5Score?3?5?$CFd?$AA@ 00418da4     Psyje5Main.obj
- 0002:00000dc0       ??_C@_0BL@JAIAJECH@New?5High?5Score?$CB?5Well?5Done?$CB?$AA@ 00418dc0     Psyje5Main.obj
- 0002:00000df4       ??_C@_0BJ@EHGDNNGI@Green?5boosts?5your?5score?4?$AA@ 00418df4     Psyje5Main.obj
+ 0002:00000c00       ??_C@_0L@MOOHHJFP@splash?4jpg?$AA@ 00418c00     Psyje5Main.obj
+ 0002:00000c14       ??_C@_0BA@IKMJDFDJ@bbbbbbbbbbbbbbb?$AA@ 00418c14     Psyje5Main.obj
+ 0002:00000c28       ??_C@_0BA@IHJCBNF@baaaaaaaaaaaaab?$AA@ 00418c28     Psyje5Main.obj
+ 0002:00000c48       ??_C@_0BA@MHMEGHD@Final?5Score?3?5?$CFd?$AA@ 00418c48     Psyje5Main.obj
+ 0002:00000c64       ??_C@_0BI@KJMMPKL@Reigning?5High?5Score?3?5?$CFd?$AA@ 00418c64     Psyje5Main.obj
+ 0002:00000c84       ??_C@_0BL@JAIAJECH@New?5High?5Score?$CB?5Well?5Done?$CB?$AA@ 00418c84     Psyje5Main.obj
+ 0002:00000ccc       ??_C@_0BG@PNHHHHJF@Your?5score?5so?5far?3?5?$CFd?$AA@ 00418ccc     Psyje5Main.obj
+ 0002:00000cec       ??_C@_0BG@GKDFALMN@SPACE?5twice?5restarts?4?$AA@ 00418cec     Psyje5Main.obj
+ 0002:00000d0c       ??_C@_0BG@EBOLLLKP@Better?5Luck?5Next?5Time?$AA@ 00418d0c     Psyje5Main.obj
+ 0002:00000d34       ??_C@_0CF@KCBKFCJM@Computer?5object?5?$CFd?5starts?5at?5?$CFd?0@ 00418d34     Psyje5Main.obj
+ 0002:00000d5c       ??_C@_0CE@GPAEKCKB@Paused?4?5SPACE?5continues?0?5ESC?5qui@ 00418d5c     Psyje5Main.obj
+ 0002:00000da4       ??_C@_08KNDNNBLP@Level?5?$CFd?$AA@ 00418da4     Psyje5Main.obj
+ 0002:00000dc0       ??_C@_0BA@PNCDONGO@Tiles?5taken?3?5?$CFd?$AA@ 00418dc0     Psyje5Main.obj
+ 0002:00000df4       ??_C@_0L@HHKCMDHE@Game?5Over?4?$AA@ 00418df4     Psyje5Main.obj
  0002:00000e20       ??_7Psyje5Object@@6B@      00418e20     Psyje5Object.obj
  0002:00000e3c       ??_7Psyje5PlayerObject@@6B@ 00418e3c     Psyje5PlayerObject.obj
  0002:00000e58       ??_7TileManager@@6B@       00418e58     Psyje5TileMan.obj
@@ -628,8 +624,9 @@
  0002:00001638       __load_config_used         00419638     MSVCRT:loadcfg.obj
  0002:000016a0       ??_C@_01DDCIFGEA@E?$AA@    004196a0     Psyje5EnemyObject.obj
  0002:000016a4       ??_C@_0DA@DAJMLJHM@PlayerX?3?5?$CFd?0?5PlayerY?3?5?$CFd?0?5Xdiff?3@ 004196a4     Psyje5EnemyObject.obj
- 0002:000016d4       ??_C@_0CF@KCBKFCJM@Computer?5object?5?$CFd?5starts?5at?5?$CFd?0@ 004196d4     Psyje5Main.obj
- 0002:00001700       ??_C@_0CE@GPAEKCKB@Paused?4?5SPACE?5continues?0?5ESC?5qui@ 00419700     Psyje5Main.obj
+ 0002:000016d4       ??_C@_01EEMJAFIK@?6?$AA@   004196d4     Psyje5Main.obj
+ 0002:00001700       ??_C@_0L@GMBNIKFN@ESC?5exits?4?$AA@ 00419700     Psyje5Main.obj
+ 0002:00001718       ??_C@_0BM@ODDHIJIC@SPACE?5twice?5for?5next?5level?4?$AA@ 00419718     Psyje5Main.obj
  0002:0000199c       ??_R4BaseEngine@@6B@       0041999c     BaseEngine.obj
  0002:000019b4       ??_R3BaseEngine@@8         004199b4     BaseEngine.obj
  0002:000019c8       ??_R2BaseEngine@@8         004199c8     BaseEngine.obj

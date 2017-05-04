@@ -37,11 +37,14 @@ void Psyje5Main::SetupBackgroundBuffer() {
 
 	int rectWidth = GetScreenWidth() / xVal;
 	int rectHeight = this->GetScreenHeight() / yVal;
+	ImageData im;
 
 	switch (m_state) {
 	case stateInit:
 		FillBackground(GREEN);
-		DrawBackgroundSquares(RED, BLUE);
+		//DrawBackgroundSquares(RED, BLUE);
+		im.LoadImage("splash.jpg");
+		im.RenderImageWithMask(this->GetBackground(), 0, 0, 0, 0, im.GetWidth(), im.GetHeight());
 		{
 			char* data[] =
 			{
@@ -92,9 +95,25 @@ void Psyje5Main::SetupBackgroundBuffer() {
 			DrawBackgroundSquares(BLACK, RED);
 			break;
 		case stateWon:
+			// Draw an image loaded from a file.
+			// Load the image file into an image object - at the normal size
+			// Create a second image from the first, by halving the size
+			//im.ShrinkFrom(&im2, 2);
+
+			// Note: image loaded only once, above, and now we will draw it nine times
+			// Also note: don't try to use the 'WithMask' version with a jpg - the mask needs a solid colour
+			/*
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
+					im.RenderImageWithMask(this->GetBackground(),
+					0, 0,
+					i * 100, j * 100 + 300,
+					im.GetWidth(), im.GetHeight());
+			*/
 			FillBackground(RED);
 			DrawBackgroundSquares(BLACK, RED);
 			Redraw(true);
+			/**/
 			break;
 	}
 }
@@ -134,11 +153,13 @@ void Psyje5Main::DrawStrings() {
 	char buf[128];
 	switch (m_state) {
 	case stateInit:	
+		/*
 		CopyBackgroundPixels(0, 0, GetScreenWidth(), GetScreenHeight());
 		DrawScreenString(100, 200, "You are red.", BLACK, NULL);
 		DrawScreenString(100, 240, "Avoid Blue for as long as you can.", BLACK, NULL);
 		DrawScreenString(100, 280, "Green boosts your score.", BLACK, NULL);
 		DrawScreenString(100, 320, "Space begins the game.", BLACK, NULL);
+		*/
 		break;
 
 	case stateMain:
@@ -402,7 +423,12 @@ void Psyje5Main::GameRender(void)
 		UndrawObjects();
 		// Remove the old strings be re-drawing the background
 		UnDrawStrings();
-		AnimatedBG();
+
+		// THIS IS THE ANIMATED BACKGROUND
+		AnimatedBG(BLACK, RED);
+		// THIS IS THE ANIMATED BACKGROUND
+
+
 		// Draw the text for the user
 		DrawStrings(); // Single function in case people want to use that instead
 		DrawStringsUnderneath();	// Draw the string underneath the other objects here
@@ -424,13 +450,13 @@ void Psyje5Main::GameRender(void)
 }
 
 
-void Psyje5Main::AnimatedBG()
+void Psyje5Main::AnimatedBG(int iColour1, int iColour2)
 {
 	CopyBackgroundPixels(0, 0, this->GetScreenWidth(), this->GetScreenHeight());
 	FillBackground(BLACK);
 	switch ((m_iScore/100) % 2) {
-	case 0: DrawBackgroundSquares(RED, BLACK); break;
-	case 1: DrawBackgroundSquares(BLACK, RED); break;
+	case 0: DrawBackgroundSquares(iColour1, iColour2); break;
+	case 1: DrawBackgroundSquares(iColour2, iColour1); break;
 	};
 	// Tile based stuff
 	m_oTiles.DrawAllTiles(this, this->GetBackground(), 0, 0, 14, 10);
