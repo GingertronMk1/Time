@@ -48,6 +48,6 @@ public:
 private:
 	bool m_bInsideDraw;
 public:
-	void AnimatedBG(int iColour1, int iColour2);
+	void AnimatedBG(int iOffset, int iColour1, int iColour2);
 };
 

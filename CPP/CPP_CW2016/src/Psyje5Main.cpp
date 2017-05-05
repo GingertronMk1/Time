@@ -42,7 +42,6 @@ void Psyje5Main::SetupBackgroundBuffer() {
 	switch (m_state) {
 	case stateInit:
 		FillBackground(GREEN);
-		//DrawBackgroundSquares(RED, BLUE);
 		im.LoadImage("splash.jpg");
 		im.RenderImageWithMask(this->GetBackground(), 0, 0, 0, 0, im.GetWidth(), im.GetHeight());
 		{
@@ -79,10 +78,9 @@ void Psyje5Main::SetupBackgroundBuffer() {
 
 		case stateMain:
 			FillBackground(BLACK);
-			DrawBackgroundSquares(RED, BLACK);
+//			DrawBackgroundSquares(RED, BLACK);
 			// Tile based stuff
 			m_oTiles.DrawAllTiles(this, this->GetBackground(), 0, 0, 14, 10);
-			
 			break;
 			
 		case statePaused:
@@ -95,25 +93,9 @@ void Psyje5Main::SetupBackgroundBuffer() {
 			DrawBackgroundSquares(BLACK, RED);
 			break;
 		case stateWon:
-			// Draw an image loaded from a file.
-			// Load the image file into an image object - at the normal size
-			// Create a second image from the first, by halving the size
-			//im.ShrinkFrom(&im2, 2);
-
-			// Note: image loaded only once, above, and now we will draw it nine times
-			// Also note: don't try to use the 'WithMask' version with a jpg - the mask needs a solid colour
-			/*
-			for (int i = 0; i < 3; i++)
-				for (int j = 0; j < 3; j++)
-					im.RenderImageWithMask(this->GetBackground(),
-					0, 0,
-					i * 100, j * 100 + 300,
-					im.GetWidth(), im.GetHeight());
-			*/
 			FillBackground(RED);
 			DrawBackgroundSquares(BLACK, RED);
 			Redraw(true);
-			/**/
 			break;
 	}
 }
@@ -127,7 +109,7 @@ int Psyje5Main::InitialiseObjects()
 	// Destroy any existing objects
 	DestroyOldObjects();
 
-	int i_ComputerObjects = 1;			// UPDATE THIS ONE TO INCREASE/DECREASE HOW MANY COMPUTER OBJECTS THERE ARE
+	int i_ComputerObjects = 2;			// UPDATE THIS ONE TO INCREASE/DECREASE HOW MANY COMPUTER OBJECTS THERE ARE
 
 	i_ComputerObjects += 2;				// For the array
 
@@ -136,10 +118,8 @@ int Psyje5Main::InitialiseObjects()
 	StoreObjectInArray(0, new Psyje5PlayerObject(this, 1, 1));	// The first object is the player
 	StoreObjectInArray(1, new Psyje5FriendObject(this, 13, 9));
 	for (int i = 2; i <= i_ComputerObjects; i++){				// The remainder (bar 1) are the 'AI' objects
-		int compX = (rand() % 13) + 1;		// random no between 1 and 13
-		int compY = (rand() % 9) + 1;		// random no between 1 and 9
-		if (compX % 2 == 0 && compX % 2 == 0)
-			compY += 1;
+		int compX = 1 + rand() % 13;
+		int compY = 1 + (rand() % 2) * 8;
 		
 		printf("Computer object %d starts at %d, %d\n", i - 1, compX, compY);
 		StoreObjectInArray(i, new Psyje5EnemyObject(this, compX, compY));
@@ -153,13 +133,6 @@ void Psyje5Main::DrawStrings() {
 	char buf[128];
 	switch (m_state) {
 	case stateInit:	
-		/*
-		CopyBackgroundPixels(0, 0, GetScreenWidth(), GetScreenHeight());
-		DrawScreenString(100, 200, "You are red.", BLACK, NULL);
-		DrawScreenString(100, 240, "Avoid Blue for as long as you can.", BLACK, NULL);
-		DrawScreenString(100, 280, "Green boosts your score.", BLACK, NULL);
-		DrawScreenString(100, 320, "Space begins the game.", BLACK, NULL);
-		*/
 		break;
 
 	case stateMain:
@@ -279,14 +252,12 @@ void Psyje5Main::DrawObjects()
 void Psyje5Main::GameOver() {
 	m_state = stateFailed;
 	SetupBackgroundBuffer();
-	Redraw(true);
 }
 
 void Psyje5Main::GameWon()
 {
 	m_state = stateWon;
 	SetupBackgroundBuffer();
-	Redraw(true);
 }
 
 void Psyje5Main::DrawBackgroundSquares(int iColour1, int iColour2)
@@ -294,15 +265,49 @@ void Psyje5Main::DrawBackgroundSquares(int iColour1, int iColour2)
 	int totalWidth = GetScreenWidth();
 	int totalHeight = this->GetScreenHeight();
 
-	for (int iX = 0; iX < totalWidth; iX++) {
-		for (int iY = 0; iY < totalHeight; iY += 10) {
+	int iSquareDim = 10;
+
+	for (int iX = 0; iX < totalWidth; iX+= iSquareDim) {
+		for (int iY = 0; iY < totalHeight; iY += iSquareDim) {
 			switch (abs(iX - iY) % 20) {
-			case 0: DrawBackgroundRectangle(iX, iY, iX + 10, iY + 10, iColour1); break;
-			case 10: DrawBackgroundRectangle(iX, iY, iX + 10, iY + 10, iColour2); break;
+			case 0: DrawBackgroundRectangle(iX, iY, iX + iSquareDim, iY + iSquareDim, iColour1); break;
+			case 10: DrawBackgroundRectangle(iX, iY, iX + iSquareDim, iY + iSquareDim, iColour2); break;
 			}
 
 		}
 	}
+}
+
+void Psyje5Main::AnimatedBG(int iOffset, int iColour1, int iColour2)
+{
+	CopyBackgroundPixels(0, 0, this->GetScreenWidth(), this->GetScreenHeight());
+	FillBackground(BLACK);
+	int totalWidth = GetScreenWidth();
+	int totalHeight = this->GetScreenHeight();
+
+	int iSquareDim = 10;
+
+	// Correcting the offset means using modulo to make it 'reset'
+	// Use 2 time the square width cos we have multicoloured squares and it jars if we only use one
+	int iOffsetCorr = iOffset % (2 * iSquareDim);	
+
+
+	// the background scrolls in x, and so we need it to 'start' 2 squares further left than we need, to make
+	// it look smooth. We need then to correct so we don't just run off the screen, and the rest is fairly easy.
+	for (int iX = -(2*iSquareDim); iX < totalWidth; iX += iSquareDim) {
+		for (int iY = 0; iY < totalHeight; iY += iSquareDim) {
+			int iXCorr = iX + iOffsetCorr;
+			int iXEnd = iXCorr + iSquareDim;
+			int iYEnd = iY + iSquareDim;
+			switch (abs(iX - iY) % 20) {
+			case 0: DrawBackgroundRectangle(iXCorr, iY, iXEnd, iYEnd, iColour1); break;
+			case 10: DrawBackgroundRectangle(iXCorr, iY, iXEnd, iYEnd, iColour2); break;
+			}
+
+		}
+	}
+	// Tile based stuff
+	m_oTiles.DrawAllTiles(this, this->GetBackground(), 0, 0, 14, 10);
 }
 
 
@@ -425,7 +430,7 @@ void Psyje5Main::GameRender(void)
 		UnDrawStrings();
 
 		// THIS IS THE ANIMATED BACKGROUND
-		AnimatedBG(BLACK, RED);
+		AnimatedBG(m_iTick/100, BLACK, RED);
 		// THIS IS THE ANIMATED BACKGROUND
 
 
@@ -447,17 +452,4 @@ void Psyje5Main::GameRender(void)
 		SDL_RenderCopy(m_pSDL2Renderer, m_pSDL2Texture, NULL, NULL);
 		SDL_RenderPresent(m_pSDL2Renderer);
 	}
-}
-
-
-void Psyje5Main::AnimatedBG(int iColour1, int iColour2)
-{
-	CopyBackgroundPixels(0, 0, this->GetScreenWidth(), this->GetScreenHeight());
-	FillBackground(BLACK);
-	switch ((m_iScore/100) % 2) {
-	case 0: DrawBackgroundSquares(iColour1, iColour2); break;
-	case 1: DrawBackgroundSquares(iColour2, iColour1); break;
-	};
-	// Tile based stuff
-	m_oTiles.DrawAllTiles(this, this->GetBackground(), 0, 0, 14, 10);
 }
