@@ -13,6 +13,7 @@ public:
 	~Psyje5FriendObject(void);
 	void Draw();
 	void DoUpdate(int iCurrentTime);
+	int GetPsyje5ObjectKind() { return 3; }
 
 private:
 	Psyje5Main* m_pMainEngine;

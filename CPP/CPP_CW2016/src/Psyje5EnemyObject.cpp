@@ -32,7 +32,9 @@ void Psyje5EnemyObject::Draw() {
 		m_iCurrentScreenX - iSize, m_iCurrentScreenY - iSize,
 		m_iCurrentScreenX + iSize - 1, m_iCurrentScreenY + iSize - 1,
 		0x00ffff);
-	m_pMainEngine->DrawScreenString(m_iCurrentScreenX - 10, m_iCurrentScreenY - 10, "E", 0, NULL);
+	m_pMainEngine->DrawScreenString(m_iCurrentScreenX - 10,
+									m_iCurrentScreenY - 12, 
+									"E", 0x000000, NULL);
 
 	StoreLastScreenPositionForUndraw();
 
@@ -43,10 +45,14 @@ void Psyje5EnemyObject::DoUpdate(int iCurrentTime) {
 	m_iPreviousScreenY = m_iCurrentScreenY;
 
 	DisplayableObject* pObject;
+	Psyje5Object* pPsyje5Object;
+	int pPlayerXDiff, pPlayerYDiff;
 	for (int iObjectId = 0;
 		(pObject = m_pMainEngine->GetDisplayableObject(iObjectId)) != NULL; iObjectId++) {
 		if (pObject == this)
 			continue;
+		pPsyje5Object = dynamic_cast<Psyje5Object*>(pObject);
+		int pPsyje5ObjectKind = pPsyje5Object->GetPsyje5ObjectKind();
 		int iXDiff = pObject->GetXCentre() - m_iCurrentScreenX;
 		int iYDiff = pObject->GetYCentre() - m_iCurrentScreenY;
 
@@ -58,25 +64,26 @@ void Psyje5EnemyObject::DoUpdate(int iCurrentTime) {
 		int iSize = 10 + iFrame;
 		if (iFrame > 15)
 			iSize = 10 + (30 - iFrame);
-
-		switch (iObjectId) {
-		case 0:								// Player object has a constant size of 20
-			iSizeOther = 20;	
+		switch (pPsyje5ObjectKind) {
+		case 1:								// Player object has a constant size of 20
+			iSizeOther = 20;
+			pPlayerXDiff = iXDiff;			// Save these for later...
+			pPlayerYDiff = iYDiff;
 			break;
-		case 1:
+		case 2:
+			iSizeOther = iSize;				// Other enemies are the same size as this one
+			break;
+		case 3:
 			iSizeOther = 10;				// Friend has a constant size of 10
-			break;
-		default:
-			iSizeOther = iSize;				// Everything else is the same as this one
 			break;
 		}
 
 		// Old Mate Pythagorus
 		if (((iXDiff*iXDiff) + (iYDiff*iYDiff)) < ((iSizeOther + iSize)*(iSizeOther + iSize))) {
-			if (iObjectId == 0) {
+			if (pPsyje5ObjectKind == 1) {
 				m_pMainEngine->GameOver();
 			}
-			else {
+			else if (pPsyje5ObjectKind == 2) {
 				m_iMapX = 1 + rand() % 13;
 				m_iMapY = 1 + (rand() % 2) * 8;
 				m_iDir = 1;
@@ -121,53 +128,38 @@ void Psyje5EnemyObject::DoUpdate(int iCurrentTime) {
 		}
 		
 		// Set off a new movement
-		int playerX, playerY, iXDifference, iYDifference, iDirectionIndicator;
-		DisplayableObject* playerObject = NULL;
-		switch (rand() % 4) {					// 1 in 4 chance of moving in the direction of the player
+		int iDirectionIndicator;
+		switch (rand() % 20) {					
+			// Short version: 3 in 20 chance to change direction, 1 each for 'increase by 1', 'decrease by 1', and 'towards the player'
 		case 0: 
-			playerObject = m_pMainEngine->GetDisplayableObject(0);
-			playerX = playerObject->GetXCentre();
-			playerY = playerObject->GetYCentre();
-			iXDifference = playerX - m_iCurrentScreenX;
-			iYDifference = playerY - m_iCurrentScreenY;
-			iDirectionIndicator = abs(iXDifference) - abs(iYDifference);
-			printf("PlayerX: %d, PlayerY: %d, Xdiff: %d, Ydiff: %d\n", playerX, playerY, iXDifference, iYDifference);
+			iDirectionIndicator = abs(pPlayerXDiff) - abs(pPlayerYDiff);	// Do this here to save computation
 			if (iDirectionIndicator < 0) {		// If the player is more to the side than it is above:
-				if (iXDifference > 0) {							
+				if (pPlayerXDiff > 0) {							
 					m_iDir = 1;		// If the X difference > 0, it is to the right
-					//printf("To the right: ");
 					break;
 				}
 				else {
 					m_iDir = 3;		// Otherwise, it is to the left
-					//printf("To the left: ");
 					break;
 				}
 			}
 			else if (iDirectionIndicator > 0) {	// If the player is more top/bottom than it is side:
-				if (iYDifference > 0) {
+				if (pPlayerYDiff > 0) {
 					m_iDir = 2;		// Below
-					//printf("To the bottom: ");
 					break;
 				}
 				else {
 					m_iDir = 0;		// Above
-					//printf("To the top: ");
 					break;
 				}
 			};
-		case 1:
-		case 2:
-		case 3:
-			switch (rand() % 10)
-			{
-			case 0: // Increase dir by 1
+		case 1:	// Increase dir by 1
 				m_iDir = (m_iDir + 1) % 4;
 				break;
-			case 1: // Reduce dir by 1
+		case 2: // Reduce dir by 1
 				m_iDir = (m_iDir + 3) % 4;
 				break;
-			}
+		default: break;
 		}
 
 		switch (tm.GetValue(
@@ -175,13 +167,13 @@ void Psyje5EnemyObject::DoUpdate(int iCurrentTime) {
 			m_iMapY + GetYDiffForDirection(m_iDir)))
 		{
 		case 0: // Passageway
-		case 2: // Pellet
-		case 3: // Pellet
-		case 4: // Pellet
-		case 5: // Pellet
-		case 6: // Pellet
-		case 7: // Pellet
-		case 8: // Pellet
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
 			// Allow move - set up new movement now
 			m_iMapX += GetXDiffForDirection(m_iDir);
 			m_iMapY += GetYDiffForDirection(m_iDir);

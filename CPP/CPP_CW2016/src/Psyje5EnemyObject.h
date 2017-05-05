@@ -8,6 +8,7 @@ public:
 	~Psyje5EnemyObject(void);
 	void Draw();
 	void DoUpdate(int iCurrentTime);
+	int GetPsyje5ObjectKind() { return 2; }
 
 private:
 	Psyje5Main* m_pMainEngine;

@@ -40,10 +40,16 @@ void Psyje5FriendObject::DoUpdate(int iCurrentTime) {
 	m_iPreviousScreenY = m_iCurrentScreenY;
 
 	DisplayableObject* pObject;
+	Psyje5Object* pPsyje5Object;
 	for (int iObjectId = 0;
 		(pObject = m_pMainEngine->GetDisplayableObject(iObjectId)) != NULL; iObjectId++) {
 		if (pObject == this)
 			continue;
+		// dynamically cast to a Psyje5Object so we can
+		// use functions from that class to ID each object
+		pPsyje5Object = dynamic_cast<Psyje5Object*>(pObject);			
+		int pPsyje5ObjectKind = pPsyje5Object->GetPsyje5ObjectKind();
+
 		int iXDiff = pObject->GetXCentre() - m_iCurrentScreenX;
 		int iYDiff = pObject->GetYCentre() - m_iCurrentScreenY;
 
@@ -51,25 +57,24 @@ void Psyje5FriendObject::DoUpdate(int iCurrentTime) {
 
 		int iTick, iFrame, iSizeOther;
 
-		switch (iObjectId) {		// If it's the player object, that doesn't change size
-		case 0: 
-			iSizeOther = 20; 
+		switch (pPsyje5ObjectKind) {
+		case 1:			iSizeOther = 20;			// Player object has a constant size of 20
 			break;
-		case 1: 
-			iSizeOther = 10;
-			break;
-		default:
+		case 2:
 			iTick = iCurrentTime / 20;
 			iFrame = iTick % 30;
 			iSizeOther = 10 + iFrame;
 			if (iFrame > 15)
-				iSizeOther = 10 + (30 - iFrame);
+				iSizeOther = 10 + (30 - iFrame);	// Enemy objects pulsate
 			break;
+		case 3:
+			iSizeOther = 10;						// Friend object has a constant size of 10
+			break;									// We're unlikely to encounter another friend
 		}
 
 		// Old Mate Pythagorus
 		if (((iXDiff*iXDiff) + (iYDiff*iYDiff)) < ((iSizeOther + iSize)*(iSizeOther + iSize))) {
-			if (iObjectId == 0) {
+			if (pPsyje5ObjectKind == 1) {
 				m_pMainEngine->ScoreUpdate(1000);
 			}
 				m_iMapX = 1 + rand() % 13;
@@ -113,13 +118,13 @@ void Psyje5FriendObject::DoUpdate(int iCurrentTime) {
 			m_iMapY + GetYDiffForDirection(m_iDir)))
 		{
 		case 0: // Passageway
-		case 2: // Pellet
-		case 3: // Pellet
-		case 4: // Pellet
-		case 5: // Pellet
-		case 6: // Pellet
-		case 7: // Pellet
-		case 8: // Pellet
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
 			// Allow move - set up new movement now
 			m_iMapX += GetXDiffForDirection(m_iDir);
 			m_iMapY += GetYDiffForDirection(m_iDir);
