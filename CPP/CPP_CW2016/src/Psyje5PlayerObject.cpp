@@ -31,7 +31,7 @@ void Psyje5PlayerObject::Draw() {
 		0xff0000);
 
 	m_pMainEngine->DrawScreenString(m_iCurrentScreenX - 10,
-									m_iCurrentScreenY - 10, 
+									m_iCurrentScreenY - 12, 
 									"P", 0x00ffff, NULL);
 
 
@@ -51,26 +51,7 @@ void Psyje5PlayerObject::DoUpdate(int iCurrentTime) {
 		m_iDir = 3;
 	m_iPreviousScreenX = m_iCurrentScreenX;
 	m_iPreviousScreenY = m_iCurrentScreenY;
-	/*
-	DisplayableObject* pObject;
-	for (int iObjectId = 0; (pObject = m_pMainEngine->GetDisplayableObject(iObjectId)) != NULL; iObjectId++) {
-		if (pObject == this)
-			continue;
-		int iXDiff = pObject->GetXCentre() - m_iCurrentScreenX;		// get the centre of the object we're looking at in X
-		int iYDiff = pObject->GetYCentre() - m_iCurrentScreenY;		// same in Y
 
-		int iTick = iCurrentTime / 20;
-		int iFrame = iTick % 30;
-		int iSize = 10 + iFrame;
-		if (iFrame > 15)
-			iSize = 10 + (30 - iFrame);
-		int iSizeOther = iSize;
-
-		// All the collision handling is done by the other objects; this saves us having
-		// to code all of the possible scenarios
-	}
-	*/
-	// If movement has finished
 	if (m_oMover.HasMovementFinished(iCurrentTime))
 	{
 		Psyje5TileMan& tm = m_pMainEngine->GetTileManager();

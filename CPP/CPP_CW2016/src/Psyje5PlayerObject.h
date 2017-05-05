@@ -9,6 +9,8 @@ public:
 	~Psyje5PlayerObject(void);
 	void Draw();
 	void DoUpdate(int iCurrentTime);
+	virtual int GetPsyje5ObjectKind() { return 1; }
+
 
 private:
 	Psyje5Main* m_pMainEngine;
