@@ -32,6 +32,7 @@ public:
 		default: return 0; // Can never happen
 		}
 	}
+	virtual int GetPsyje5ObjectKind() { return 0; }
 
 private:
 	Psyje5Main* m_pMainEngine;
