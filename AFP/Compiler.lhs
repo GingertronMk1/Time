@@ -100,6 +100,8 @@ TEST CASES:---------------------------------------------------------------------
 >                 Assign 'A' (App Sub (Var 'A') (Var 'B'))]
 > labelTest :: Code
 > labelTest = [LABEL 0, PUSH 1, LABEL 1]
+> jumpTest :: Code
+> jumpTest = [PUSH 1, POP 'A', JUMP 0, PUSH 2, POP 'A', LABEL 1, PUSH 10, POP 'B', JUMP 2, LABEL 0, JUMP 1, LABEL 2]
 > labelTestProg :: Prog
 > labelTestProg = Seqn [Assign 'A' (Val 1),
 >                       Assign 'B' (Val 2),
@@ -177,116 +179,72 @@ EXECUTOR CODE:------------------------------------------------------------------
 
 exec :: Code -> Mem
 
-> type PC = Int    -- A program counter to keep track of where I am in the code
+Machine state: (Code to be executed (including current instruction), Code already executed, Stack, Mem)
 
-The 'Machine': the program counter, Stack, Memory, a copy of all the code, and a list of `Int`s representing
-where all the labels are (this function comes later)
+> type Machine = (Code, Code, Stack, Mem)   -- WELCOME MY SON
 
-> type Machine = (PC, Stack, Mem, Code, [(Label,Int)])   -- WELCOME MY SON
-
-`run` is a function that compiles and executes the code; really just here so I don't have to keep typing in `exec (comp (fac 10))` when I want to test
-something.
-
-> run :: Prog -> Mem
-> run p = exec $ comp p
-
-Exec goes from Code to Mem, so we use the codeExec function defined above, returning only the memory
-
-> exec :: Code -> Mem
-> exec c = m
->          where (p,s,m,c',ls) = codeExec (0,[],[],c,firstPass c)
-
-We begin by looking at the most basic parts of the Code: the Instructions.
-Push takes an int and puts it at the beginning of the stack
-
-> instPush :: Int -> Stack -> Stack
-> instPush i s = i:s
-
-PushV takes a name, looks it up in memory, and PUSHes the associated value to the stack
+> instExec :: Machine -> Machine
+> instExec ((PUSH n):is, is2, s, m)   = (is, (PUSH n):is2, n:s, m)
+> instExec ((PUSHV n):is, is2, s, m)  = (is, (PUSHV n):is2, s', m)
+>                                       where s' = instPushV n m s
+> instExec ((POP n):is, is2, s, m)    = (is, (POP n):is2, s', m')
+>                                       where (s', m') = instPop n s m
+> instExec ((DO o):is, is2, s, m)     = (is, (DO o):is2, s', m)
+>                                       where s' = instDo o s
+> instExec ((LABEL l):is, is2, s, m)  = (is, (LABEL l):is2, s, m)
+> instExec ((JUMP n):is, is2, s, m)   = (is', is2', s, m)
+>                                       where (is', is2') = instJump n is (JUMP n:is2)
+> instExec ((JUMPZ n):is, is2, s, m)  = (is', is2', s, m)
+>                                       where (is', is2') = instJumpZ n is (JUMPZ n:is2) s
 
 > instPushV :: Name -> Mem -> Stack -> Stack
-> instPushV n m s = instPush (memSearch n m) s
+> instPushV n m s = (instPushV' n m):s
 
-To search the memory without going through `Maybe`s (I imagine this is a language like C where it just expects you to know what you're doing)
-construct a copy of memory where the `Name` section corresponds to the name given, return the first list item and take the second part of that.
-
-> memSearch :: Name -> Mem -> Int
-> memSearch n m = snd . head $ filter (\x -> fst x == n) m
-
-POP takes the head of the stack (an int), as well as a name, and puts it into memory as a tuple
-If the stack is empty, return the memory as-is
+> instPushV' :: Name -> Mem -> Int
+> instPushV' n m = snd . head $ filter (\x -> fst x == n) m
 
 > instPop :: Name -> Stack -> Mem -> (Stack, Mem)
-> instPop n [] m = ([], m)
 > instPop n s m = (tail s, (n,head s):(filter (\x -> fst x /= n) m))
 
-`DO`ing a mathematical operation means taking the top two stack items, performing the operation
-and returning the result to the head of the stack
-
-> instDo :: Op -> Stack -> Stack
 > instDo o s = case o of Add -> (y+x):newStack
 >                        Sub -> (y-x):newStack
 >                        Mul -> (y*x):newStack
 >                        Div -> (div y x):newStack
->              where [x,y] = take 2 s
->                    newStack = drop 2 s
+>              where newStack = drop 2 s
+>                    [x,y] = take 2 s
 
-Jump takes a Label value, and a list of Label positions in code, and returns the index of the Label in the code
+> instJump :: Label -> Code -> Code -> (Code, Code)
+> instJump n is is2 = instJump' n $ (reverse is2 ++ is)
 
-> instJump :: Label -> [(Label,Int)] -> PC
-> instJump l ils = snd . head $ filter (\x -> fst x == l) ils
+> instJump' :: Label -> Code -> (Code, Code)
+> instJump' n c = (is, reverse is2)
+>                  where is   = dropWhile (instJump'' n) c
+>                        is2  = takeWhile (instJump'' n) c
 
-JumpZ takes all the things Jump does, as well as the current Stack and PC. If the head of the Stack == 0, it JUMPs using the Label value and list of Labels.
-Otherwise, it increments the PC by one.
+> instJump'' :: Label -> Inst -> Bool
+> instJump'' n (LABEL l) = not $ l == n
+> instJump'' n _ = True
 
-> instJumpZ :: Stack -> Label -> [(Label,Int)] -> PC -> PC
-> instJumpZ s l ls p = if (head s == 0) then instJump l ls
->                                       else p+1
+> instJumpZ :: Label -> Code -> Code -> Stack -> (Code, Code)
+> instJumpZ n is is2 s = if (head s == 0) then instJump n is is2
+>                                         else (is, is2)
 
-Putting all of these together into one function, which changes the overall state of the machine
-
-> instExec :: Inst -> Machine -> Machine
-> instExec (PUSH i) (p,s,m,c,ls) = (p+1,s',m,c,ls)                                          -- PUSH updates the stack
->                               where s' = instPush i s
-> instExec (PUSHV n) (p,s,m,c,ls) = (p+1,s', m,c,ls)                                        -- Same for PUSHV
->                                where s' = instPushV n m s
-> instExec (POP n) (p,s,m,c,ls) = (p+1,s', m',c,ls)                                         -- POP updates the memory and stack
->                              where (s',m') = instPop n s m
-> instExec (DO o) (p,s,m,c,ls) = (p+1,s',m,c,ls)                                            -- DO updates the stack
->                             where s' = instDo o s
-> instExec (LABEL l) (p,s,m,c,ls) = (p+1,s,m,c,ls)                                          -- LABEL instructions get skipped
-> instExec (JUMP n) (p,s,m,c,ls) = (p',s,m,c,ls)                                            -- JUMP changes the program counter, which changes our position in the code
->                                  where p' = instJump n ls
-> instExec (JUMPZ n) (p,s,m,c,ls) = (p',s,m,c,ls)                                           -- JUMPZ also changes the PC
->                                   where p' = instJumpZ s n ls p
-
-To execute the code: if you're not at the last thing, do the next instruction, using the machine state from performing the
-current instruction. If you are at the last thing, just do this one.
-The intuition on that last part is that you're never going to get a JUMP as the last instruction, as the compiler (above) doesn't ever do that, and
-if you're running your own generated machine code, same as `memSearch`, you should know what you're doing.
 
 > codeExec :: Machine -> Machine
-> codeExec (p,s,m,c,ls) = if p < (length c)-1 then codeExec (p',s',m',c',ls')
->                         else (p',s',m',c',ls')
->                         where (p',s',m',c',ls') = instExec (c!!p) (p,s,m,c,ls)
+> codeExec mac@(i:[], is2, s, m) = instExec mac
+> codeExec mac@(i:is, is2, s, m) = codeExec (instExec mac)
 
-Generating a list of labels' positions in the code is the first pass of the executor. First, we make a function that looks at individual instructions
-and updates a list of positions based on that instructions' position in the code (passed in as an argument). If the Inst passed in is a LABEL, take its
-index and add it to the list of positions, else return the list of positions unchanged.
+> execBase :: Code -> Machine
+> execBase c = codeExec (c, [], [], [])
 
-> labelPos' :: Inst -> Int -> [(Label,Int)] -> [(Label,Int)]
-> labelPos' (LABEL l) i xs = (l,i):xs
-> labelPos' _ i xs = xs
+> codeRes p = c2
+>             where (c1, c2, s, m) = execBase $ comp p
 
-Applying this function over some Code, if you are at the end of the code, return the result of applying the helper to the last Inst. Otherwise, recursively
-apply yourself to the remainder of the code, passing in the list of positions that results from applying the helper to the current Inst.
+> exec :: Code -> Mem
+> exec c = m
+>          where (c1, c2, s, m) = execBase c
 
-> labelPos :: Code -> Int -> [(Label,Int)] -> [(Label,Int)]
-> labelPos (i:[]) n ls = labelPos' i n ls
-> labelPos (i:is) n ls = labelPos is (n+1) $ labelPos' i n ls
+> run :: Prog -> Mem
+> run p = exec $ comp p
 
-As the above two functions take an index and a list of positions as arguments, as well as the Code to scan through, we need to create a function that will take
-just code. This is trivially labelPos, with the Code to scan passed in as well as initial values of 0 for the index and the empty list for the list.
-
-> firstPass :: Code -> [(Label,Int)]
-> firstPass c = labelPos c 0 []
+> ijptest n = instJump' n $ comp $ fac 10
