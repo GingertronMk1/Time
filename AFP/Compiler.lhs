@@ -183,25 +183,49 @@ Machine state: (Code to be executed (including current instruction), Code alread
 
 > type Machine = (Code, Code, Stack, Mem)   -- WELCOME MY SON
 
+Executing each 'Inst' indivudually:
+
 > instExec :: Machine -> Machine
+
+PUSH prepends whatever Int value it's given to the stack, so just the : operator here
+
 > instExec ((PUSH n):is, is2, s, m)   = (is, (PUSH n):is2, n:s, m)
-> instExec ((PUSHV n):is, is2, s, m)  = (is, (PUSHV n):is2, s', m)
->                                       where s' = instPushV n m s
+
+PUSHV searches the memory for an Int value labeled by a Char, and prepends that Int to the stack
+
+> instExec ((PUSHV n):is, is2, s, m)  = (is, (PUSHV n):is2, (instPushV' n m):s, m)
+
+POP takes the head of the stack and adds it to the memory with the Name provided by the function call
+
 > instExec ((POP n):is, is2, s, m)    = (is, (POP n):is2, s', m')
 >                                       where (s', m') = instPop n s m
+
+DO takes the top 2 elements of the stack and performs a mathematical operation on them
+
 > instExec ((DO o):is, is2, s, m)     = (is, (DO o):is2, s', m)
 >                                       where s' = instDo o s
+
+LABEL does nothing
+
 > instExec ((LABEL l):is, is2, s, m)  = (is, (LABEL l):is2, s, m)
+
+JUMP changes the 'to be' and 'already' executed code to jump to another location described by a LABEL
+
 > instExec ((JUMP n):is, is2, s, m)   = (is', is2', s, m)
 >                                       where (is', is2') = instJump n is (JUMP n:is2)
+
+JUMPZ JUMPs if the head of the stack is 0
+
 > instExec ((JUMPZ n):is, is2, s, m)  = (is', is2', s, m)
 >                                       where (is', is2') = instJumpZ n is (JUMPZ n:is2) s
 
-> instPushV :: Name -> Mem -> Stack -> Stack
-> instPushV n m s = (instPushV' n m):s
+instPushV' filters the memory to only contain tuples where the first value is the Name we're after, then takes the Int out of that tuple
 
 > instPushV' :: Name -> Mem -> Int
 > instPushV' n m = snd . head $ filter (\x -> fst x == n) m
+
+instPop modifies Stack and Mem, such that Stack now no longer contains its head, and Mem has a new item, the previous head of the stack
+in a tuple with the Name given by the code, meanwhile filtering out any existing items with that Name
 
 > instPop :: Name -> Stack -> Mem -> (Stack, Mem)
 > instPop n s m = (tail s, (n,head s):(filter (\x -> fst x /= n) m))
@@ -213,22 +237,31 @@ Machine state: (Code to be executed (including current instruction), Code alread
 >              where newStack = drop 2 s
 >                    [x,y] = take 2 s
 
+Jump takes a label and 2 Codes, and returns a (Code, Code) tuple. In the base-level function, it stitches the code back together to form the full Code of the program initially,
+then using instJump', re-splits it about the LABEL n, with the LABEL being returned as the first thing to be executed
+
 > instJump :: Label -> Code -> Code -> (Code, Code)
-> instJump n is is2 = instJump' n $ (reverse is2 ++ is)
+> instJump n is is2 = (is', reverse is2')
+>                     where fullCode  = reverse is2 ++ is
+>                           is'       = dropWhile (instJump' n) fullCode
+>                           is2'      = takeWhile (instJump' n) fullCode
 
-> instJump' :: Label -> Code -> (Code, Code)
-> instJump' n c = (is, reverse is2)
->                  where is   = dropWhile (instJump'' n) c
->                        is2  = takeWhile (instJump'' n) c
+Inst doesn't derive Eq, so instJump' is a quick workaround for this. We want it to return False on the specific label we're after, so some individual cases are needed.
+If it isn't a LABEL at all, return True. If it is a LABEL, but its value isn't the one we're after, return True. Only if it's the LABEL we want should it return False,
+and I know that doesn't make sense, that the one we want is False, but it has to be for the dropWhile and takeWhile functions to work without an annoying 'not' call.
 
-> instJump'' :: Label -> Inst -> Bool
-> instJump'' n (LABEL l) = not $ l == n
-> instJump'' n _ = True
+> instJump' :: Label -> Inst -> Bool
+> instJump' n (LABEL l) = l /= n
+> instJump' n _ = True
+
+instJumpZ JUMPs ony if the head of the stack is 0, else it returns the two pieces of Code unchanged
 
 > instJumpZ :: Label -> Code -> Code -> Stack -> (Code, Code)
 > instJumpZ n is is2 s = if (head s == 0) then instJump n is is2
 >                                         else (is, is2)
 
+codeExec is a recursive definition. If you're at the end of the Code, the last element, return what happens if you just do that. Otherwise, recursively go through, feeding
+each instExec into the next codeExec statement. This assumes you don't have a JUMP or a JUMPZ at the end of the code, which the compiler doesn't do so you shouldn't either.
 
 > codeExec :: Machine -> Machine
 > codeExec mac@(i:[], is2, s, m) = instExec mac
@@ -237,14 +270,9 @@ Machine state: (Code to be executed (including current instruction), Code alread
 > execBase :: Code -> Machine
 > execBase c = codeExec (c, [], [], [])
 
-> codeRes p = c2
->             where (c1, c2, s, m) = execBase $ comp p
-
 > exec :: Code -> Mem
 > exec c = m
 >          where (c1, c2, s, m) = execBase c
 
 > run :: Prog -> Mem
 > run p = exec $ comp p
-
-> ijptest n = instJump' n $ comp $ fac 10
