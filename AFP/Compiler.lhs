@@ -189,34 +189,34 @@ Executing each 'Inst' indivudually:
 
 PUSH prepends whatever Int value it's given to the stack, so just the : operator here
 
-> instExec ((PUSH n):is, is2, s, m)   = (is, (PUSH n):is2, n:s, m)
+> instExec ((PUSH n):is, is2, s, m) = (is, (PUSH n):is2, n:s, m)
 
 PUSHV searches the memory for an Int value labeled by a Char, and prepends that Int to the stack
 
-> instExec ((PUSHV n):is, is2, s, m)  = (is, (PUSHV n):is2, (instPushV' n m):s, m)
+> instExec ((PUSHV n):is, is2, s, m) = (is, (PUSHV n):is2, (instPushV' n m):s, m)
 
 POP takes the head of the stack and adds it to the memory with the Name provided by the function call
 
-> instExec ((POP n):is, is2, s, m)    = (is, (POP n):is2, s', m')
->                                       where (s', m') = instPop n s m
+> instExec ((POP n):is, is2, s, m) = (is, (POP n):is2, s', m')
+>                                    where (s', m') = instPop n s m
 
 DO takes the top 2 elements of the stack and performs a mathematical operation on them
 
-> instExec ((DO o):is, is2, s, m)     = (is, (DO o):is2, s', m)
->                                       where s' = instDo o s
+> instExec ((DO o):is, is2, s, m) = (is, (DO o):is2, s', m)
+>                                   where s' = instDo o s
 
 LABEL does nothing
 
-> instExec ((LABEL l):is, is2, s, m)  = (is, (LABEL l):is2, s, m)
+> instExec ((LABEL l):is, is2, s, m) = (is, (LABEL l):is2, s, m)
 
 JUMP changes the 'to be' and 'already' executed code to jump to another location described by a LABEL
 
-> instExec ((JUMP n):is, is2, s, m)   = (is', is2', s, m)
->                                       where (is', is2') = instJump n is (JUMP n:is2)
+> instExec ((JUMP n):is, is2, s, m) = (is', is2', s, m)
+>                                     where (is', is2') = instJump n is (JUMP n:is2)
 
 JUMPZ JUMPs if the head of the stack is 0
 
-> instExec ((JUMPZ n):is, is2, s, m)  = (is', is2', s, m)
+> instExec ((JUMPZ n):is, is2, s, m) = (is', is2', s, m)
 >                                       where (is', is2') = instJumpZ n is (JUMPZ n:is2) s
 
 instPushV' filters the memory to only contain tuples where the first value is the Name we're after, then takes the Int out of that tuple
@@ -230,6 +230,7 @@ in a tuple with the Name given by the code, meanwhile filtering out any existing
 > instPop :: Name -> Stack -> Mem -> (Stack, Mem)
 > instPop n s m = (tail s, (n,head s):(filter (\x -> fst x /= n) m))
 
+> instDo :: Op -> Stack -> Stack
 > instDo o s = case o of Add -> (y+x):newStack
 >                        Sub -> (y-x):newStack
 >                        Mul -> (y*x):newStack
