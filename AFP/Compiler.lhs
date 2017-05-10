@@ -189,40 +189,49 @@ Executing each 'Inst' indivudually:
 
 PUSH prepends whatever Int value it's given to the stack, so just the : operator here
 
-> instExec ((PUSH n):is, is2, s, m) = (is, (PUSH n):is2, n:s, m)
+> instExec ((PUSH n):is, is2, s, m)   = execPush (is, (PUSH n):is2, s, m)
+> instExec ((PUSHV n):is, is2, s, m)  = execPushV(is, (PUSHV n):is2, (instPushV n m):s, m)
+> instExec ((POP n):is, is2, s, m)    = execPop(is, (POP n):is2, s, m')
+> instExec ((DO o):is, is2, s, m)     = execDo(is, (DO o):is2, s, m)
+> instExec ((LABEL l):is, is2, s, m)  = (is, (LABEL l):is2, s, m)
+> instExec ((JUMP n):is, is2, s, m)   = execJump(is, (JUMP n):is2, s, m)
+> instExec ((JUMPZ n):is, is2, s, m)  = execJumpZ(is, (JUMPZ n):is2, s, m)
 
-PUSHV searches the memory for an Int value labeled by a Char, and prepends that Int to the stack
+> execPush :: Machine -> Int -> Machine
+> execPush (c1, c2, s, m) i = (c1, (PUSH i):c2, i:s, m)
 
-> instExec ((PUSHV n):is, is2, s, m) = (is, (PUSHV n):is2, (instPushV' n m):s, m)
+> execPushV :: Machine -> Name -> Machine
+> execPushV (c1, c2, s, m) n = (c1, (PUSHV n):c2, i:s, m)
+>                              where i = snd . head (filter (\x -> fst x == n) m
 
-POP takes the head of the stack and adds it to the memory with the Name provided by the function call
+> execPop :: Machine -> Name -> Machine
+> execPop (c1, c2, s, m) n = (c1, (POP n):c2, tail s, m')
+>                            where  m' = (n, head s):(filter (\x -> fst x /= n) m)
 
-> instExec ((POP n):is, is2, s, m) = (is, (POP n):is2, s', m')
->                                    where (s', m') = instPop n s m
+> execDo :: Machine -> Op -> Machine
+> execDo (c1, c2, s, m) o = case o of Add -> (c1, c2, (y+x):newStack, m)
+>                                     Sub -> (c1, c2, (y-x):newStack, m)
+>                                     Mul -> (c1, c2, (y*x):newStack, m)
+>                                     Div -> (c1, c2, (div y x):newStack, m)
+>                                     where [x,y] = take 2 s
+>                                           newStack = drop 2 s
 
-DO takes the top 2 elements of the stack and performs a mathematical operation on them
+> execJump :: Machine -> Label -> Machine
+> execJump (c1, c2, s, m) l = (dropWhile (execJump' l) fullCode, reverse . takeWhile (execJump' l) fullCode, s, m)
+>                           where fullCode = reverse c2 ++ c1
 
-> instExec ((DO o):is, is2, s, m) = (is, (DO o):is2, s', m)
->                                   where s' = instDo o s
+> execJump' :: Label -> Inst -> Bool
+> execJump' n (LABEL l) = l /= n
+> execJump' n _ = True
 
-LABEL does nothing
+> execJumpZ :: Machine -> Label -> Machine
+> execJumpZ mac@(c1, c2, s, m) l = if head s == 0 then execJump mac l
+>                                                 else mac
 
-> instExec ((LABEL l):is, is2, s, m) = (is, (LABEL l):is2, s, m)
+instPushV filters the memory to only contain tuples where the first value is the Name we're after, then takes the Int out of that tuple
 
-JUMP changes the 'to be' and 'already' executed code to jump to another location described by a LABEL
-
-> instExec ((JUMP n):is, is2, s, m) = (is', is2', s, m)
->                                     where (is', is2') = instJump n is (JUMP n:is2)
-
-JUMPZ JUMPs if the head of the stack is 0
-
-> instExec ((JUMPZ n):is, is2, s, m) = (is', is2', s, m)
->                                       where (is', is2') = instJumpZ n is (JUMPZ n:is2) s
-
-instPushV' filters the memory to only contain tuples where the first value is the Name we're after, then takes the Int out of that tuple
-
-> instPushV' :: Name -> Mem -> Int
-> instPushV' n m = snd . head $ filter (\x -> fst x == n) m
+> instPushV :: Name -> Mem -> Int
+> instPushV n m = snd . head $ filter (\x -> fst x == n) m
 
 instPop modifies Stack and Mem, such that Stack now no longer contains its head, and Mem has a new item, the previous head of the stack
 in a tuple with the Name given by the code, meanwhile filtering out any existing items with that Name
