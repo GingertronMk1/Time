@@ -185,9 +185,7 @@ void Psyje5Main::KeyDown(int iKeyCode) {
 		case stateMain: 
 			break;
 		case statePaused:
-			m_state = stateFailed;
-			SetupBackgroundBuffer();
-			Redraw(true);
+			GameOver();
 			break;
 		case stateInit:
 		case stateWon:
@@ -252,6 +250,7 @@ void Psyje5Main::DrawObjects()
 void Psyje5Main::GameOver() {
 	m_state = stateFailed;
 	SetupBackgroundBuffer();
+	Redraw(true);
 }
 
 void Psyje5Main::GameWon()
