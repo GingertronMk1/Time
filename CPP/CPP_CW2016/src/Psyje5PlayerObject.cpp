@@ -30,9 +30,13 @@ void Psyje5PlayerObject::Draw() {
 		m_iCurrentScreenX + iSize - 1, m_iCurrentScreenY + iSize - 1,
 		0xff0000);
 
+	char buf[128];
+	sprintf(buf, "%d", iFrame);
+
 	m_pMainEngine->DrawScreenString(m_iCurrentScreenX - 10,
-									m_iCurrentScreenY - 12, 
-									"P", 0x00ffff, NULL);
+		m_iCurrentScreenY - 12,
+		buf, 0x00ffff, NULL);
+	
 
 
 	StoreLastScreenPositionForUndraw();
