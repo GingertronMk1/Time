@@ -1,4 +1,4 @@
-import Data.List
+--import Data.List
 import Data.Maybe
 
 data SAT = Var Int
@@ -39,8 +39,8 @@ varNum s = maximum $ varNum' s []
 varNum' :: SAT -> [Int] -> [Int]
 varNum' (Var n) is = n:is
 varNum' (Not s) is = varNum' s is
-varNum' (And s1 s2) is = (varNum' s1 is) ++ (varNum' s2 is)
-varNum' (Or s1 s2) is = (varNum' s1 is) ++ (varNum' s2 is)
+varNum' (And s1 s2) is = varNum' s1 (varNum' s2 is)
+varNum' (Or s1 s2) is = varNum' s1 (varNum' s2 is)
 
 allAssign :: Int -> [Assignment]
 allAssign n = sequence $ replicate (n+1) [True, False]
@@ -51,10 +51,20 @@ allAssignSAT s = allAssign $ varNum s
 satisfiable :: SAT -> Bool
 satisfiable s = or $ map (evaluate s) (allAssignSAT s)
 
+evaluateExtra :: SAT -> Assignment -> (Assignment, Bool)
+evaluateExtra s a = (a, evaluate s a)
+
+satisfiableExtra :: SAT -> [(Assignment, Bool)]
+satisfiableExtra s = map (\x -> evaluateExtra s x) (allAssignSAT s)
+
 solution :: SAT -> Maybe Assignment
-solution s = do i <- elemIndex True $ map (evaluate s) allAss
-                return $ allAss !! i
-                where allAss = allAssignSAT s
+solution s = solution' (satisfiableExtra s)
+
+solution' :: [(Assignment, Bool)] -> Maybe Assignment
+solution' [] = Nothing
+solution' (s:ss) = if b then Just a
+                        else solution' ss
+                   where (a, b) = s
 
 solutions :: [SAT] -> [Maybe Assignment]
 solutions ss = map solution ss
