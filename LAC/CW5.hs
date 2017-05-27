@@ -1,4 +1,3 @@
---import Data.List
 import Data.Maybe
 
 data SAT = Var Int
@@ -51,20 +50,13 @@ allAssignSAT s = allAssign $ varNum s
 satisfiable :: SAT -> Bool
 satisfiable s = or $ map (evaluate s) (allAssignSAT s)
 
-evaluateExtra :: SAT -> Assignment -> (Assignment, Bool)
-evaluateExtra s a = (a, evaluate s a)
-
-satisfiableExtra :: SAT -> [(Assignment, Bool)]
-satisfiableExtra s = map (\x -> evaluateExtra s x) (allAssignSAT s)
-
 solution :: SAT -> Maybe Assignment
-solution s = solution' (satisfiableExtra s)
-
-solution' :: [(Assignment, Bool)] -> Maybe Assignment
-solution' [] = Nothing
-solution' (s:ss) = if b then Just a
-                        else solution' ss
-                   where (a, b) = s
+solution s = if trueSols /= [] then Just $ fst $ head trueSols
+                               else Nothing
+             where trueSols = filter snd (map (\x -> (x, evaluate s x)) (allAssignSAT s))
 
 solutions :: [SAT] -> [Maybe Assignment]
 solutions ss = map solution ss
+
+soltest :: [Maybe Assignment]
+soltest = solutions testSATs
