@@ -1,5 +1,8 @@
-#include <cstdio>
+#include <string>
+#include <iostream>
 
+using namespace std;
+/*
 void foo() {
   static int count = 0;
   count++;
@@ -11,12 +14,21 @@ void bar() {
   count++;
   printf("Value of bar count is: %d\n", count);
 }
+*/
 
 int main() {
-  int i;
-  for(i = 0; i < 5; i++)
-    foo();
-  for(i = 0; i < 5; i++)
-    bar();
+  string s1("Test String");
+  int i = 1;
+  cout << "Input Number\t";
+  cin >> i;
+  cout << s1 << " " << i << endl;
+  cerr << s1.c_str() << endl;
+
+
+
+
+
+
+
   return 0;
 }
