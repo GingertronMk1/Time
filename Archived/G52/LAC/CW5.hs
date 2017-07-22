@@ -35,18 +35,15 @@ varNum' (And s1 s2) = varNum' s1 ++ varNum' s2
 varNum' (Or s1 s2) = varNum' s1 ++ varNum' s2
 
 allAssign :: Int -> [Assignment]
-allAssign n = sequence (replicate (n+1) [True, False])
-
-allAssignSAT :: SAT -> [Assignment]
-allAssignSAT = allAssign . varNum
+allAssign 0 = [[True],[False]]
+allAssign n = [b:bs | b <- [True, False], bs <- allAssign (n-1)]
 
 satisfiable :: SAT -> Bool
-satisfiable s = or (map (evaluate s) (allAssignSAT s))
+satisfiable s = or (map (evaluate s) (allAssign (varNum s)))
 
 solution :: SAT -> Maybe Assignment
-solution s = if trueSols /= [] then Just $ fst $ head trueSols
-                               else Nothing
-             where trueSols = filter snd (map (\x -> (x, evaluate s x)) (allAssignSAT s))
+solution s = if ss == [] then Nothing else Just (head ss)
+             where ss = filter (evaluate s) (allAssign (varNum s))
 
 solutions :: [SAT] -> [Maybe Assignment]
 solutions = map solution

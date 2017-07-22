@@ -375,7 +375,7 @@ Good to have one little function that tells us if the board is done
 Show the winner
 
 > showWinner :: Board -> String
-> showWinner board = show $ whoWon board
+> showWinner = show . whoWon
 
 ----------------------------------------------------------------------
 GAME TREE STUFF HERE:-------------------------------------------------
@@ -473,7 +473,8 @@ deal with.
 Selecting a random member of the list of empty columns
 
 > randomEmptyCol :: Board -> Int
-> randomEmptyCol board = (emptyCols board) !! randomNum (length $ emptyCols board)
+> randomEmptyCol board = ec !! randomNum (length $ ec)
+>                        where ec = emptyCols board
 
 ----------------------------------------------------------------------
 GAME LOOP HERE:-------------------------------------------------------

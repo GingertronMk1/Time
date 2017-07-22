@@ -111,14 +111,14 @@ COMPILER CODE:------------------------------------------------------------------
 Therefore it goes from Prog -> [Inst]
 
 > comp :: Prog -> Code
-> comp p = fst $ app (progCompST p) 0
+> comp p = fst (app (progCompST p) 0)
 
 Compiling expressions first; building blocks.
 
 > exprComp :: Expr -> Code
-> exprComp (Val i) = [PUSH i]   -- if it's just a value, PUSH that to the stack
-> exprComp (Var n) = [PUSHV n]  -- if it's a variable, PUSHV that
-> exprComp (App o e p) = exprComp e ++ exprComp p ++ [DO o] -- if it's an operation, do it recursively
+> exprComp (Val i)      = [PUSH i]   -- if it's just a value, PUSH that to the stack
+> exprComp (Var n)      = [PUSHV n]  -- if it's a variable, PUSHV that
+> exprComp (App o e p)  = exprComp e ++ exprComp p ++ [DO o] -- if it's an operation, do it recursively
 
 Generation of new labels done here
 
@@ -127,7 +127,7 @@ Generation of new labels done here
 And now, compiling programs using state
 
 > progCompST :: Prog -> ST Code
-> progCompST (Assign n e) = return $ exprComp e ++ [POP n]
+> progCompST (Assign n e) = return (exprComp e ++ [POP n])
 
 For a While loop: reserve 2 fresh labels; one for the beginning and one for the  end of the loop (something to jump back to at the end 
 of the loop and something to skip to once the predicate's fulfilled), and compile the sub-program to be run as the body of the loop, then 
@@ -185,8 +185,9 @@ Executing each 'Inst' individually:
 >                              where i = snd (head (filter (\x -> fst x == n) m))
 
 > execPop :: Machine -> Name -> Machine
-> execPop (c1, c2, s, m) n = (c1, c2, tail s, m')
->                            where  m' = (n, head s):(filter (\x -> fst x /= n) m)
+> execPop mac@(c1,c2,[],m) n    = mac
+> execPop (c1, c2, (s:ss), m) n = (c1, c2, ss, m')
+>                                 where  m' = (n, s):(filter (\x -> fst x /= n) m)
 
 > execDo :: Machine -> Op -> Machine
 > execDo (c1, c2, s, m) o = case o of Add -> (c1, c2, (y+x):newStack, m)
@@ -203,8 +204,8 @@ Executing each 'Inst' individually:
 >                                   c2' = reverse (takeWhile (execJump' l) fullCode)
 
 > execJump' :: Label -> Inst -> Bool
-> execJump' n (LABEL l) = l /= n
-> execJump' n _ = True
+> execJump' n i = case i of (LABEL l) -> l /= n
+>                           otherwise -> True
 
 > execJumpZ :: Machine -> Label -> Machine
 > execJumpZ mac@(c1, c2, s, m) l = if head s == 0 then execJump mac l
