@@ -53,6 +53,8 @@ data Token
     | EOF                               -- ^ End of file (input) marker.
 
     -- Additional Tokens for Task I.1: repeat and until
-    | Repeat
-    | Until
+    | Repeat    -- ^ \"repeat\"
+    | Until     -- ^ \"until\"
+
+
     deriving (Eq, Show)
