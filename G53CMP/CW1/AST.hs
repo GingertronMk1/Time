@@ -139,6 +139,13 @@ data Expression
           eaArgs    :: [Expression],    -- ^ Arguments
           expSrcPos :: SrcPos
       }
+    -- | Ternary Operator for I.2
+    | ExpCond {
+          ecCond    :: Expression,
+          ecTrue    :: Command,
+          ecFalse   :: Command,
+          expSrcPos :: SrcPos
+    }
 
 
 instance HasSrcPos Expression where
