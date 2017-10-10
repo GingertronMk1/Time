@@ -151,6 +151,10 @@ scanner cont = P $ scan
         mkIdOrKwd "while" = While
         mkIdOrKwd name    = Id {idName = name}
 
+        -- Extending with Repeat and Until
+        mkIdorKwd "repeat"  = Repeat
+        mkIdorKwd "until"   = Until
+
         -- Return token, position of token, updated position, and remaning
         -- input. We assume tnat no MiniTriangle token span multiple
         -- lines. Hence only one line number argument is needed.
