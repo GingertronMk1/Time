@@ -30,6 +30,7 @@ data Token
     | Colon     -- ^ \":\"
     | ColEq     -- ^ \":=\"
     | Equals    -- ^ \"=\"
+    | Cond      -- ^ \"?\"
 
     -- Keywords
     | Begin     -- ^ \"begin\"
@@ -40,7 +41,9 @@ data Token
     | If        -- ^ \"if\"
     | In        -- ^ \"in\"
     | Let       -- ^ \"let\"
+    | Repeat    -- ^ \"repeat\"   FOR TASK I.1
     | Then      -- ^ \"then\"
+    | Until     -- ^ \"until\"    FOR TASK I.1
     | Var       -- ^ \"var\"
     | While     -- ^ \"while\"
 
@@ -51,10 +54,4 @@ data Token
 
     -- End Of File marker
     | EOF                               -- ^ End of file (input) marker.
-
-    -- Additional Tokens for Task I.1: repeat and until
-    | Repeat    -- ^ \"repeat\"
-    | Until     -- ^ \"until\"
-
-
     deriving (Eq, Show)
