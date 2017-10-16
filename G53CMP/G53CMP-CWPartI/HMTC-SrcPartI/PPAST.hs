@@ -51,11 +51,17 @@ ppCommand n (CmdCall {ccProc = p, ccArgs = es, cmdSrcPos = sp}) =
 ppCommand n (CmdSeq {csCmds = cs, cmdSrcPos = sp}) =
     indent n . showString "CmdSeq" . spc . ppSrcPos sp . nl
     . ppSeq (n+1) ppCommand cs
-ppCommand n (CmdIf {ciCond = e, ciThen = c1, ciElse = c2, cmdSrcPos = sp}) =
-    indent n . showString "CmdIf" . spc . ppSrcPos sp . nl
-    . ppExpression (n+1) e
-    . ppCommand (n+1) c1
-    . ppCommand (n+1) c2
+ppCommand n (CmdIf {ciCondsCmds = cs, ciElse = e, cmdSrcPos = sp}) =
+    case e of Nothing ->  indent n . showString "CmdIf" . spc . ppSrcPos sp . nl
+                          . ppExpression (n+1) e1
+                          . ppCommand (n+1) c1
+                          . ppExprsComms n css
+              Just x  ->  indent n . showString "CmdIf" . spc . ppSrcPos sp . nl
+                          . ppExpression (n+1) e1
+                          . ppCommand (n+1) c1
+                          . ppExprsComms n css
+                          . ppCommand (n+1) x
+              where (e1, c1):css = cs
 ppCommand n (CmdWhile {cwCond = e, cwBody = c, cmdSrcPos = sp}) =
     indent n . showString "CmdWhile" . spc . ppSrcPos sp . nl
     . ppExpression (n+1) e
@@ -64,10 +70,22 @@ ppCommand n (CmdLet {clDecls = ds, clBody = c, cmdSrcPos = sp}) =
     indent n . showString "CmdLet" . spc . ppSrcPos sp . nl
     . ppSeq (n+1) ppDeclaration ds
     . ppCommand (n+1) c
-ppCommand n (CmdRepeat {crBody = c, crCond = e, cmdSrcPos = sp}) =
-    indent n . showString "CmdRepeat" . spc . ppSrcPos sp . nl
-    . ppCommand (n+1) c
+ppCommand n (CmdRepeat {crBody = c, crCond = e, cmdSrcPos = sp}) =      -- TASK I.1
+    indent n . showString "CmdRepeat" . spc . ppSrcPos sp . nl          -- TASK I.1
+    . ppCommand (n+1) c                                                 -- TASK I.1
+    . ppExpression (n+1) e                                              -- TASK I.1
+ppCommand n (CmdIfNoElse {cineCond = e, cineBody = b, cmdSrcPos = sp}) =
+    indent n . showString "CmdIfNoElse" . spc . ppSrcPos sp . nl
     . ppExpression (n+1) e
+    . ppCommand (n+1) b
+
+ppExprsComms :: Int -> [(Expression, Command)] -> ShowS       -- A helper function to prettily print the list of expressions and commands
+ppExprsComms n []           = showString ""
+ppExprsComms n ((e,c):ecs)  = indent n . showString "CmdElsif" . nl 
+                              . ppExpression (n+1) e
+                              . ppCommand (n+1) c
+                              . ppExprsComms n ecs
+
 
 
 ------------------------------------------------------------------------------
