@@ -90,12 +90,18 @@ data Command
           csCmds    :: [Command],       -- ^ Commands
           cmdSrcPos :: SrcPos
       }
+--  -- | Conditional command
+--  | CmdIf {
+--        ciCond    :: Expression,      -- ^ Condition
+--        ciThen    :: Command,         -- ^ Then-branch
+--        ciElse    :: Command,         -- ^ Else-branch
+--        cmdSrcPos :: SrcPos
+--    }
     -- | Conditional command
     | CmdIf {
-          ciCond    :: Expression,      -- ^ Condition
-          ciThen    :: Command,         -- ^ Then-branch
-          ciElse    :: Command,         -- ^ Else-branch
-          cmdSrcPos :: SrcPos
+          ciCondsCmds :: [(Expression, Command)],      -- ^ Condition
+          ciElse      :: Maybe Command,         -- ^ Else-branch
+          cmdSrcPos   :: SrcPos
       }
     -- | While-loop
     | CmdWhile {
@@ -113,6 +119,19 @@ data Command
     | CmdRepeat {
           crBody    :: Command,         -- ^ Loop-body
           crCond    :: Expression,      -- ^ Loop-condition
+          cmdSrcPos :: SrcPos
+    }
+    -- | If sans else
+    | CmdIfNoElse {
+          cineCond  :: Expression,
+          cineBody  :: Command,
+          cmdSrcPos :: SrcPos
+    }
+    -- | elsif
+    | CmdElsIf {
+          cieCond   :: Expression,
+          cieBody   :: Command,
+          cieNext   :: Command,
           cmdSrcPos :: SrcPos
     }
 
