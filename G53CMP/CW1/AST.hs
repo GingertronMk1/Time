@@ -142,8 +142,8 @@ data Expression
     -- | Ternary Operator for I.2
     | ExpCond {
           ecCond    :: Expression,
-          ecTrue    :: Command,
-          ecFalse   :: Command,
+          ecTrue    :: Expression,
+          ecFalse   :: Expression,
           expSrcPos :: SrcPos
     }
 

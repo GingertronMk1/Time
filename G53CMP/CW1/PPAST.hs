@@ -83,6 +83,11 @@ ppExpression n (ExpApp {eaFun = f, eaArgs = es, expSrcPos = sp}) =
     indent n . showString "ExpApp" . spc . ppSrcPos sp . nl
     . ppExpression (n+1) f
     . ppSeq (n+1) ppExpression es
+ppExpression n (ExpCond {ecCond = c, ecTrue = t, ecFalse = f, expSrcPos = sp})=
+    indent n . showString "ExpCond" . spc . ppSrcPos sp . nl
+    . ppExpression (n+1) c
+    . ppExpression (n+1) t
+    . ppExpression (n+1) f
 
 
 ------------------------------------------------------------------------------
