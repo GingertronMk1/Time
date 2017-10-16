@@ -72,6 +72,7 @@ import Scanner
     REPEAT      { (Repeat, $$) }
     UNTIL       { (Until, $$) }
     '?'         { (Cond, $$) }
+    ELSIF       { (Elsif, $$) }
     LITINT      { (LitInt {}, _) }
     ID          { (Id {}, _) }
     '+'         { (Op {opName="+"},   _) }
@@ -114,8 +115,8 @@ command
         { CmdAssign {caVar = $1, caVal=$3, cmdSrcPos = srcPos $1} }
     | var_expression '(' expressions ')'
         { CmdCall {ccProc = $1, ccArgs = $3, cmdSrcPos = srcPos $1} }
-    | IF expression THEN command ELSE command
-        { CmdIf {ciCond = $2, ciThen = $4, ciElse = $6, cmdSrcPos = $1} }
+    | IF expression THEN command elseIfs optionalElse
+        { CmdIf{ciCondsCmds = ($2,$4) : $5, ciElse = $6, cmdSrcPos = $1} }
     | WHILE expression DO command
         { CmdWhile {cwCond = $2, cwBody = $4, cmdSrcPos = $1} }
     | LET declarations IN command
@@ -129,12 +130,17 @@ command
     | REPEAT command UNTIL expression
         { CmdRepeat {crBody = $2, crCond = $4, cmdSrcPos = $1} }
 
+optionalElse  :: { Maybe Command }
+optionalElse  : { Nothing }
+              | ELSE command { Just $2 }
 
+elseIfs :: { [(Expression, Command)] }
+elseIfs : { [] }
+        | elseIfs ELSIF expression THEN command { $1 ++ [($3, $5)] }
 
 expressions :: { [Expression] }
 expressions : expression { [$1] }
             | expression ',' expressions { $1 : $3 }
-
 
 -- The terminal associated with a precedence declaration has to occur
 -- *literally* in a rule if precedence declarations are to be taken into
