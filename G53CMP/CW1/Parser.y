@@ -58,7 +58,6 @@ import Scanner
     ':'         { (Colon, $$) }
     ':='        { (ColEq, $$) }
     '='         { (Equals, $$) }
-    '?'         { (Cond, $$) }
     BEGIN       { (Begin, $$) }
     CONST       { (Const, $$) }
     DO          { (Do, $$) }
@@ -67,11 +66,13 @@ import Scanner
     IF          { (If, $$) }
     IN          { (In, $$) }
     LET         { (Let, $$) }
-    REPEAT      { (Repeat, $$) }
     THEN        { (Then, $$) }
-    UNTIL       { (Until, $$) }
     VAR         { (Var, $$) }
     WHILE       { (While, $$) }
+    REPEAT      { (Repeat, $$) }
+    UNTIL       { (Until, $$) }
+    '?'         { (Cond, $$) }
+    ELSIF       { (Elsif, $$) }
     LITINT      { (LitInt {}, _) }
     ID          { (Id {}, _) }
     '+'         { (Op {opName="+"},   _) }
@@ -89,22 +90,22 @@ import Scanner
     '||'        { (Op {opName="||"},  _) }
     '!'         { (Op {opName="!"},   _) }
 
-%right '?' ':'
 %left '||'
 %left '&&'
 %nonassoc '<' '<=' '==' '!=' '>=' '>'
 %left '+' '-'
 %left '*' '/'
 %right '^'
+%right '?' ':'
 
 %%
 
 program :: { AST }
-        program : command       { AST $1 }
+program : command       { AST $1 }
 
 
 commands :: { [Command] }
-         commands : command              { [$1] } 
+commands : command              { [$1] } 
          | command ';' commands { $1 : $3 }
 
 
@@ -114,12 +115,10 @@ command
         { CmdAssign {caVar = $1, caVal=$3, cmdSrcPos = srcPos $1} }
     | var_expression '(' expressions ')'
         { CmdCall {ccProc = $1, ccArgs = $3, cmdSrcPos = srcPos $1} }
-    | IF expression THEN command ELSE command
-        { CmdIf {ciCond = $2, ciThen = $4, ciElse = $6, cmdSrcPos = $1} }
+    | IF expression THEN command elseIfs optionalElse
+        { CmdIf{ciCondsCmds = ($2,$4) : $5, ciElse = $6, cmdSrcPos = $1} }
     | WHILE expression DO command
         { CmdWhile {cwCond = $2, cwBody = $4, cmdSrcPos = $1} }
-    | REPEAT command UNTIL expression
-        { CmdRep {crBody = $2, crCond = $4, cmdSrcPos = $1} }
     | LET declarations IN command
         { CmdLet {clDecls = $2, clBody = $4, cmdSrcPos = $1} }
     | BEGIN commands END
@@ -128,6 +127,16 @@ command
           else
               CmdSeq {csCmds = $2, cmdSrcPos = srcPos $2}
         }
+    | REPEAT command UNTIL expression
+        { CmdRepeat {crBody = $2, crCond = $4, cmdSrcPos = $1} }
+
+optionalElse  :: { Maybe Command }
+optionalElse  : { Nothing }
+              | ELSE command { Just $2 }
+
+elseIfs :: { [(Expression, Command)] }
+elseIfs : { [] }
+        | elseIfs ELSIF expression THEN command { $1 ++ [($3, $5)] }
 
 expressions :: { [Expression] }
 expressions : expression { [$1] }
@@ -149,11 +158,6 @@ expression :: { Expression }
 expression
     : primary_expression
         { $1 }
-    | expression '?' expression ':' expression
-        { ExpCond { ecCond  = $1,
-                    ecTrue  = $3,
-                    ecFalse = $5,
-                    expSrcPos = srcPos $1 } }
     | expression opclass_disjunctive expression %prec '||'
         { ExpApp {eaFun     = $2,
                   eaArgs    = [$1,$3],
@@ -178,9 +182,15 @@ expression
         { ExpApp {eaFun     = $2,
                   eaArgs    = [$1,$3],
                   expSrcPos = srcPos $1} }
+    | expression '?' expression ':' expression %prec '?'
+        { ExpCond {ecCond     = $1,
+                   ecThen     = $3,
+                   ecElse     = $5,
+                   expSrcPos  = srcPos $1} }
+
 
 primary_expression :: { Expression }
-: LITINT
+    : LITINT
         { ExpLitInt {eliVal = tspLIVal $1, expSrcPos = tspSrcPos $1} }
     | var_expression
         { $1 }
@@ -201,17 +211,17 @@ primary_expression :: { Expression }
 -- denoted by operators) are also represented as expressions.
 
 var_expression :: { Expression }
-               : ID { ExpVar {evVar = tspIdName $1, expSrcPos = tspSrcPos $1} }
+    : ID { ExpVar {evVar = tspIdName $1, expSrcPos = tspSrcPos $1} }
 
 
 opclass_disjunctive :: { Expression }
-                    : '||' { mkExpVarBinOp $1 }
+    : '||' { mkExpVarBinOp $1 }
 
 opclass_conjunctive :: { Expression }
-                    : '&&' { mkExpVarBinOp $1 }
+    : '&&' { mkExpVarBinOp $1 }
 
 opclass_relational :: { Expression }
-                   : relational_op { mkExpVarBinOp $1 }
+    : relational_op { mkExpVarBinOp $1 }
 
 relational_op
     : '<'  { $1 }
@@ -222,24 +232,24 @@ relational_op
     | '>'  { $1 }
 
 opclass_additive :: { Expression }
-                 : additive_op { mkExpVarBinOp $1 }
+    : additive_op { mkExpVarBinOp $1 }
 
 additive_op
     : '+'  { $1 }
     | '-'  { $1 }
 
 opclass_multiplicative :: { Expression }
-                       : multiplicative_op { mkExpVarBinOp $1 }
+    : multiplicative_op { mkExpVarBinOp $1 }
 
 multiplicative_op
     : '*'  { $1 }
     | '/'  { $1 }
 
 opclass_exponential :: { Expression }
-                    : '^' { mkExpVarBinOp $1 }
+    : '^' { mkExpVarBinOp $1 }
 
 opclass_unary :: { Expression }
-              : unary_op { mkExpVarUnOp $1 }
+    : unary_op { mkExpVarUnOp $1 }
 
 unary_op
     : '!' { $1 }
@@ -247,7 +257,7 @@ unary_op
 
 
 declarations :: { [Declaration] }
-             declarations
+declarations
     : declaration
         { [$1] } 
     | declaration ';' declarations
@@ -255,7 +265,7 @@ declarations :: { [Declaration] }
 
 
 declaration :: { Declaration }
-            declaration
+declaration
     : CONST ID ':' type_denoter '=' expression
         { DeclConst {dcConst = tspIdName $2, dcType = $4, dcVal = $6,
                      declSrcPos = $1} }
@@ -268,41 +278,41 @@ declaration :: { Declaration }
 
 
 type_denoter :: { TypeDenoter }
-             type_denoter : ID       { TDBaseType {tdbtName = tspIdName $1,
+type_denoter : ID       { TDBaseType {tdbtName = tspIdName $1,
                                       tdSrcPos = tspSrcPos $1} }
 
 
 {
 
 happyError :: P a
-           happyError = failP "Parse error"
+happyError = failP "Parse error"
 
 
 -- | Parses a MiniTriangle program, building an AST representation of it
 -- if successful.
 
 parse :: String -> D AST
-      parse = runP parseAux
+parse = runP parseAux
 
 
 -- Projection functions for pairs of token and source position.
 
 tspSrcPos :: (Token,SrcPos) -> SrcPos
-          tspSrcPos = snd
+tspSrcPos = snd
 
 
 tspLIVal :: (Token,SrcPos) -> Integer
-         tspLIVal (LitInt {liVal = n}, _) = n
+tspLIVal (LitInt {liVal = n}, _) = n
 tspLIVal _ = parserErr "tspLIVal" "Not a LitInt"
 
 
 tspIdName :: (Token,SrcPos) -> Name
-          tspIdName (Id {idName = nm}, _) = nm
+tspIdName (Id {idName = nm}, _) = nm
 tspIdName _ = parserErr "tspIdName" "Not an Id"
 
 
 tspOpName :: (Token,SrcPos) -> Name
-          tspOpName (Op {opName = nm}, _) = nm
+tspOpName (Op {opName = nm}, _) = nm
 tspOpName _ = parserErr "tspOpName" "Not an Op"
 
 
@@ -310,7 +320,7 @@ tspOpName _ = parserErr "tspOpName" "Not an Op"
 
 -- Builds ExpVar from pair of Binary Operator Token and SrcPos.
 mkExpVarBinOp :: (Token,SrcPos) -> Expression
-              mkExpVarBinOp otsp =
+mkExpVarBinOp otsp =
     ExpVar {evVar = tspOpName otsp, expSrcPos = tspSrcPos otsp}
 
 
@@ -318,7 +328,7 @@ mkExpVarBinOp :: (Token,SrcPos) -> Expression
 -- As a special case, the unary operator "-" is substituted for the name
 -- "neg" to avoid confusion with the binary operator "-" later.
 mkExpVarUnOp :: (Token,SrcPos) -> Expression
-             mkExpVarUnOp otsp =
+mkExpVarUnOp otsp =
     ExpVar {evVar = nm, expSrcPos = tspSrcPos otsp}
     where
         onm = tspOpName otsp
@@ -329,7 +339,7 @@ mkExpVarUnOp :: (Token,SrcPos) -> Expression
 -- if successful, pretty-prints the resulting AST.
 
 testParser :: String -> IO ()
-           testParser s = do
+testParser s = do
     putStrLn "Diagnostics:"
     mapM_ (putStrLn . ppDMsg) (snd result)
     putStrLn ""
@@ -345,6 +355,6 @@ testParser :: String -> IO ()
 
 
 parserErr :: String -> String -> a
-          parserErr = internalError "Parser"
+parserErr = internalError "Parser"
 
 }
