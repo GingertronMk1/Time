@@ -9,6 +9,6 @@ in
             y := y + 1
         until y > 42;
         putint(y);
-        z := (y > 30 ? 1 : 0);
+        z := (y > 30 ? x == 9 ? 2 : 1 : 0);
         putint(z)
     end
