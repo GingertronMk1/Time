@@ -52,16 +52,13 @@ ppCommand n (CmdSeq {csCmds = cs, cmdSrcPos = sp}) =
     indent n . showString "CmdSeq" . spc . ppSrcPos sp . nl
     . ppSeq (n+1) ppCommand cs
 ppCommand n (CmdIf {ciCondsCmds = cs, ciElse = e, cmdSrcPos = sp}) =
-    case e of Nothing ->  indent n . showString "CmdIf" . spc . ppSrcPos sp . nl
-                          . ppExpression (n+1) e1
-                          . ppCommand (n+1) c1
-                          . ppExprsComms n css
-              Just x  ->  indent n . showString "CmdIf" . spc . ppSrcPos sp . nl
-                          . ppExpression (n+1) e1
-                          . ppCommand (n+1) c1
-                          . ppExprsComms n css
-                          . ppCommand (n+1) x
-              where (e1, c1):css = cs
+    let printMost = indent n . showString "CmdIf" . spc . ppSrcPos sp . nl
+                    . ppExpression (n+1) e1
+                    . ppCommand (n+1) c1
+                    . ppExprsComms n css
+    in case e of Nothing -> printMost
+                 Just c  -> printMost . ppCommand (n+1) c
+    where (e1, c1):css = cs
 ppCommand n (CmdWhile {cwCond = e, cwBody = c, cmdSrcPos = sp}) =
     indent n . showString "CmdWhile" . spc . ppSrcPos sp . nl
     . ppExpression (n+1) e
@@ -74,15 +71,10 @@ ppCommand n (CmdRepeat {crBody = c, crCond = e, cmdSrcPos = sp}) =
     indent n . showString "CmdRepeat" . spc . ppSrcPos sp . nl
     . ppCommand (n+1) c
     . ppExpression (n+1) e
-ppCommand n (CmdIfNoElse {cineCond = e, cineBody = b, cmdSrcPos = sp}) =
-    indent n . showString "CmdIfNoElse" . spc . ppSrcPos sp . nl
-    . ppExpression (n+1) e
-    . ppCommand (n+1) b
 
 ppExprsComms :: Int -> [(Expression, Command)] -> ShowS       -- A helper function to prettily print the list of expressions and commands
 ppExprsComms n []           = showString ""
-ppExprsComms n ((e,c):ecs)  = indent n . showString "CmdElsif" . nl 
-                              . ppExpression (n+1) e
+ppExprsComms n ((e,c):ecs)  = ppExpression (n+1) e
                               . ppCommand (n+1) c
                               . ppExprsComms n ecs
 
