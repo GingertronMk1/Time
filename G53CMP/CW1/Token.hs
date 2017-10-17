@@ -30,7 +30,7 @@ data Token
     | Colon     -- ^ \":\"
     | ColEq     -- ^ \":=\"
     | Equals    -- ^ \"=\"
-    | Cond      -- ^ \"?\"
+    | Cond      -- ^ \"?\"          TASK I.2
 
     -- Keywords
     | Begin     -- ^ \"begin\"
@@ -41,11 +41,12 @@ data Token
     | If        -- ^ \"if\"
     | In        -- ^ \"in\"
     | Let       -- ^ \"let\"
-    | Repeat    -- ^ \"repeat\"   FOR TASK I.1
     | Then      -- ^ \"then\"
-    | Until     -- ^ \"until\"    FOR TASK I.1
     | Var       -- ^ \"var\"
     | While     -- ^ \"while\"
+    | Repeat    -- ^ \"repeat\"     TASK I.1
+    | Until     -- ^ \"until\"      TASK I.1
+    | Elsif     -- ^ \"elsif\"      TASK I.3
 
     -- Tokens with variable spellings
     | LitInt {liVal :: Integer}         -- ^ Integer literals

@@ -129,7 +129,7 @@ scanner cont = P $ scan
         mkOpOrSpecial ":"  = Colon
         mkOpOrSpecial ":=" = ColEq
         mkOpOrSpecial "="  = Equals
-        mkOpOrSpecial "?"  = Cond
+        mkOpOrSpecial "?"  = Cond     -- TASK I.2
         mkOpOrSpecial name = Op {opName = name}
 
         -- scanIdOrKwd :: Int -> Int -> Char -> String -> D a
@@ -147,11 +147,12 @@ scanner cont = P $ scan
         mkIdOrKwd "if"      = If
         mkIdOrKwd "in"      = In
         mkIdOrKwd "let"     = Let
-        mkIdOrKwd "repeat"  = Repeat
         mkIdOrKwd "then"    = Then
-        mkIdOrKwd "until"   = Until
         mkIdOrKwd "var"     = Var
         mkIdOrKwd "while"   = While
+        mkIdOrKwd "repeat"  = Repeat      -- TASK I.1
+        mkIdOrKwd "until"   = Until       -- TASK I.1
+        mkIdOrKwd "elsif"   = Elsif       -- TASK I.3
         mkIdOrKwd name      = Id {idName = name}
 
         -- Return token, position of token, updated position, and remaning
