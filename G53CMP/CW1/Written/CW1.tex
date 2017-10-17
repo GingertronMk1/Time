@@ -61,7 +61,7 @@ Then extending the \verb|command| portion with the AST generated in \verb|AST.hs
 The final part was extending \verb|PPAST.hs| to nicely print my \verb|repeat-until| loops.
 This was achieved by adding a case to the \verb|ppCommand| function.
 
-\lstin{73}{76}{PPAST.hs}
+\lstin{70}{73}{PPAST.hs}
 
 \section{Task I.2: Conditional Expression}
 \subsection{Language Modification}
@@ -98,7 +98,7 @@ Then I extended the \verb|expression| function to include the ternary operator a
 \subsubsection{PPAST.hs}
 Finally I extended the \verb|ppExpression| function in \verb|PPAST.hs| to support the new expression.
 
-\lstin{104}{108}{PPAST.hs}
+\lstin{96}{100}{PPAST.hs}
 
 \section{Task I.3: Optional Else and Elsif}
 \subsection{Language Modification}
@@ -149,12 +149,12 @@ If ppExprsComms receives an empty list (i.e. there were no \verb|elsif| cases), 
 If it receives a populated list, it takes the head of the list, prints \textbf{"CmdElsIf"}, and the \verb|Expression| and \verb|Command| using the provided functions for those. 
 It then calls itself on the tail of the list.
 
-\lstin{82}{88}{PPAST.hs}
+\lstin{75}{79}{PPAST.hs}
 
 For the modifications on \verb|ppCommand|, I added a \verb|case of| statement with respect to the \verb|ciElse| portion of the AST. 
 If this is \verb|Nothing|, the function only prints whatever \verb|if... then... elsif... then...| it receives, otherwise it prints all that as well as the final \verb|else...| case.
 
-\lstin{54}{64}{PPAST.hs}
+\lstin{54}{61}{PPAST.hs}
 
 \section{Task I.4: More Character Literals}
 \subsection{Language Modification}
