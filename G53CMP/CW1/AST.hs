@@ -122,18 +122,18 @@ data Command
           cmdSrcPos :: SrcPos
     }
     -- | If sans else
-    | CmdIfNoElse {
-          cineCond  :: Expression,
-          cineBody  :: Command,
-          cmdSrcPos :: SrcPos
-    }
-    -- | elsif
-    | CmdElsIf {
-          cieCond   :: Expression,
-          cieBody   :: Command,
-          cieNext   :: Command,
-          cmdSrcPos :: SrcPos
-    }
+--  | CmdIfNoElse {
+--        cineCond  :: Expression,
+--        cineBody  :: Command,
+--        cmdSrcPos :: SrcPos
+--  }
+--  -- | elsif
+--  | CmdElsIf {
+--        cieCond   :: Expression,
+--        cieBody   :: Command,
+--        cieNext   :: Command,
+--        cmdSrcPos :: SrcPos
+--  }
 
 
 instance HasSrcPos Command where
