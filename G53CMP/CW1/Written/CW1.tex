@@ -1,4 +1,4 @@
-\title{G53MDP Mobile Device Programming}
+\title{G53CMP Coursework Part I}
 \author{
   Jack Ellis\\
     psyje5@nottingham.ac.uk\\
@@ -6,7 +6,6 @@
   }
 \date{}
 \documentclass[12pt]{article}
-\pagenumbering{gobble}
 \usepackage{graphicx}
 \graphicspath{ {Images/} }
 \usepackage{amsmath}
@@ -21,7 +20,7 @@
 \lstdefinestyle{Haskell}{
   \basicstyle=\small\tt
 }
-\newcommand{\lstin}[3]{%
+\newcommand{\lstin}[3]{
   \lstinputlisting[firstline=#1, lastline=#2]{#3}
 }
 
@@ -31,6 +30,15 @@
 \pagebreak
 \section{Task I.1: Repeat-Loop}
 \subsection{Language Modification}
+\subsubsection{Lexical Syntax}
+For this, the \textit{Keyword} non-terminal was extended with the addition of \verb|repeat| and \verb|until| terminals, basically \textit{Keyword} $\rightarrow$ \verb|repeat| $|$ \verb|until|
+
+\subsubsection{Context-Free Syntax}
+Here, \textit{Command} was extended to include the production \textit{Command} $\rightarrow$ \verb|repeat| \textit{Command} \verb|until| \textit{Expression}
+
+\subsubsection{Abstract Syntax Tree}
+This was a similar extension to the CFS, in that \textit{Command} was extended to include a production \textit{Command} $\rightarrow$ \verb|repeat| \textit{Command} \verb|until| \textit{Expression}, and this was given the name \textbf{CmdRepeat}
+
 
 \subsection{Code Extensions}
 \subsubsection{Token.hs}
@@ -65,6 +73,15 @@ This was achieved by adding a case to the \verb|ppCommand| function.
 
 \section{Task I.2: Conditional Expression}
 \subsection{Language Modification}
+\subsubsection{Lexical Syntax}
+First, \textit{Operator} was extended to include the '\verb|?|' character, with the production \textit{Operator} $\rightarrow$ \verb|?|.
+The colon ('\verb|:|') character already exists within the productions.
+
+\subsubsection{Context-Free Syntax}
+This was extended by a new non-terminal \textit{CondExp}, which in turn has a single production: \textit{CondExp} $\rightarrow$ \textit{Expression} \verb|?| \textit{Expression} \verb|:| \textit{Expression}.
+
+\subsubsection{Abstract Syntax Tree}
+Here I added a new production to \textit{Expression}, mirroring what was done in the CFS for \textit{CondExp}, specifically \textit{Expression} $\rightarrow$ \textit{Expression} \verb|?| \textit{Expression} \verb|:| \textit{Expression}.
 
 \subsection{Code Modification}
 \subsubsection{Token.hs}
@@ -102,6 +119,22 @@ Finally I extended the \verb|ppExpression| function in \verb|PPAST.hs| to suppor
 
 \section{Task I.3: Optional Else and Elsif}
 \subsection{Language Modification}
+Each of the following subsections will be split into 2 parts: optional else, and elsif.
+\subsubsection{Lexical Syntax}
+There was no change to the Lexical Syntax for the optional else; we are simply modifying how the keywords can be used.\\\par
+
+With regards to the else-if section, \textit{Keyword} was extended with the production \textit{Keyword} $\rightarrow$ \verb|elsif|.
+
+\subsubsection{Context-Free Syntax}
+In terms of optional else, the CFS was extended with a new non-terminal \textit{OptElse}, which produces as follows: \textit{OptElse} $\rightarrow$ \verb|else| \textit{Command} $|   \epsilon$.
+\textit{Command} was then modified such that instead of the standard production for \verb|if|, there is now a production Command $\rightarrow$ \verb|if| \textit{Expression} \verb|then| \textit{Command} \textit{optElse}.
+\\\par
+
+For the \verb|elsif|, the same \verb|if| production was again modified, with the production now reading Command $\rightarrow$ \verb|if| \textit{Expression} \verb|then| \textit{Command} \textit{Elsifs} \textit{OptElse}.
+The Elsifs non-terminal has the following production: Elsifs $\rightarrow \epsilon |$ \verb|elsif| \textit{Expression} \verb|then| \textit{Command} \textit{Elsifs}.
+
+\subsubsection{Abstract Syntax Tree}
+The ASTs for both were extended in the same way as the Context-Free Syntaxes, with CmdIf retaining its name.
 
 \subsection{Code Modification}
 \subsubsection{Token.hs}
@@ -143,9 +176,9 @@ This involves incorporating the changes made to the AST and the functions descri
 \lstin{118}{119}{Parser.y}
 
 \subsubsection{PPAST.hs}
-Making this print prettily was relatively straightforward with the assistance of a helper function, namely one that would deal with a list of \verb|(Expression, Command)| tuples. 
+Making this print prettily was relatively straightforward with the assistance of a helper function, specifically one that would deal with a list of \verb|(Expression, Command)| tuples. 
 This function I called \verb|ppExprsComms|. 
-If ppExprsComms receives an empty list (i.e. there were no \verb|elsif| cases), it would simply print nothing, \textbf{""}. 
+If \verb|ppExprsComms| receives an empty list (i.e. there were no \verb|elsif| cases), it would simply print noting, \textbf{""}. 
 If it receives a populated list, it takes the head of the list, prints \textbf{"CmdElsIf"}, and the \verb|Expression| and \verb|Command| using the provided functions for those. 
 It then calls itself on the tail of the list.
 
@@ -156,8 +189,12 @@ If this is \verb|Nothing|, the function only prints whatever \verb|if... then...
 
 \lstin{54}{61}{PPAST.hs}
 
+\iffalse
 \section{Task I.4: More Character Literals}
 \subsection{Language Modification}
+\subsubsection{Lexical Syntax}
+\subsubsection{Context-Free Syntax}
+\subsubsection{Abstract Syntax Tree}
 
 \subsection{Code Modification}
 \subsubsection{Token.hs}
@@ -165,7 +202,7 @@ If this is \verb|Nothing|, the function only prints whatever \verb|if... then...
 \subsubsection{AST.hs}
 \subsubsection{Parser.y}
 \subsubsection{PPAST.hs}
-
+\fi
 
 
 
