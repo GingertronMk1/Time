@@ -198,6 +198,8 @@ primary_expression :: { Expression }
         { ExpApp {eaFun = $1, eaArgs = [$2], expSrcPos = srcPos $1}}
     | '(' expression ')'
         { $2 }
+--    | \' expression \'
+--        { $2 }
 
 
 -- Variables being assigned to, procedures being called, and functions being
