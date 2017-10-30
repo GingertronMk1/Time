@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -24,8 +22,8 @@ public class BrushSizeAndShape extends AppCompatActivity {
         // Populating the options with what is currently selected
         Intent oldValues = getIntent();
         // Get the current size and shape of the brush
-        int oldShape = oldValues.getExtras().getInt("oldShape");        // Get the current size
-        int oldSize = oldValues.getExtras().getInt("oldSize");          // and shape of brush
+        int oldShape = oldValues.getExtras().getInt("oldShape");
+        int oldSize = oldValues.getExtras().getInt("oldSize");
 
         // Auto-enter the current size of the brush
         EditText et = findViewById(R.id.sizePicker);
@@ -39,8 +37,9 @@ public class BrushSizeAndShape extends AppCompatActivity {
         Intent oldValues = getIntent();
         int oldSize = oldValues.getExtras().getInt("OldSize");
 
-        RadioGroup rg = findViewById(R.id.roundSquareGroup);            // Getting the two
-        EditText et = findViewById(R.id.sizePicker);                    // input areas
+        // Getting the two input areas
+        RadioGroup rg = findViewById(R.id.roundSquareGroup);
+        EditText et = findViewById(R.id.sizePicker);
 
 
         // With some fiddling in MainActivity, we can just use the index within the group
@@ -61,6 +60,7 @@ public class BrushSizeAndShape extends AppCompatActivity {
             newSize = oldSize;
         }
 
+        // Finally we wrap this all into a nice Intent and pass it back to MainActivity
         Intent newSizeShape = new Intent();
         newSizeShape.putExtra("newShape", roundOrSquare);
         newSizeShape.putExtra("newSize", newSize);

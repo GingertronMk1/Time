@@ -18,8 +18,6 @@
         </activity>
         <activity android:name=".DrawBlank" />
         <activity android:name=".ColourChange" />
-        <activity android:name=".BrushSize" />
-        <activity android:name=".BrushShape" />
         <activity android:name=".BrushSizeAndShape"></activity>
     </application>
 

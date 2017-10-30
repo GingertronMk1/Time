@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
-import android.util.Log;
 import android.widget.RelativeLayout;
 
 
@@ -47,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
                     FingerPainterView myFPV = findViewById(R.id.myFingerPainterViewId);
                     int newColour = data.getExtras().getInt("newColour");
-                    //Log.d("New Colour", Integer.toHexString(newColour));
-                    //Log.d("Size", Integer.toString(myFPV.getBrushWidth()));
                     myFPV.setColour(newColour);
                 }
                 break;
