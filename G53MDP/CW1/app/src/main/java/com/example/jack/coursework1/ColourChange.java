@@ -6,13 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
-static final int BLACK = 0xFFFFFFFF;
-static final int RED = 0xFFFF0000;
-static final int GREEN = 0xFF00FF00;
-static final int BLUE = 0xFF0000FF;
-
 
 public class ColourChange extends AppCompatActivity {
+
+    static final int BLACK = 0xFF000000;
+    static final int RED = 0xFFFF0000;
+    static final int GREEN = 0xFF00FF00;
+    static final int BLUE = 0xFF0000FF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,28 +20,17 @@ public class ColourChange extends AppCompatActivity {
         setContentView(R.layout.activity_colour_change);
     }
 
-    public void colourBlack(View v) {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("newColour", 0xFFFFFFFF);
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-    public void colourRed(View v) {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("newColour", 0xFFFF0000);
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-    public void colourGreen(View v) {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("newColour", 0xFF00FF00);
-        setResult(Activity.RESULT_OK, returnIntent);
-        finish();
-    }
-    public void colourBlue(View v) {
-        Intent returnIntent = new Intent();
-        returnIntent.putExtra("newColour", 0xFF0000FF);
-        setResult(Activity.RESULT_OK, returnIntent);
+    // What all these do is pass the relevant colour into the actual returner function described below
+
+    public void colourBlack(View v) { returnColour(BLACK); }
+    public void colourRed(View v) { returnColour(RED); }
+    public void colourGreen(View v) { returnColour(GREEN); }
+    public void colourBlue(View v) { returnColour(BLUE); }
+
+    public void returnColour(int colour) {
+        Intent colourIntent = new Intent();
+        colourIntent.putExtra("newColour", colour);
+        setResult(Activity.RESULT_OK, colourIntent);
         finish();
     }
 }
