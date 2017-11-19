@@ -18,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Player"></activity>
+        <service android:name=".PlayerService"/>
     </application>
 
 </manifest>
