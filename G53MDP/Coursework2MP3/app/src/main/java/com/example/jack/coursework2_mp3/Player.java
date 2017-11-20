@@ -3,21 +3,18 @@ package com.example.jack.coursework2_mp3;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.app.PendingIntent;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.content.ServiceConnection;
 import android.widget.ProgressBar;
-import android.util.Log;
 
 
 
 public class Player extends AppCompatActivity {
 
-    PlayerService pService;
-    boolean pBound = false;
+    PlayerService.PlayerBinder pService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,29 +35,23 @@ public class Player extends AppCompatActivity {
     protected void onStop() {       // On stop, unbind from that service
         super.onStop();
         unbindService(pConnection);
-        pBound = false;
     }
 
     public void playPause(View v) {
-        if(pBound) {
             pService.playPause();       // Basically passes play/pause straight through to the method in PlayerService
-        }
     }
 
     private ServiceConnection pConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
-            PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) service;   // Creating the connection
-            pService = binder.getService();
-            binder.registerCallback(callback);
-            pBound = true;
+            pService = (PlayerService.PlayerBinder) service;   // Creating the connection
+            pService.registerCallback(callback);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            //unregisterCallback(callback);
+            pService.unregisterCallback(callback);
             pService = null;
-            pBound = false;
         }
     };
 

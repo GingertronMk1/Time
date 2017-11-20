@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.app.PendingIntent;
-import android.content.res.Resources;
 import android.support.v4.app.NotificationCompat;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -56,7 +55,7 @@ public class PlayerService extends Service {
             case PAUSED: servicePlayer.play(); break;               // If it's paused, play
             case PLAYING: servicePlayer.pause(); break;             // If it's playing, pause
             case STOPPED: servicePlayer.play(); break;              // If it's stopped, play
-        };
+        }
     }
 
     public int timeElapsed() {
@@ -67,32 +66,17 @@ public class PlayerService extends Service {
             fElapsed = (el/du)*1000;
         }
         int iElapsed = (int) fElapsed;
-        Log.d("Time Elapsed", Float.toString(el));
-        Log.d("Time Total", Float.toString(du));
-        Log.d("Proportion", Integer.toString(iElapsed));
-
         return iElapsed;
     };
 
-    public int getState() {
-        int state = 0;
-        switch(servicePlayer.getState()){
-            case PLAYING:   state = 0; break;
-            case PAUSED:    state = 1; break;
-            case STOPPED:   state = 2; break;
-            case ERROR:     state = 3; break;
-        }
-        return state;
-    }
-
-
     public class PlayerBinder extends Binder implements IInterface {
-        PlayerService getService() {
-            return PlayerService.this;                  // Making a Binder that returns this
-        }
         @Override
-        public IBinder asBinder() {
+        public PlayerBinder asBinder() {
             return this;
+        }
+
+        public void playPause() {
+            PlayerService.this.playPause();
         }
 
         public void registerCallback(CallbackInterface callback) {
@@ -119,7 +103,6 @@ public class PlayerService extends Service {
         public void run() {
             while (this.running) {
                 try{Thread.sleep(1000);} catch(Exception e) {return;}
-                Log.d("Elapsed", Integer.toString(timeElapsed()));
                 progress = timeElapsed();
                 doCallbacks(progress);
             }
