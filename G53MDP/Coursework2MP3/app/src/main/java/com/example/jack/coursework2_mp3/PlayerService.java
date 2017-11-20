@@ -116,4 +116,10 @@ public class PlayerService extends Service {
             remoteCallbackList.finishBroadcast();
         }
     }
+
+    @Override
+    public void onDestroy() {
+        sp = null;
+        super.onDestroy();
+    }
 }

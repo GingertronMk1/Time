@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.content.ServiceConnection;
 import android.widget.ProgressBar;
+import android.util.Log;
 
 
 
@@ -29,12 +30,6 @@ public class Player extends AppCompatActivity {
         super.onStart();
         Intent intent = new Intent(this, PlayerService.class);
         bindService(intent, pConnection, Context.BIND_AUTO_CREATE);     // On start, Bind to a PlayerService
-    }
-
-    @Override
-    protected void onStop() {       // On stop, unbind from that service
-        super.onStop();
-        unbindService(pConnection);
     }
 
     public void playPause(View v) {
@@ -69,4 +64,36 @@ public class Player extends AppCompatActivity {
         }
     };
 
+    @Override
+    protected void onDestroy() {
+        Log.d("CW2", "Player onDestroy");
+        if(pConnection!=null) {
+            unbindService(pConnection);
+            pConnection = null;
+        }
+        super.onDestroy();
+    }
+/*
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("CW2", "Player onPause");
+        unbindService(pConnection);
+    }
+/*
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("CW2", "Player onResume");
+        Intent intent = new Intent(this, PlayerService.class);
+        bindService(intent, pConnection, Context.BIND_AUTO_CREATE); // Rebind on resumption
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(pConnection);
+        Log.d("CW2", "Player onStop");
+    }
+*/
 }
