@@ -149,7 +149,7 @@ I did however add the \verb|elsif| keyword to \verb|mkIdIrKwd|.
 \lstin{157}{157}{Scanner.hs}
 
 \subsubsection{AST.hs}
-In AST, I modified the \verb|CmdIf| case in the \verb|Command| data-type, doing two main things. 
+In \verb|AST.hs|, I modified the \verb|CmdIf| case in the \verb|Command| data-type, doing two main things. 
 First was to allow for the arbitrary number of \verb|elsif| cases, which was achieved by making a list of \verb|(Expression, Command)| tuples. 
 The second was to allow for the optional \verb|else| case, which was achieved by making \verb|ciElse| a \verb|Maybe Command| rather than a \verb|Command|.
 
@@ -185,7 +185,7 @@ It then calls itself on the tail of the list.
 \lstin{75}{79}{PPAST.hs}
 
 For the modifications on \verb|ppCommand|, I added a \verb|case of| statement with respect to the \verb|ciElse| portion of the AST. 
-If this is \verb|Nothing|, the function only prints whatever \verb|if... then... elsif... then...| it receives, otherwise it prints all that as well as the final \verb|else...| case.
+If this is \verb|Nothing|, the function only prints whatever \verb|if... then... elsif... then...| it receives, otherwise it prints all of that as well as the final \verb|else Command|  case.
 
 \lstin{54}{61}{PPAST.hs}
 
