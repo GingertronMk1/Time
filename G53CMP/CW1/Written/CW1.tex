@@ -94,7 +94,7 @@ Therefore all I had to do was add a \verb|Token| case for the \verb|?| operator.
 Here we find that the scanner already accepts the \verb|?| operator, however it does this as a normal character. 
 Thus I extended the \verb|mkOpOrSpecial| function to include the \verb|"?"| case.
 
-\lstin{132}{132}{Scanner.hs}
+\lstin{134}{134}{Scanner.hs}
 
 \subsubsection{AST.hs}
 The tricky thing here was remembering that this is a conditional \textbf{expression}, not a command. 
@@ -146,7 +146,7 @@ Nothing needed to be added to \verb|Token.hs| for the optional else, however Els
 Again, no extension was needed here for the optional else. 
 I did however add the \verb|elsif| keyword to \verb|mkIdIrKwd|.
 
-\lstin{155}{155}{Scanner.hs}
+\lstin{157}{157}{Scanner.hs}
 
 \subsubsection{AST.hs}
 In AST, I modified the \verb|CmdIf| case in the \verb|Command| data-type, doing two main things. 
