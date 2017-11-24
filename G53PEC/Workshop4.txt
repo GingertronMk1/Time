@@ -1,0 +1,11 @@
+We feel that Paul should appeal to higher authorities based on the principles of disclosing information others ought to know, taking responsibility for your actions, and maintaining integrity.
+Going through them, we feel that if Paul has been coerced into doing something he didn't want under threat of losing his job, which is an ethical breach on his bosses part and something others need to know about.
+Furthermore, he took the time to research solutions to the matrix problem, which again is information others ought to know.
+He should take responsibility for his actions insofar as stating his reasons for producing software he knows to be sub-par.
+Finally, he should maintain his integrity by taking responsibility for what he's done.
+
+IET rules 2 and 3 state that his boss should be up-to-date on the modern matrix algorithms, and the fact that he is not means he should not have undertaken the project (despite his role being to give it to Paul).
+Rule 5 states that Paul should inform his boss' employers that his software carries with it risks and his boss did not heed his professional advice to delay its launch.
+Rule 6 says that he should not be writing information that is damaging to the integrity of the organisation; by including factually incorrect information in the documentation, Paul is doing this.
+
+The group arrived at the decision unanimously having taken into account the above factors.
