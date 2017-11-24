@@ -1,0 +1,12 @@
+My basis for this case study will be the subject of my G52GRP group project; a face tracker used to control computers.
+The system scans a users' face and translates its movements into computer input (mouse, keyboard, etc.)
+The role of the team was to integrate extant facial tracking technologies and implement with them a program capable of emulating keyboard and mouse input.
+
+The first ethical scenario I will be considering is thus:
+A user uses the system to control their thermostat; a new release breaks the system rendering it only able to raise the temperature.
+This issue came about as a result of improper testing.
+This is an issue of safety and reliability
+
+The second scenario is:
+At some point in the system's development, the lead software designer wants to have it connect to the internet to build a more realistic model of how people's faces move.
+This is an issue of privacy.
