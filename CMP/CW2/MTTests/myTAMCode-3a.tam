@@ -1,0 +1,14 @@
+GETINT
+LOADL 1
+Label "cmp"
+LOAD (SB 0)
+LOAD (SB 1)
+LSS
+JUMPIFNZ "end"
+LOAD (SB 1)
+PUTINT
+LOADL 1
+ADD
+JUMP "cmp"
+Label "end"
+HALT
