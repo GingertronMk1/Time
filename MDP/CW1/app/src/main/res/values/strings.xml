@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Coursework1</string>
+    <item name="myFingerPainterViewId" type="id" />
+</resources>
