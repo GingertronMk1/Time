@@ -1,6 +1,0 @@
-Statement 8 is the one we have selected as the most contentious; we believe that people will not develop these behaviours any more than any other means of interaction.
-
-With regards to the roles of software developers, we would advise incorporating a good infrastructure for moderation, ensuring that those who would nurture these harmful behaviours are not given the platform to do so.
-Keeping a system that ranks content would be a good idea as well; ensuring negative and harmful content is not rewarded and possibly hidden from public view.
-Furthermore, maintain a log of users' interactions such that they are held accountable for what they may say in the future by virtue of someone being able to make a judgement based on previous comments.
-Finally, keep a strike system, with a limited number of times a users' commentary is reported before they are perma-banned, again removing the possibility of repeat offending.
