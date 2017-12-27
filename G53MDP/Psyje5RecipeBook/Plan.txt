@@ -1,0 +1,5 @@
+On a basic level, we want 3 activities:
+
+1: mainActivity, from where we can browse our stored recipes or add another one
+2: readActivity, where we read a given recipe
+3: writeActivity, where we write a new recipe
