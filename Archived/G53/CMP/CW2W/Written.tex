@@ -1,0 +1,111 @@
+\title{G53CMP Coursework Part II}
+\author{
+  Jack Ellis\\
+    psyje5@nottingham.ac.uk\\
+    4262333
+}
+\date{}
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\graphicspath{ {Images/} }
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily,
+    language=Haskell,
+    tabsize=4,
+    inputpath=../CW2/
+}
+\lstdefinestyle{Haskell}{
+  \basicstyle=\small\tt
+}
+\newcommand{\lstin}[3]{
+  \lstinputlisting[firstline=#1, lastline=#2]{#3}
+}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\pagebreak
+\section{Task II.2}
+\subsection{Character Literals}
+\subsubsection{Type.hs}
+This was a matter of adding the \verb|Character| option to the \verb|Type| data, and extending \verb|Eq| and \verb|Show|
+
+\lstin{67}{81}{Type.hs}
+\lstin{91}{97}{Type.hs}
+\lstin{180}{185}{Type.hs}
+
+\subsubsection{MTStdEnv.hs}
+Here I added \verb|Character| to the \verb|TypeSym| array section of \verb|mtStdEnv|
+
+\lstin{64}{68}{MTStdEnv.hs}
+
+\subsection{Repeat-Until}
+
+\subsubsection{MTIR.hs/PPMTIR.hs}
+These were the same as the extensions to \verb|AST| and \verb|PPAST| from Part I
+
+\lstin{84}{89}{MTIR.hs}
+\lstin{69}{72}{PPMTIR.hs}
+
+\subsubsection{TypeChecker.hs}
+\verb|chkCmd| was extended to include the new \verb|CmdRepeat| MTIR representation
+
+\lstin{120}{123}{TypeChecker.hs}
+
+\pagebreak
+
+\section{Task II.3}
+
+\subsection{Print 1 To N}
+
+\lstin{6}{19}{myTAMCode.hs}
+
+First, an int is retrieved from the standard input. 
+1 is then pushed onto the machine's stack. 
+The label "comp" is applied for looping later. 
+The contents of address Stack Base 0 are pushed onto the stack, as are then the contents of Stack Base 1. 
+If 0's contents are smaller than 1's, "True" is pushed onto the stack, replacing both values. 
+Otherwise, "False" is pushed, with the same effect. 
+If the previous action returned "True", the program jumps to the end. 
+Otherwise, Stack Base 1's contents are pushed to the stack, printed, and 1 added to them. 
+The program jumps to the label "comp".
+The label "end" is applied so the earlier jump has somewhere to go, and the program finishes.
+
+
+\subsection{Factorial}
+
+\lstin{21}{40}{myTAMCode.hs}
+
+An int is retrieved from stdin. 
+The subroutine "fac" is called. 
+Its result is pushed to stdout. 
+The program then halts.\par
+
+The subroutine "fac" first pushes '1' to the stack. 
+It then loads the value stored in Local Base -1, and compares them to 1. 
+If they are smaller, it jumps to label "one" (this is the base case, ensuring any value less than one returns one).
+Otherwise, the value in Local Base -1 is pushed to the top 2 positions in the stack, the top one then being subtracted by one. 
+"fac" is called recursively here, what this serves to do is take the value and multiply it by all smaller natural numbers; this is the real factorial part. 
+Once this recursive call finishes, MUL is called again, making the final factorial call, the "one" section is jumped, and the factorial value returned.
+
+\subsection{getchr and putchr}
+
+\subsubsection{LibMT.hs}
+
+\lstin{169}{179}{LibMT.hs}
+
+Adding these was largely a case of copying the parts for \verb|getint| and \verb|putint|, but modifying them with the GETCHR and PUTCHR MAT calls.
+
+\subsubsection{MTStdEnv.hs}
+
+And adding them here was again a matter of modifying the definitions for \verb|getint| and \verb|putint|, ensuring they were type-correct for Characters rather than Integers.
+
+\lstin{90}{91}{MTStdEnv.hs}
+
+
+
+\end{document}
+

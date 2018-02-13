@@ -1,0 +1,96 @@
+\title{G53PEC Case Study Analysis}
+\author{
+        Jack Ellis \\
+        psyje5@nottingham.ac.uk\\
+        4262333\\
+        I confirm that this coursework submission is all my own work, except where explicitly indicated within the text. 
+}
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\graphicspath{ {Images/} }
+\iffalse
+\usepackage[backend=bibtex]{biblatex}
+\addbibresource{bibli.bib}
+\fi
+
+\begin{document}
+\maketitle
+
+\section{Project Title and Description}
+The project I am going to reason about is the project I worked on as part of the G52GRP module, entitled \textit{Face As A Game Controller}. 
+The aim of this project was to create a piece of software that would take a video feed of a users' face and translate that into computer input. 
+The resultant product was able to detect head up, down, left, right, and tilt motions. 
+
+\section{Ethical Issues}
+\subsection{Privacy}
+If the system is to be taken online, there is a possibility that any information gathered may be accessed by people outside of the system\cite{equifax}. 
+The system by which it is taken online should be transparent and respecting of its users' privacy, so as to prevent users being simply means to an end per Kantian ethics. 
+If the users are treated as such means, then the actions taken using this data will come from an unethical place. 
+
+In \textit{The Right To Privacy}, it is stated that "the law must afford some remedy for the unauthorised circulation of portraits of private persons"\cite{righttoprivacy}. 
+This is particularly relevant to our situation, in which the literal front-on portraits of the users' will be stored. 
+To ensure we can stay true to this principle, we must incorporate an opt-in/opt-out system, likely leaning on the side of opt-in for our own ethical safety. 
+
+Clause 3.d of the BCS code of conduct states that the administrator/s of a system should "NOT disclose or authorise to be disclosed, or use for personal gain or to benefit a third party, confidential information except with the permission of your Relevant Authority, or as required by Legislation."\cite{bcs}. 
+This means that the system should not disclose the information (the images/recording of user activity) unless required to by a relevant authority. 
+
+
+\subsection{Safety And Reliability}
+It is important to consider how safe the system is for use in its intended context. 
+As a developer you are accountable for defects in the system and any ill effects these defects may have. 
+If in the event of a lapse in ISP connection, the system fails, causing a disruption to the end users life, you are responsible for that disruption and the knock-on effects. 
+Returning to the BCS CoC, section 2.f states that one should "avoid injuring others, their property, reputation, or employment by false or malicious or negligent action or inaction.".\cite{bcs} 
+This means that if the system is used in such a way that it facilitates property, reputation, or employment that a failure of a feature should not mean failure of the system. 
+
+
+
+\section{Proposed Way Forward}
+\subsection{Privacy}
+To overcome this first ethical issue, we must ask ourselves some questions about the way this is being done. 
+If the individual questions can be answered in an ethically acceptable way, the system can be deemed ethically acceptable. 
+\begin{enumerate}
+  \item Can users opt in to/out of collection?\\
+        To satisfy this, the option to opt in/out must be made clear on installation, alongside all of the relevant information regarding the collection (discussed later). 
+        Moreover, the option to change ones mind must be available at all times when the system is in use, for example in a settings window within the application. 
+  \item Are users aware of the data collection and means of collection?\\
+        To satisfy this point, the system needs to include its privacy policy in an easily accessible place, potentially in a menu option. 
+        Furthermore, on system install, alongside the option to opt in/out, the full policy should be posted such that an end user knows exactly what it means to opt into the collection scheme. 
+        This should also be present within the settings pane option to opt in/out. 
+        If these first two things are in place the data collected can be said to have been ethically obtained. 
+  \item Is the collected data limited in scope?\\
+        To satisfy this, the data collected must be of a scope that is made clear to the user and is not infinite; there is a limit to the amount gathered. 
+  \item Can the data be traced back to the user that generated it?\\
+        To satisfy this final point, any data collected by the system should not be tracable to a user; recordings should be anonymised as much as is possible without losing resolution. 
+\end{enumerate}
+
+\subsection{Safety And Reliability}
+To overcome this ethical issue, we must ask a different set of questions:
+\begin{enumerate}
+  \item Does the consumer know about any bugs the developer knows about?\\
+        If the developer knows and withholds information about software defects and a user buys the software for use in such a case, the developer is to be held responsible. 
+        To avoid this, the developer should maintain a bug tracker on their website, potentially linked to a Git repository or some such, that is constantly updated with information about any arising bugs. 
+  \item Can a consumer organsation test the system?\\
+        For this to be satisfied, the system should be made available to review organisations such as 'Which?', and the reviews to be made publically available. 
+        A possible addendum to this is to make prerelease betas available to similar organisations or select end users. 
+  \item If a consumer buys a defective product, are they expected to buy any fixes?\\
+        Finally, a considerably simpler one to satisfy: software patches should be freely available from the developer. 
+\end{enumerate}
+
+\begin{thebibliography}{9}
+    \bibitem{equifax}
+      BBC News\\
+      \textit{Equifax data hack affected 694,000 UK customers}\\
+      \verb|www.bbc.co.uk/news/business-41575188|\\
+      Accessed 2017-12-14
+    \bibitem{bcs}
+      British Computer Society\\
+      \textit{Code of Conduct for BCS Members}\\
+      \verb|http://www.bcs.org/upload/pdf/conduct.pdf|\\
+      Accessed 2017-12-14
+    \bibitem{righttoprivacy}
+      Samuel D Warren and Louis D Brandeis. “The Right to Privacy”. In: Harvard Law Review (1890), pp. 193–220. 
+
+
+\end{thebibliography}
+
+\end{document}

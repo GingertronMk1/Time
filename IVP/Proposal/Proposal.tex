@@ -1,0 +1,35 @@
+\title{G53IVP Project Proposal}
+\author{
+  Jack Ellis \\
+  psyje5@nottingham.ac.uk\\
+  4262333
+}
+\date{}
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\graphicspath{ {Images/} }
+\usepackage{mathtools}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\pagebreak
+
+\section{Data Set}
+I propose to use the Nottingham New Theatre's history project\footnote{http://history.newtheatre.org.uk}. 
+This project contains years worth of information about shows put on at the NNT, including the season the show was put on as part of, cast, crew, playwright, and year of production. 
+
+\section{Task}
+The ultimate goal of this project is to better be able to visualise how the number of shows and casts in NNT productions has changed over the years. 
+Within this I would hope to be able to see the number of first-time directors and actors over the years, see individual 'records', e.g. who has been in the most shows, directed the most, and so on. 
+Additionally I would aim to create a system whereby two actors can be linked by common shows, in a "six degrees of Kevin Bacon" style. 
+Ideally the system should be able to be given a pair of actors and show the path that links them in the shortest number of shows.
+
+\section{Proposed Visualisation}
+With respect to the showing of the numbers of shows, shows per season, and so on, this is all quantitative bivariate data and as such can be represented by way of line graphs. 
+With respect to the "six degrees" I propose to create a network graph visualisation, with the nodes representing actors and arcs representing shared shows, i.e. two nodes linked by an arc represents two actors who were in the same show at some point. 
+As well as this, inputting the names of two actors should highlight the shortest path between them, ideally also listing the path and shows that link them.
+
+\section{Proposed Implementation}
+
+\end{document}
