@@ -1,4 +1,4 @@
-\title{G53IVP Project Proposal}
+\title{The History of the Nottingham New Theatre}
 \author{
   Jack Ellis \\
   psyje5@nottingham.ac.uk\\
@@ -12,8 +12,6 @@
 
 \begin{document}
 \maketitle
-\tableofcontents
-\pagebreak
 
 \section{Data Set}
 I propose to use the Nottingham New Theatre's history project\footnote{http://history.newtheatre.org.uk}. 
@@ -28,8 +26,30 @@ Ideally the system should be able to be given a pair of actors and show the path
 \section{Proposed Visualisation}
 With respect to the showing of the numbers of shows, shows per season, and so on, this is all quantitative bivariate data and as such can be represented by way of line graphs. 
 With respect to the "six degrees" I propose to create a network graph visualisation, with the nodes representing actors and arcs representing shared shows, i.e. two nodes linked by an arc represents two actors who were in the same show at some point. 
+Work related to this includes the Chrome extension "Lost Circles"\footnote{https://chrome.google.com/webstore/detail/lost-circles-facebook-gra/ehpmfdlcppenimpibdifodjgfafkjhjl?hl=en}, which draws an interactive network map of all of a users' Facebook friends. 
+My system should look similar to the output of this, with the addition of being able to find links between two people. 
 As well as this, inputting the names of two actors should highlight the shortest path between them, ideally also listing the path and shows that link them.
 
 \section{Proposed Implementation}
+I intend to use Haskell for the data manipulation, as the data gathered is easily manipulated by it and I have some experience already with the platform. 
+For the visualisation I propose to use the D3 JavaScript library, and consequently target web browsers.
+
+\section{Milestones}
+\begin{itemize}
+\item Finding the data - 07/03/2018\\
+      Within a week I would hope to have located a suitable source of data from the history project's website.
+\item Parsing/Filtering - 14/03/2018\\
+      A week thereafter I would aim to have this information set out as a csv file if it is not already as such.
+\item Mining - 28/03/2018
+      Transforming the data so as to determine things such as whether or not a director has directed before or whether an actor has worked with another (and the ensuing connections) will take some time, and as such I would give myself more time for this part
+\item Initial Visualisations - 04/04/2018\\
+      Hopefully the actual determining of the relevant information will take the bulk of the time of the project, and some basic (i.e. non-interactive) visualisations can take shape at this point.
+\item Interactive Visualisations - 18/04/2018\\
+      At this stage the network graph depicting actors' connections should be finished and work may begin on stylistic elements
+\item User Feedback - 25/04/2018\\
+      At this stage the system should be in such a position as user feedback can take place on the visualisations, and further refining can take place.
+\item Hand In - 09/05/2018
+      The system should be handed in on this date, including a comprehensive report detailing the evolution of the system and how the data was obtained and transformed.
+\end{itemize}
 
 \end{document}

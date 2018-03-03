@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		047524A72029E07D008717DC /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 047524A62029E07D008717DC /* GLUT.framework */; };
-		047524AA2029E19D008717DC /* MyScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 047524A82029E19D008717DC /* MyScene.cpp */; };
+		047D4310203321B40021287C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 047D430F203321B40021287C /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		047524992029DF56008717DC /* CopyFiles */ = {
+		047D430A203321B40021287C /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -24,123 +23,110 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0475249B2029DF56008717DC /* GRA Lab 1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "GRA Lab 1"; sourceTree = BUILT_PRODUCTS_DIR; };
-		047524A62029E07D008717DC /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
-		047524A82029E19D008717DC /* MyScene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MyScene.cpp; sourceTree = "<group>"; };
-		047524A92029E19D008717DC /* MyScene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MyScene.hpp; sourceTree = "<group>"; };
+		047D430C203321B40021287C /* Lab1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Lab1; sourceTree = BUILT_PRODUCTS_DIR; };
+		047D430F203321B40021287C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		047524982029DF56008717DC /* Frameworks */ = {
+		047D4309203321B40021287C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				047524A72029E07D008717DC /* GLUT.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		047524922029DF56008717DC = {
+		047D4303203321B40021287C = {
 			isa = PBXGroup;
 			children = (
-				0475249D2029DF56008717DC /* GRA Lab 1 */,
-				0475249C2029DF56008717DC /* Products */,
-				047524A52029E07C008717DC /* Frameworks */,
+				047D430E203321B40021287C /* Lab1 */,
+				047D430D203321B40021287C /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		0475249C2029DF56008717DC /* Products */ = {
+		047D430D203321B40021287C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0475249B2029DF56008717DC /* GRA Lab 1 */,
+				047D430C203321B40021287C /* Lab1 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0475249D2029DF56008717DC /* GRA Lab 1 */ = {
+		047D430E203321B40021287C /* Lab1 */ = {
 			isa = PBXGroup;
 			children = (
-				047524A82029E19D008717DC /* MyScene.cpp */,
-				047524A92029E19D008717DC /* MyScene.hpp */,
+				047D430F203321B40021287C /* main.cpp */,
 			);
-			path = "GRA Lab 1";
-			sourceTree = "<group>";
-		};
-		047524A52029E07C008717DC /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				047524A62029E07D008717DC /* GLUT.framework */,
-			);
-			name = Frameworks;
+			path = Lab1;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0475249A2029DF56008717DC /* GRA Lab 1 */ = {
+		047D430B203321B40021287C /* Lab1 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 047524A22029DF56008717DC /* Build configuration list for PBXNativeTarget "GRA Lab 1" */;
+			buildConfigurationList = 047D4313203321B40021287C /* Build configuration list for PBXNativeTarget "Lab1" */;
 			buildPhases = (
-				047524972029DF56008717DC /* Sources */,
-				047524982029DF56008717DC /* Frameworks */,
-				047524992029DF56008717DC /* CopyFiles */,
+				047D4308203321B40021287C /* Sources */,
+				047D4309203321B40021287C /* Frameworks */,
+				047D430A203321B40021287C /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "GRA Lab 1";
-			productName = "GRA Lab 1";
-			productReference = 0475249B2029DF56008717DC /* GRA Lab 1 */;
+			name = Lab1;
+			productName = Lab1;
+			productReference = 047D430C203321B40021287C /* Lab1 */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		047524932029DF56008717DC /* Project object */ = {
+		047D4304203321B40021287C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Jack Ellis";
 				TargetAttributes = {
-					0475249A2029DF56008717DC = {
+					047D430B203321B40021287C = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 047524962029DF56008717DC /* Build configuration list for PBXProject "GRA Lab 1" */;
+			buildConfigurationList = 047D4307203321B40021287C /* Build configuration list for PBXProject "Lab1" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 047524922029DF56008717DC;
-			productRefGroup = 0475249C2029DF56008717DC /* Products */;
+			mainGroup = 047D4303203321B40021287C;
+			productRefGroup = 047D430D203321B40021287C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0475249A2029DF56008717DC /* GRA Lab 1 */,
+				047D430B203321B40021287C /* Lab1 */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		047524972029DF56008717DC /* Sources */ = {
+		047D4308203321B40021287C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				047524AA2029E19D008717DC /* MyScene.cpp in Sources */,
+				047D4310203321B40021287C /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		047524A02029DF56008717DC /* Debug */ = {
+		047D4311203321B40021287C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -195,7 +181,7 @@
 			};
 			name = Debug;
 		};
-		047524A12029DF56008717DC /* Release */ = {
+		047D4312203321B40021287C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -243,7 +229,7 @@
 			};
 			name = Release;
 		};
-		047524A32029DF56008717DC /* Debug */ = {
+		047D4314203321B40021287C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -251,7 +237,7 @@
 			};
 			name = Debug;
 		};
-		047524A42029DF56008717DC /* Release */ = {
+		047D4315203321B40021287C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -262,25 +248,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		047524962029DF56008717DC /* Build configuration list for PBXProject "GRA Lab 1" */ = {
+		047D4307203321B40021287C /* Build configuration list for PBXProject "Lab1" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				047524A02029DF56008717DC /* Debug */,
-				047524A12029DF56008717DC /* Release */,
+				047D4311203321B40021287C /* Debug */,
+				047D4312203321B40021287C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		047524A22029DF56008717DC /* Build configuration list for PBXNativeTarget "GRA Lab 1" */ = {
+		047D4313203321B40021287C /* Build configuration list for PBXNativeTarget "Lab1" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				047524A32029DF56008717DC /* Debug */,
-				047524A42029DF56008717DC /* Release */,
+				047D4314203321B40021287C /* Debug */,
+				047D4315203321B40021287C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 047524932029DF56008717DC /* Project object */;
+	rootObject = 047D4304203321B40021287C /* Project object */;
 }
