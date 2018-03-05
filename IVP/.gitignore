@@ -1,0 +1,10 @@
+*
+!/**/
+!*.*
+*.hi
+*.o
+*.DS_Store
+*.toc
+*.pdf
+*.aux
+*.log
