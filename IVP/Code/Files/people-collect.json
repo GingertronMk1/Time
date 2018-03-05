@@ -1804,6 +1804,11 @@
                 "title": "...And Another Thing! An Improvised Play",
                 "roles": ["Technical Operator"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Technical Operator"]
+            }
         ],
         "committees": [
             {
@@ -2050,6 +2055,11 @@
             ,{
                 "title": "A Doll's House",
                 "roles": ["Poster Designer"]
+            }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Set Designer"]
             }
         ],
         "committees": [
@@ -2757,6 +2767,11 @@
             ,{
                 "title": "One Man, Two Guvnors",
                 "roles": ["Stage Manager"]
+            }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Sam"]
             }
         ],
         "committees": [
@@ -10854,6 +10869,11 @@
                 "title": "Wishful Thinking",
                 "roles": ["Assistant Producer","Technical Operator"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Technical Director"]
+            }
         ],
         "committees": [
             {
@@ -11766,6 +11786,11 @@
             ,{
                 "title": "One Man, Two Guvnors",
                 "roles": ["Musician"]
+            }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Video Designer"]
             }
         ],
         "committees": [
@@ -13674,6 +13699,11 @@
                 "title": "One Man, Two Guvnors",
                 "roles": ["Shadow Lighting Designer","Technical Operator"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Technical Operator"]
+            }
         ],
         "committees": [
             {
@@ -14068,6 +14098,11 @@
         
             ,{
                 "title": "One Man, Two Guvnors",
+                "roles": ["Technical Operator"]
+            }
+        
+            ,{
+                "title": "Swallow",
                 "roles": ["Technical Operator"]
             }
         ],
@@ -17559,6 +17594,11 @@
                 "title": "One Man, Two Guvnors",
                 "roles": ["Stanley Stubbers"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Director"]
+            }
         ],
         "committees": [
             {
@@ -18977,6 +19017,11 @@
             ,{
                 "title": "One Man, Two Guvnors",
                 "roles": ["Technical Operator","Stage Manager"]
+            }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Technical Operator"]
             }
         ],
         "committees": [],
@@ -54646,6 +54691,11 @@
                 "title": "One Man, Two Guvnors",
                 "roles": ["Harry Dangle"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Technical Operator"]
+            }
         ],
         "committees": [],
         "link": "/people/andrew_houghton/"
@@ -58380,6 +58430,11 @@
                 "title": "One Man, Two Guvnors",
                 "roles": ["Alfie"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Poster Designer/Publicity Manager"]
+            }
         ],
         "committees": [],
         "link": "/people/sam_morris/"
@@ -59903,6 +59958,11 @@
                 "title": "One Man, Two Guvnors",
                 "roles": ["Technical Operator"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Sound Designer"]
+            }
         ],
         "committees": [],
         "link": "/people/adam_frankland/"
@@ -60577,6 +60637,11 @@
                 "title": "Death of the Author",
                 "roles": ["Shadow Director"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Producer"]
+            }
         ],
         "committees": [],
         "link": "/people/rosa_morgan/"
@@ -60898,6 +60963,11 @@
             ,{
                 "title": "One Man, Two Guvnors",
                 "roles": ["Stage Manager"]
+            }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Shadow Director"]
             }
         ],
         "committees": [],
@@ -61885,6 +61955,11 @@
                 "title": "A Doll's House",
                 "roles": ["Nora Helmer"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Anna"]
+            }
         ],
         "committees": [],
         "link": "/people/lucy_chandler/"
@@ -62187,6 +62262,11 @@
                 "title": "The Devil You Know",
                 "roles": ["Lighting Designer"]
             }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Lighting Designer"]
+            }
         ],
         "committees": [],
         "link": "/people/ian_webster/"
@@ -62212,6 +62292,16 @@
             ,{
                 "title": "Paper Cranes",
                 "roles": ["Dr Jones"]
+            }
+        
+            ,{
+                "title": "Timon/Titus by William Shakespeare",
+                "roles": ["Make-Up Artist"]
+            }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Make-up Assistant"]
             }
         ],
         "committees": [],
@@ -62828,27 +62918,6 @@
     
 
     ,
-    "sandra_jareno_ripoli" : {
-        "name": "Sandra Jareno Ripoli",
-        "type": "person",
-        "excerpt": "",
-        "bio": "",
-        
-        "course": null,
-        "graduated": null,
-        "award": [],
-        "shows": [
-            {
-                "title": "Timon/Titus by William Shakespeare",
-                "roles": ["Make-Up Artist"]
-            }
-        ],
-        "committees": [],
-        "link": "/people/sandra_jareno_ripoli/"
-    }
-    
-
-    ,
     "jase_neal" : {
         "name": "Jase Neal",
         "type": "person",
@@ -62862,6 +62931,11 @@
             {
                 "title": "Death of the Author",
                 "roles": ["Poster Designer"]
+            }
+        
+            ,{
+                "title": "Swallow",
+                "roles": ["Stash Designer"]
             }
         ],
         "committees": [],
@@ -63118,6 +63192,69 @@
         ],
         "committees": [],
         "link": "/people/zehra_torun/"
+    }
+    
+
+    ,
+    "emily_wightman" : {
+        "name": "Emily Wightman",
+        "type": "person",
+        "excerpt": "",
+        "bio": "",
+        
+        "course": null,
+        "graduated": null,
+        "award": [],
+        "shows": [
+            {
+                "title": "Swallow",
+                "roles": ["Rebecca"]
+            }
+        ],
+        "committees": [],
+        "link": "/people/emily_wightman/"
+    }
+    
+
+    ,
+    "olivia_morel" : {
+        "name": "Olivia Morel",
+        "type": "person",
+        "excerpt": "",
+        "bio": "",
+        
+        "course": null,
+        "graduated": null,
+        "award": [],
+        "shows": [
+            {
+                "title": "Swallow",
+                "roles": ["Production Assistant"]
+            }
+        ],
+        "committees": [],
+        "link": "/people/olivia_morel/"
+    }
+    
+
+    ,
+    "david_levey" : {
+        "name": "David Levey",
+        "type": "person",
+        "excerpt": "",
+        "bio": "",
+        
+        "course": null,
+        "graduated": null,
+        "award": [],
+        "shows": [
+            {
+                "title": "Swallow",
+                "roles": ["Extras"]
+            }
+        ],
+        "committees": [],
+        "link": "/people/david_levey/"
     }
     
 
