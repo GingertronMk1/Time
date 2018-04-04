@@ -2,8 +2,8 @@
 
 Make a quick and dirty rugby conversion simulator thing.
 
-[x] 3 or more different 3D object
-[x] Some animated objects
-[x] Looks realistic
-[x] Skybox
-[x] User control
+- [x] 3 or more different 3D object
+- [x] Some animated objects
+- [x] Looks realistic
+- [x] Skybox
+- [x] User control
