@@ -18,6 +18,7 @@ public:
     Sun(){};
     ~Sun(){};
     void Display();
+    //void 
 };
 
 #endif /* Sun_hpp */

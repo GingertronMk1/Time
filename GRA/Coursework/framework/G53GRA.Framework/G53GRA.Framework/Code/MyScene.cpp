@@ -10,32 +10,22 @@ MyScene::MyScene(int argc, char** argv, const char *title, const int& windowWidt
 
 void MyScene::Initialise()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1);
-    /*
-    // Set lighting effect colours and positional parameter
-    float ambient[]  = { .2f, .2f, .2f, 1.f };      // ambient light (20% white)
-    float diffuse[]  = { .5f, .5f, .5f, 1.f };      // diffuse light (50% white)
-    float specular[] = { 1.f, 1.f, 1.f, 1.f };      // specular light (100% white)
-    float position[] = { 1.f, .5f, 1.f, 0.f };      // directional light (w = 0)
-    // Attach properties to single light source (GL_LIGHT0)
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);      // set ambient parameter of light source
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);      // set diffuse parameter of light source
-    glLightfv(GL_LIGHT0, GL_SPECULAR, specular);    // set specular parameter of light source
-    glLightfv(GL_LIGHT0, GL_POSITION, position);    // set direction vector of light source
-    // Enable this lighting effects
-    glEnable(GL_LIGHTING);  // enable scene lighting (required to enable a light source)
-    glEnable(GL_LIGHT0);    // enable light source with attached parameters (GL_LIGHT0) 
-*/
+    // Set background colour
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glEnable(GL_CULL_FACE);         // Enable culling of useless polygons
+    glDisable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_NORMALIZE);
     
     //Setting the Stage
     Stage* stage = new Stage();
     GLuint* skybox = new GLuint[6];
-    skybox[0] = Scene::GetTexture("./Textures/Skybox/left.bmp");
-    skybox[1] = Scene::GetTexture("./Textures/Skybox/right.bmp");
-    skybox[2] = Scene::GetTexture("./Textures/Skybox/front.bmp");
-    skybox[3] = Scene::GetTexture("./Textures/Skybox/back.bmp");
-    skybox[4] = Scene::GetTexture("./Textures/Skybox/down.bmp");
-    skybox[5] = Scene::GetTexture("./Textures/Skybox/up.bmp");
+    skybox[0] = Scene::GetTexture("./Textures/Skybox/Mountains/left.bmp");
+    skybox[1] = Scene::GetTexture("./Textures/Skybox/Mountains/right.bmp");
+    skybox[2] = Scene::GetTexture("./Textures/Skybox/Mountains/front.bmp");
+    skybox[3] = Scene::GetTexture("./Textures/Skybox/Mountains/back.bmp");
+    skybox[4] = Scene::GetTexture("./Textures/Skybox/Mountains/down.bmp");
+    skybox[5] = Scene::GetTexture("./Textures/Skybox/Mountains/up.bmp");
     stage->setTextures(skybox);
     stage->position(0.0f, 0.0f, 0.0f);
     //objects["stage"] = stage;
@@ -64,6 +54,7 @@ void MyScene::Initialise()
     
     Sun *s = new Sun();
     s->position(0,500,0);
+
 
     //Adding everything to the scene, drawing
     AddObjectToScene(t);

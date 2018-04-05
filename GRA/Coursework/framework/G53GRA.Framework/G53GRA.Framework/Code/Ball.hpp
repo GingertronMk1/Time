@@ -40,6 +40,7 @@ private:
     float speedUp;
     float origPos[3];
     float origBangles[3];
+    GLint texID;
 };
 
 #endif /* Ball_hpp */

@@ -52,7 +52,7 @@ void Camera::SetupCamera()
 void Camera::Update(const double& deltaTime)
 {
     
-	float speed = 2.0f;     //Increased from 1.0f
+	float speed = 5.0f;     //Increased from 1.0f
 
 	if (aKey)
 		sub(eyePosition, right, speed);
@@ -114,7 +114,7 @@ void Camera::HandleKey(unsigned char key, int state, int x, int y)
 {
 	switch (key)
 	{
-            /*
+#if 0
 		case 'A':
 		case 'a':
 			aKey = state;
@@ -143,14 +143,13 @@ void Camera::HandleKey(unsigned char key, int state, int x, int y)
             fKey = state;
 		default:
 			break;
-             */
-            
+#else
         case 'r':
         case 'R':
             Reset();
         default:
             break;
-              
+#endif
 	}
 }
 
