@@ -10,6 +10,7 @@ MyScene::MyScene(int argc, char** argv, const char *title, const int& windowWidt
 
 void MyScene::Initialise()
 {
+    
     // Set background colour
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glEnable(GL_CULL_FACE);         // Enable culling of useless polygons
@@ -32,16 +33,18 @@ void MyScene::Initialise()
     
     
     //Creating the turf
-    Turf *t = new Turf("./Textures/Turf.bmp");
+    Turf *t = new Turf("./Textures/Turf2.bmp");
     t->position(0,0,0);
+    
+    int postPos = 480;
     
     //Creating posts at one end
     Posts *p1 = new Posts();
-    p1->position(0,0,500);
+    p1->position(0,0,postPos);
     
     //Creating other posts
     Posts *p2 = new Posts();
-    p2->position(0,0,-500);
+    p2->position(0,0,-postPos);
     
     //Creating ball
     Ball *b = new Ball();
@@ -69,5 +72,5 @@ void MyScene::Initialise()
 void MyScene::Projection()
 {
 	GLdouble aspect = static_cast<GLdouble>(windowWidth) / static_cast<GLdouble>(windowHeight);
-	gluPerspective(60.0, aspect, 1.0, 10000.0);        // Bumped FoV to 100, far draw distance to 10000
+	gluPerspective(90.0, aspect, 1.0, 10000.0);        // Bumped FoV to 100, far draw distance to 10000
 }

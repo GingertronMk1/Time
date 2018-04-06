@@ -22,6 +22,8 @@ public:
     
 private:
     GLint texID;
+    float length = 1200.f;
+    float width = 700.f;
 };
 
 #endif /* Turf_hpp */

@@ -17,10 +17,12 @@ void Ball::Display()
     
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-    glTranslatef(pos[0], pos[1], pos[2]);   //Set position (due to the way the ball will be rendered we have to move it back in z by the value of its current length
-    glRotatef(static_cast<GLint>(bangles[0]), 1.0f, 0.0f, 0.0f);    //Set rotation in x
-    glRotatef(static_cast<GLint>(bangles[1]), 0.0f, 1.0f, 0.0f);    //Set rotation in y
-    glRotatef(static_cast<GLint>(bangles[2]), 0.0f, 0.0f, 1.0f);    //Set rotation in z
+    glTranslatef(pos[0]+posOff[0],      // Setting the original position
+                 pos[1]+posOff[1],      // Taking into account the offsets
+                 pos[2]+posOff[2]);     // (They'll be used for flight)
+    glRotatef(static_cast<GLint>(bangles[0]+banglesOff[0]), 1.0f, 0.0f, 0.0f);    //Set rotation in x
+    glRotatef(static_cast<GLint>(bangles[1]+banglesOff[1]), 0.0f, 1.0f, 0.0f);    //Set rotation in y
+    glRotatef(static_cast<GLint>(bangles[2]+banglesOff[2]), 0.0f, 0.0f, 1.0f);    //Set rotation in z
     
     glTranslatef(0, 0, -length);
     glScalef(width, width, length);     //Set scale
@@ -110,19 +112,20 @@ void Ball::Display()
 
 void Ball::Update(const double& deltaTime)
 {
-    if (isKicked == 1) {
-        if (pos[1] <= 0)
+    if (ballState == kicked) {            // If the ball has been kicked
+        if (posOff[1] <= -pos[1])   // If it's hit the turf again
         {
-            isKicked = 2;
+            printf("Landed\n");
+            ballState = landed;           // Stop state
         }
-        else
+        else                        // Otherwise
         {
-            speedUp += gravity/100;
+            speedUp += gravity/100;                 // SUVAT
             //printf("speedUp: %f\n", speedUp);
-            pos[2] += speedAlong;
-            pos[1] += speedUp;
-            bangles[0] -= 10;
-            if (bangles[0] > 180.0f) {bangles[0] = bangles[0] - 180.0f;}    //doesnt' need to be 360 as ball has order-2 rotational symmetry
+            posOff[2] += speedAlong;
+            posOff[1] += speedUp;
+            banglesOff[0] -= 10;
+            if (banglesOff[0] > 180.0f) {banglesOff[0] = banglesOff[0] - 180.0f;}    //doesnt' need to be 360 as ball has order-2 rotational symmetry
         }
     }
 }
@@ -137,32 +140,40 @@ void Ball::Bangle(float bX, float bY, float bZ)
 void Ball::HandleKey(unsigned char key, int state, int x, int y)
 {
 #if 1
-    printf("Kickable\n");
     if(state == 1)  // Only on the downstroke
     {
-        if(isKicked == 0)
+        switch (ballState)
         {
-            switch (key)
-            {
-                case ' ':   startFlying();
+            case preset:    switch (key)
+                            {
+                                case ' ':   set();
+                                            break;
+                                case 'q':
+                                case 'Q':   bangles[0] -= 2;
+                                            printf("angle: %f\n", bangles[0]);
+                                            break;
+                                case 'a':
+                                case 'A':   bangles [0] += 2;
+                                            printf("angle: %f\n", bangles[0]);
+                                default:    break;
+                    
+                            };
                             break;
-                case 'q':
-                case 'Q':   bangles[0] -= 2;
-                            printf("angle: %f\n", bangles[0]);
+            case isSet:     switch (key)
+                            {
+                                case ' ':   startFlying();
+                                default:    break;
+                            };
                             break;
-                case 'a':
-                case 'A':   bangles [0] += 2;
-                            printf("angle: %f\n", bangles[0]);
-                default:    break;
-
-            }
-        } else if(isKicked == 2) {
-            switch (key)
-            {
-                case 'r':
-                case 'R':   reset();
-                default:    break;
-            }
+            case landed:    switch (key)
+                            {
+                                case 'r':
+                                case 'R': reset();
+                                default: break;
+                            };
+                            break;
+            default:        break;
+                
         }
     }
 #endif
@@ -171,19 +182,7 @@ void Ball::HandleKey(unsigned char key, int state, int x, int y)
 
 void Ball::startFlying()
 {
-    for (int i = 0; i < 3; i++)
-    {
-        origPos[i] = pos[i];
-        origBangles[i] = bangles[i];
-        printf("pos[%d]: %f, bangles[%d]: %f\n", i, origPos[i], i, origBangles[i]);
-
-    }
-    angleDegs = abs(bangles[0]);
-    angleRads = angleDegs*(M_PI/180.0f);
-    speedAlong = speedOffBoot*cos(angleRads);
-    speedUp = speedOffBoot*sin(angleRads);
-    isKicked = 1;   // Get update() going
-
+    ballState = kicked;   // Get update() going
 }
 
 void Ball::reset()
@@ -193,9 +192,17 @@ void Ball::reset()
     speedAlong = 0;
     for (int i = 0; i < 3; i++)
     {
-        pos[i] = origPos[i];
-        bangles[i] = origBangles[i];
-        printf("pos[%d]: %f, bangles[%d]: %f\n", i, pos[i], i, bangles[i]);
+        posOff[i] = 0.f;
+        banglesOff[i] = 0.f;
     }
-    isKicked = 0;       // Reset fully
+    ballState = preset;       // Reset fully
+}
+
+void Ball::set()
+{
+    angleRads = abs(bangles[0])*(M_PI/180.0f);
+    speedAlong = speedOffBoot*cos(angleRads);
+    speedUp = speedOffBoot*sin(angleRads);
+    printf ("Values set\n");
+    ballState = isSet;
 }

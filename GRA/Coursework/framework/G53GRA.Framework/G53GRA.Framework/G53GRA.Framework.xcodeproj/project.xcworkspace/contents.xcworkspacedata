@@ -2,18 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:../Code/Sun.cpp">
-   </FileRef>
-   <FileRef
-      location = "group:../Code/Sun.hpp">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/Jack/Git/Time/GRA/Coursework/G53GRA/g53gra_framework/G53GRA.Framework/G53GRA.Framework/Sun.cpp">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/Jack/Git/Time/GRA/Coursework/G53GRA/g53gra_framework/G53GRA.Framework/G53GRA.Framework/Sun.hpp">
-   </FileRef>
-   <FileRef
       location = "self:">
    </FileRef>
 </Workspace>

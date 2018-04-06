@@ -80,6 +80,7 @@ public:
 	* @see #Reset()
 	*/
 	virtual void SetupCamera();
+    enum ballStates {preset, isSet, kicked, landed};
 
 private:
 	/**
@@ -114,4 +115,8 @@ private:
 	int currentButton;
 	/** Previous mouse coordinates */
 	GLint mouseX, mouseY;
+    float finalPos[3] = {90.0f, 115.0f, -100.0f};
+    float finalVD[3] = {-0.35f, -0.2f, 1.0f};
+    
+    ballStates ballState = preset;
 };

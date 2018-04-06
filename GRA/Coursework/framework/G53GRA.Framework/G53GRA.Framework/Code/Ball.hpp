@@ -26,21 +26,23 @@ public:
     void HandleKey(unsigned char key, int state, int x, int y);
     void startFlying();
     void reset();
+    void set();
+    enum ballStates {preset, isSet, kicked, landed};
 
 private:
     float length =          15.0f;  // Ball Length
     float width =           10.0f;  // Ball Width
-    float bangles[3] =     {0.0f, 0.0f, 0.0f};  //flip, spin, yaw
-    int isKicked =          0;      // Has the ball been kicked?
-    float gravity =         -9.8f;      // The value
+    float bangles[3] =      {0.0f, 0.0f, 0.0f};  //flip, spin, yaw
+    ballStates ballState =  preset;      // Has the ball been kicked?
+    float gravity =         -9.8f;  // The value of acceleration in y due to gravity
     float speedOffBoot =    10.0f;
     float angleDegs;
     float angleRads;
     float speedAlong;
     float speedUp;
-    float origPos[3];
-    float origBangles[3];
-    GLint texID;
+    float posOff[3] = {0.f,0.f,0.f};
+    float banglesOff[3] = {0.f, 0.f, 0.f};
+    GLint texID;        // For texturing
 };
 
 #endif /* Ball_hpp */

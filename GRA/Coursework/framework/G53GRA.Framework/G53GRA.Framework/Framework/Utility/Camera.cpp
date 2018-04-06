@@ -9,14 +9,14 @@ Camera::Camera() : wKey(0), sKey(0), aKey(0), dKey(0), currentButton(0), mouseX(
 
 void Camera::Reset(){
 	// set the camera position at start
-	eyePosition[0] = 90.0f;
-	eyePosition[1] = 115.0f;
-    eyePosition[2] = -100.0f;// 1.0f * static_cast<float>(Scene::GetWindowHeight()) / static_cast<float>(tan(M_PI / 6.0));//0.0f;
+	eyePosition[0] = 0.0f;
+    eyePosition[1] = 50.0f;//115.0f;
+    eyePosition[2] = -30.0f;//-100.0f;
 
 	// set the view direction vector of the camera to be (0,0,-1)
-	vd[0] = -0.35f;
-	vd[1] = -0.175f;
-	vd[2] = 0.925f;
+    vd[0] = 0.0f;//-0.35f;
+    vd[1] = 0.0f;//-0.175f;
+    vd[2] = 1.0f;//0.925f;
 
 	// set the planar forward direction vector of the camera to be (0,0,-1)
 	forward[0] = 0.0f;
@@ -51,7 +51,40 @@ void Camera::SetupCamera()
 
 void Camera::Update(const double& deltaTime)
 {
-    
+    switch(ballState)
+    {
+        case preset:    vd[0] = 0.0f;
+                        vd[1] = 0.0f;
+                        vd[2] = 1.0f;
+                        eyePosition[0] = 0.0f;
+                        eyePosition[1] = 50.0f;//115.0f;
+                        eyePosition[2] = -30.0f;//-100.0f;
+                        break;
+        case isSet:     for (int i = 0; i < 3; i++)
+                        {
+                            int deltaPos = 1000*(finalPos[i] - eyePosition[i]);         // Basically, comparison between floats is
+                            int deltaVD = 1000*(finalVD[i] - vd[i]);                    // dodgy at best, so I'm gonna make ints of them
+                            if(deltaPos != 0)
+                            {
+                                if(deltaPos > 0)
+                                    eyePosition[i]++;
+                                else// if(finalPos[i] < eyePosition[i])
+                                    eyePosition[i]--;
+                            }
+                            
+                            if(deltaVD != 0){
+                                if(deltaVD > 0)
+                                    vd[i] += 0.01;
+                                else// if(finalVD[i] < vd[i])
+                                    vd[i] -= 0.01;
+                            }
+                            /**/
+                            printf("∂vd: %f, ∂ eyePos: %f\n", abs(vd[i] - finalVD[i]), abs(eyePosition[i] - finalPos[i]));
+                        };
+                        break;
+        default:        break;
+    }
+/*
 	float speed = 5.0f;     //Increased from 1.0f
 
 	if (aKey)
@@ -71,6 +104,7 @@ void Camera::Update(const double& deltaTime)
     
     if (fKey && eyePosition[1] > 5)
         sub(eyePosition, up, speed);
+ */
     
 	SetupCamera();
 }
@@ -112,45 +146,20 @@ void Camera::GetUpVector(float &x, float &y, float &z) const
 
 void Camera::HandleKey(unsigned char key, int state, int x, int y)
 {
-	switch (key)
-	{
-#if 0
-		case 'A':
-		case 'a':
-			aKey = state;
-			break;
-		case 'D':
-		case 'd':
-			dKey = state;
-			break;
-		case 'W':
-		case 'w':
-			wKey = state;
-			break;
-		case 'S':
-		case 's':
-			sKey = state;
-			break;
-        case ' ':
-            Reset();
-            break;
-		case 'r':
-        case 'R':
-            rKey = state;
-            break;
-        case 'f':
-        case 'F':
-            fKey = state;
-		default:
-			break;
-#else
-        case 'r':
-        case 'R':
-            Reset();
-        default:
-            break;
-#endif
-	}
+    if(state == 1) {
+        switch (ballState)
+        {
+            case preset:    if (key == ' ')
+                                ballState = isSet;
+                            break;
+            case isSet:     if (key == ' ')
+                                ballState = kicked;
+                            break;
+            case kicked:    if (key == 'r' || key == 'R')
+                                ballState = preset;
+            default:        break;
+        }
+    }
 }
 
 void Camera::HandleMouse(int button, int state, int x, int y)
