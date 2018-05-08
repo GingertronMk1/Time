@@ -1,8 +1,8 @@
 require("ggplot2")
 require("tidyr")
-require("scales")
+#require("scales")
 
-setwd("/Users/Jack/Git/Time/FIV/")
+setwd("~/Git/Time/FIV/")
 
 music <- read.csv("Music.csv",header=TRUE,quote="\"") # read the music csv file
 
