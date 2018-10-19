@@ -1,0 +1,87 @@
+\title{Evaluating Performance Characteristic of Opportunistic Routing Protocols in ONE}
+\author{
+  G54ACN\\
+  Jack Ellis\\
+  psyje5@nottingham.ac.uk\\
+  4262333
+}
+\date{}
+\documentclass[12pt]{report}
+\usepackage{graphicx}
+\graphicspath{ {Images/} }
+\usepackage{mathtools}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\pagebreak
+
+\section{Describing Opportunistic Networks and the ONE Simulator}
+\subsection{Opportunistic Networks}
+
+An opportunistic network is a term used to describe a network in which nodes communicate with one another by way of "hopping" between other nodes, as opposed to a more traditional "static" network structure in which traffic is sent through, and organised by, a central router.
+Nodes can be any device with the ability to recieve or transmit data to/from its neighbour, typically via Bluetooth, Wi-Fi, or 3G/4G.
+These nodes act as clients, servers, and routers all at once to forward packets (sometimes their own) from source to destination, and may come with constraints on buffer size, bandwidth, computational resources, power, and so on.
+The topology of these networks is not fixed, and changes frequently and unpredictably, however this is not to say such networks cannot make use of static points to augment the nodes present on the network.
+
+\par
+
+In this setup there can be no assumption of the existence of a complete path from sender (\textit{S}) to recipient (\textit{R}).
+Those two nodes might never be connected to the same network at the same time, and consequently techniques must be used to ensure that if \textit{S} sends a message it can "wait" on the network until such a time as \textit{R} is available and can recieve it.
+This often comes at a cost: an additional delay in message delivery, due to the fact that messages are often buffered in the network waiting for a path to become available.
+
+\par
+
+Returning to the "node hops" idea, the way in which these hops are determined depends upon the protocol chosen for the network.
+Routes are calculated at each hop, so each node will make use of local knowledge to determine the best "next hop", based on what it knows about its immediate neighbours, to make so the message can reach its intended destination.
+If no good hop exists (which is to say that no other nodes are in range or the neighbours are considered unsuitable), the node can store the message and wait while future opportunities arise for forwarding.
+This technique is, somewhat unsurprisingly, called "store and carry forward".
+
+\subsubsection{Opportunistic Networks vs MANETs, VANETs, and DTNs}
+Mobile Ad-hoc NETworks (MANETs), Vehicular Ad-hoc NETworks (VANETs), and Delay-Tolerant Networks (DTNs) all appear as types of opportunistic network, however in most cases they are not.
+
+DTNs are generally regarded as a subset of opportunistic network, and the most extreme cases thereof\cite{ieeemag}.
+The key difference here is that DTNs assume certain things about the network, such as the idea that some links could only be available at certain times, opportunistic networks don't require any knowledge of the network whatsoever.
+This difference leads to the fact that routes in DTNs are precomputed by taking into account planned unavailability, whereas routes in opportunistic networks are computed at each hop (as described above).
+
+\par
+
+MANETs and VANETs require knowledge of the network's topology, routing protocols used within them need to know the layout of the network in order to function, as opposed to a true opportunistic network, which only cares about the "next hop".
+
+\subsection{The ONE Simulator}
+
+The Opportunistic Network Environment (ONE) Simulator is a network simulator built in Java and capable of:
+
+\begin{center}
+  \begin{itemize}
+    \item \textit{Generating node movement using different movement models}
+    \item \textit{Routing messages between nodes with various DTN routing algorithms and sender and receiver types}
+    \item \textit{Visualizing both mobility and message passing in real time in its graphical user interface.}
+    \item \textit{ONE can import mobility data from real-world traces or other mobility generators. It can also produce a variety of reports from node movement to message passing and general statistics.}\cite{onewebsite}
+  \end{itemize}
+\end{center}
+
+\section{Choosing two Opportunistic DTN protocols}
+\subsection{Protocol 1: }
+\subsection{Protocol 2: }
+
+\section{Designing and experiment setup + explanation of the scenario}
+\subsection{Experiment Setup}
+\subsection{The Scenario}
+
+\section{Performance Evaluation of the chosen protocols}
+
+\section{Discussing the pros and cons of Opportunistic Networks WRT the chosen scenario}
+
+\begin{thebibliography}{0}
+  \bibitem{ieeemag}
+    Opportunistic Networking: Data Forwarding in Disconnected Mobile Ad Hoc Networks\\
+    IEEE Communications Magazine, November 2006, pages 134-141\\
+    Pelusi, Passarella, Conti
+  \bibitem{onewebsite}
+    The ONE (ONE Official Website)\\
+    https://akeranen.github.io/the-one/\\
+    Accessed 2018-10-08
+\end{thebibliography}
+
+\end{document}
