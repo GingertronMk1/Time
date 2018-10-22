@@ -22,10 +22,12 @@ evalCell :: Sheet Double -> Exp -> Double
 evalCell _ (Lit v)        = v
 evalCell s (Ref r)        = s ! r
 evalCell s (App op e1 e2) = (evalOp op) (evalCell s e1) (evalCell s e2)
-evalCell s (Sum (r1,c1) (r2,c2)) = sum [evalCell s (Ref (r,c)) 
-                                        | r <- range (r1, r2), c <- range (c1, c2)]
-evalCell s (Avg (r1,c1) (r2,c2)) = mean [evalCell s (Ref (r,c)) 
-                                         | r <- range (r1, r2), c <- range (c1, c2)]
+evalCell s (Sum (r1,c1) (r2,c2))
+  = sum [evalCell s (Ref (r,c)) 
+         | r <- range (r1, r2), c <- range (c1,c2)]
+evalCell s (Avg (r1,c1) (r2,c2))
+  = mean [evalCell s (Ref (r,c)) 
+          | r <- range (r1, r2), c <- range (c1,c2)]
 
 
 evalOp :: BinOp -> (Double -> Double -> Double)
