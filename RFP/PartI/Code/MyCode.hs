@@ -35,27 +35,27 @@ makeWellDef i@(Ivl l u) = if isWellDef i
 
 instance Num Ivl where
   (+) i1@(Ivl l1 u1) i2@(Ivl l2 u2)
-    = wellDef2 i1 i2 $ makeWellDef $ Ivl (l1+l2) (u1+u2)
+    = (wellDef2 i1 i2 . makeWellDef) (Ivl (l1+l2) (u1+u2))
   (-) i1@(Ivl l1 u1) i2@(Ivl l2 u2)
-    = wellDef2 i1 i2 $ makeWellDef $ Ivl (l1-u2) (u1-l2)
+    = (wellDef2 i1 i2 . makeWellDef) (Ivl (l1-u2) (u1-l2))
   (*) i1@(Ivl l1 u1) i2@(Ivl l2 u2)
-    = wellDef2 i1 i2 $ makeWellDef $ Ivl (l1*l2) (u1*u2)
+    = (wellDef2 i1 i2 . makeWellDef) (Ivl (l1*l2) (u1*u2))
   abs i@(Ivl l u)
     = if abs l > abs u
-      then wellDef1 i $ makeWellDef $ Ivl 0.0 (abs l)
-      else wellDef1 i $ makeWellDef $ Ivl 0.0 (abs u)
+      then (wellDef1 i . makeWellDef) (Ivl 0.0 (abs l))
+      else (wellDef1 i . makeWellDef) (Ivl 0.0 (abs u))
   signum i@(Ivl l u)
-    = wellDef1 i $ makeWellDef $ Ivl (signum l) (signum u)
+    = (wellDef1 i . makeWellDef) (Ivl (signum l) (signum u))
   fromInteger n
     = let fin = fromInteger n in Ivl fin fin
 
 instance Fractional Ivl where
   (/) i1@(Ivl l1 u1) i2@(Ivl l2 u2)
     = if u2 /= 0 && l2 /= 0
-      then wellDef2 i1 i2 $ makeWellDef $ Ivl (l1/u2) (u1/l2)
+      then (wellDef2 i1 i2 . makeWellDef) (Ivl (l1/u2) (u1/l2))
       else error "Arguments result in attempt to divide by 0"
   recip i@(Ivl l u)
-    = wellDef1 i $ makeWellDef $ Ivl (recip l) (recip u)
+    = (wellDef1 i . makeWellDef) (Ivl (recip l) (recip u))
   fromRational n
     = let frn = fromRational n in Ivl frn frn
 
