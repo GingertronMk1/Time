@@ -1,0 +1,97 @@
+\title{G54RFP Coursework Part I}
+\author{
+  Jack Ellis \\
+  psyje5@nottingham.ac.uk\\
+  4262333
+}
+\date{}
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\graphicspath{ {Images/} }
+\usepackage{mathtools}
+\usepackage{listings}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\pagebreak
+
+\section{Task I.1}
+
+\subsection{Part 1}
+\lstinputlisting[language=Haskell, firstline=8, lastline=11]{../Code/MyCode.hs}
+
+Here we begin with a list containing only \verb|1|, to which we cons the merged list containing 2 times itself, 3 times itself, and 5 times itself.
+These additional lists are formed of recursive calls to \verb|hamming|.
+
+\subsection{Part 2}
+
+\section{Task I.2}
+
+\subsection{Part 1}
+\lstinputlisting[language=Haskell, firstline=11, lastline=15]{../Code/Sheet.hs}
+
+Here I extended the \verb|Exp| type to include what is shown in the coursework issue sheet.
+
+\lstinputlisting[language=Haskell, firstline=18, lastline=19]{../Code/Sheet.hs}
+
+A function to calculate the \verb|mean| of a list was required and not present, so here I defined one.
+
+\lstinputlisting[language=Haskell, firstline=25, lastline=30]{../Code/Sheet.hs}
+
+Here I used list comprehensions to obtain the full 2D range of cells described by the function call, map to them their value via an evalCell call, and sum or mean that list of values based upon what was called originally.
+
+\subsection{Part 2}
+
+The problem with the evaluator is that if any cells are empty (i.e. there is no item in the list with their reference), the evaluator fails completely.
+This could be fixed by padding the list with empty (i.e. a payload of \verb|Lit 0|) cells where there is no cell matching a required reference.
+Additionally to this, if the \verb|array| value declared at the start of a \verb|Sheet| declaration does not match the number of cells in the \verb|Sheet|, it again fails.
+This could be solved by removing the bounds call and determining the bounds of a \verb|Sheet| as a first step in evaluating it.
+
+\section{Task I.3}
+
+\section{Task I.4}
+
+\lstinputlisting[language=Haskell, firstline=13, lastline=13]{../Code/MyCode.hs}
+
+Here the data type \verb|Ivl| is defined per the coursework issue sheet.
+
+\lstinputlisting[language=Haskell, firstline=15, lastline=34]{../Code/MyCode.hs}
+
+The first step here is defining a series of functions to detect and enforce well-definedness.
+\verb|isWellDef| takes an \verb|Ivl| and returns true if its lower bound is less than or equal to its upper bound, else it returns false.
+With this function, we can create two more: \verb|wellDef1| and \verb|wellDef2|.
+They perform in exactly the same way bar the fact that they deal with functions containing 1 and 2 \verb|Ivl| values respectively.
+If all of the \verb|Ivl|s are well-defined, the function passed into them may be computed and its result returned.
+If any of the \verb|Ivl|s passed as arguments are poorly formed it will return an \verb|error| detailing which \verb|Ivl| it took was poorly formed and halting computation.
+Finally, the function \verb|makeWellDef| takes an \verb|Ivl| and makes it well-defined.
+This is useful for the later functions whose results may be poorly formed by default.
+
+\lstinputlisting[language=Haskell, firstline=35, lastline=50]{../Code/MyCode.hs}
+
+Here the \verb|Num| instance of \verb|Ivl| is defined.
+Addition, subtraction, and multiplication are all defined as per the issue sheet, with checks on well-definedness and forcing the result to be well-defined.
+\verb|abs| is defined such that it returns 0 as a lower bound, and the larger absolute value of the bounds as the upper bound.
+The rationale here is that if an \verb|Ivl| straddles 0, the \verb|abs| value of the number it denotes will be 0 or above, and the largest \verb|abs| value of its bounds will be as large as it can be.
+\verb|signum| returns a well-defined \verb|Ivl| with the \verb|signum| values of both bounds as its bounds.
+The rationale eere is that we want to see the \verb|signum| values of the highest and lowest possible values of the \verb|Ivl|.
+Finally, \verb|fromInteger| converts an \verb|Int| value into an \verb|Ivl| with a range of 0, given that the \verb|Int| has no uncertainty or bounds.
+
+\lstinputlisting[language=Haskell, firstline=52, lastline=60]{../Code/MyCode.hs}
+
+Here the \verb|Fractional| instance of \verb|Ivl| is defined.
+
+Division is a difficult one to try to define; we must ensure that at no point does division by 0 occur, and ensure well-definedness of the result.
+Hence in my implementation the new lower bound is defined by \verb|l1/u2| to give the smallest possible value, and the new upper is \verb|u1/l2| to give the largest possible value.
+\verb|recip| is the reciprocal function, and will divide 1 by any value given to it.
+Here the \verb|recip| instance for \verb|Ivl| will return a new \verb|Ivl| with the reciprocals of the bounds, switched.
+If (and this is the case for much of the mathematical functions) the input \verb|Ivl| is well-defined, the switching of the reciprocals will mathematically ensure that the new \verb|Ivl| is well-defined, however for the sake of ensuring correctness I have left the \verb|makeWellDef| function in place.
+Finally, \verb|fromRational| works much the same as \verb|fromInteger|, with the same justification.
+
+\lstinputlisting[language=Haskell, firstline=62, lastline=63]{../Code/MyCode.hs}
+
+The \verb|(+/-)| operator will construct a well-defined \verb|Ivl| with a symmetric interval around the number given as its first argument of a size given by its second argument.
+\verb|makeWellDef| is used here because it is possible to pass a negative number as the second argument and thus flip the lower and upper bounds of the resulting \verb|Ivl|, leading to a poorly-defined \verb|Ivl|.
+
+
+\end{document}
