@@ -1,3 +1,5 @@
+import Test.QuickCheck
+
 merge                       :: (Ord a) => [a] -> [a] -> [a]
 merge xxs []                = xxs
 merge [] yys                = yys
@@ -26,42 +28,65 @@ wellDef2 i1 i2 i' | isWellDef i1 && isWellDef i2 = i'
                     = error "First argument is not well-defined."
                   | isWellDef i1 && not (isWellDef i2)
                     = error "Second argument is not well-defined."
-                  | otherwise = error "Neither argument is well-defined."
+                  | otherwise
+                    = error "Neither argument is well-defined."
 
 makeWellDef :: Ivl -> Ivl
-makeWellDef i@(Ivl l u) = if isWellDef i
-                          then i
-                          else Ivl u l
+makeWellDef i@(Ivl l u) | isWellDef i = i
+                        | otherwise   = Ivl u l
 
 instance Num Ivl where
   (+) i1@(Ivl l1 u1) i2@(Ivl l2 u2)
-    = (wellDef2 i1 i2 . makeWellDef) (Ivl (l1+l2) (u1+u2))
+    = wellDef2 i1 i2 $ makeWellDef (Ivl (l1+l2) (u1+u2))
   (-) i1@(Ivl l1 u1) i2@(Ivl l2 u2)
-    = (wellDef2 i1 i2 . makeWellDef) (Ivl (l1-u2) (u1-l2))
+    = wellDef2 i1 i2 $ makeWellDef (Ivl (l1-u2) (u1-l2))
   (*) i1@(Ivl l1 u1) i2@(Ivl l2 u2)
-    = (wellDef2 i1 i2 . makeWellDef) (Ivl (l1*l2) (u1*u2))
+    = wellDef2 i1 i2 $ makeWellDef (Ivl (l1*l2) (u1*u2))
   abs i@(Ivl l u)
-    = if abs l > abs u
-      then (wellDef1 i . makeWellDef) (Ivl 0.0 (abs l))
-      else (wellDef1 i . makeWellDef) (Ivl 0.0 (abs u))
+    = let abl = abs l
+          abu = abs u
+      in wellDef1 i (if l < 0 && 0 < u
+                     then if abl > abu
+                          then Ivl 0.0 abl
+                          else Ivl 0.0 abu
+                     else makeWellDef (Ivl abl abu))
   signum i@(Ivl l u)
-    = (wellDef1 i . makeWellDef) (Ivl (signum l) (signum u))
+    = wellDef1 i (Ivl (signum l) (signum u))
   fromInteger n
-    = let fin = fromInteger n in Ivl fin fin
+    = let fin = fromInteger n
+      in Ivl fin fin
 
 instance Fractional Ivl where
   (/) i1@(Ivl l1 u1) i2@(Ivl l2 u2)
     = if u2 /= 0 && l2 /= 0
-      then (wellDef2 i1 i2 . makeWellDef) (Ivl (l1/u2) (u1/l2))
+      then wellDef2 i1 i2 (Ivl (l1/u2) (u1/l2))
       else error "Arguments result in attempt to divide by 0"
   recip i@(Ivl l u)
-    = (wellDef1 i . makeWellDef) (Ivl (recip l) (recip u))
+    = wellDef1 i $ makeWellDef (Ivl (recip l) (recip u))
   fromRational n
-    = let frn = fromRational n in Ivl frn frn
+    = let frn = fromRational n
+      in makeWellDef (Ivl frn frn)
 
 (+/-) :: Double -> Double -> Ivl
 (+/-) n i = makeWellDef (Ivl (n-i) (n+i))
 
-testIvls :: [Ivl]
-testIvls =  [10 +/- 2,
-             0 +/- (-5)]
+instance Arbitrary Ivl where
+  arbitrary = do i1 <- arbitrary
+                 i2 <- arbitrary
+                 return $ if i1 <= i2 then Ivl i1 i2
+                                      else Ivl i2 i1
+
+prop_wellFormedResult1 ::(Ivl -> Ivl) -> Ivl -> Bool
+prop_wellFormedResult1 f i = let Ivl l u = f i in l <= u
+
+prop_wellFormedResult2 ::(Ivl -> Ivl -> Ivl) -> Ivl -> Ivl -> Bool
+prop_wellFormedResult2 f i1 i2 = let Ivl l u = f i1 i2 in l <= u
+
+functions1 :: [(Ivl -> Ivl)]
+functions1 = [abs, signum, recip]
+
+functions2 :: [(Ivl -> Ivl -> Ivl)]
+functions2 = [(+),(-),(*),(/)]
+
+check1 = sequence $ map (quickCheck . prop_wellFormedResult1) functions1
+check2 = sequence $ map (quickCheck . prop_wellFormedResult2) functions2

@@ -4,7 +4,7 @@ module SBRAL where
 
 import Prelude hiding (head, tail, lookup, drop)
 
-data Tree a = Leaf a | Node (Tree a) a (Tree a) deriving Show
+data Tree a = Leaf a | Node (Tree a) a (Tree a) deriving (Show, Eq)
 type RList a = [(Int, Tree a)]
 
 
@@ -64,6 +64,13 @@ updateTree i x w (Node t1 y t2)
 
 drop :: Int -> RList a -> RList a
 drop _ [] = []
+drop 0 ts = ts
+drop n ts = drop (n-1) (tail ts)
 
---testRList :: RList Char
+treeGen :: Num a => Int -> RList a
+treeGen n = (iterate (cons 1) [])!!n
 
+
+cartProd xs ys = [(x,y)|x<-xs,y<-ys]
+treeTest' (n,i) = treeGen n == drop i (treeGen (n+i))
+treeTest ns = map treeTest' (cartProd ns ns)
