@@ -5,24 +5,24 @@ import System.Random
 type Spoon = TMVar Int
 type Philosopher = String
 
-maxDelay :: Int                   -- The maximum amount of time for which a
-maxDelay = 5                      -- Philosopher should be eating
+maxDelay :: Int
+maxDelay = 5
 
-makePairs :: [a] -> [(a,a)]       -- A function to take a list of things and return
-makePairs (x:[])    = []          -- A list of tuples, the pairs of which are adjacent
-makePairs (x:y:[])  = (x,y):[]    -- List items
+makePairs :: [a] -> [(a,a)]
+makePairs (x:[])    = []
+makePairs (x:y:[])  = (x,y):[]
 makePairs (x:y:xs)  = (x,y):(makePairs (y:xs))
 
-newSpoon :: Int -> IO Spoon     -- Creating new spoons
+newSpoon :: Int -> IO Spoon
 newSpoon n = newTMVarIO n
 
-getSpoon :: Spoon -> STM Int    -- When a philosopher wants to eat
-getSpoon f = takeTMVar f        -- They try to get a spoon
+getSpoon :: Spoon -> STM Int
+getSpoon f = takeTMVar f
 
-retSpoon :: Spoon -> Int -> STM() -- When a philosopher wants to think
-retSpoon f i = putTMVar f i       -- They return the spoon
+retSpoon :: Spoon -> Int -> STM()
+retSpoon f i = putTMVar f i
 
-philNames :: [Philosopher]      -- Our list of philosophers
+philNames :: [Philosopher]
 philNames = ["Graham Hutton",
              "Steve Bagley",
              "Henrik Nilsson",
