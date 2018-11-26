@@ -8,11 +8,6 @@ type Philosopher = String
 maxDelay :: Int
 maxDelay = 5
 
-makePairs :: [a] -> [(a,a)]
-makePairs (x:[])    = []
-makePairs (x:y:[])  = (x,y):[]
-makePairs (x:y:xs)  = (x,y):(makePairs (y:xs))
-
 newSpoon :: Int -> IO Spoon
 newSpoon n = newTMVarIO n
 
@@ -44,6 +39,11 @@ runPhil p (l, r) = do putStrLn (p ++ " is hungry")
                       threadDelay (delay*1000000)
                       runPhil p (l, r)
 
+makePairs :: [a] -> [(a,a)]
+makePairs (x:[])    = []
+makePairs (x:y:[])  = (x,y):[]
+makePairs (x:y:xs)  = (x,y):(makePairs (y:xs))
+
 main :: IO()
 main = do spoons <- mapM newSpoon [1..length philNames]
           (putStrLn . show) philNames
@@ -53,3 +53,4 @@ main = do spoons <- mapM newSpoon [1..length philNames]
           putStrLn "Press enter to stop"
           mapM_ forkIO philosophersWithSpoons
           getLine
+          return ()
