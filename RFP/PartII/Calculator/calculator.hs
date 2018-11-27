@@ -16,7 +16,7 @@ data Op = Op {symbol :: String,         -- The operator's symbol
               precedence :: Int,        -- Its precedence (used in Shunting Yard)
               associativity :: String}  -- Its associativity (also Shunting Yard)
 
-testEqns = ["5 + 3 * ( 5 - 9 )", "5 + - +"]
+testEqns = ["5 + 3 * ( 5 - 9 ) ", "5 + - + "]
 
 errorMsg :: String
 errorMsg = "Error_invalid_equation"
@@ -100,8 +100,7 @@ safeEval2 f x y = do x' <- x
                      return $ f x' y'
 
 safeEval1 :: Num a => (a -> a) -> Maybe a -> Maybe a
-safeEval1 f x = do x' <- x
-                   return $ f x'
+safeEval1 f x = x >>= \x' -> return $ f x'
 
 readMaybe :: String -> Maybe Float
 readMaybe s = readMaybe' s s
