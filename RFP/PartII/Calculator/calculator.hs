@@ -4,17 +4,14 @@ import           Graphics.UI.Threepenny.Core
 import Data.List (words)
 import Data.Char (isDigit)
 
-data Calc = Calc {working :: String,    -- The working space
-                  ans :: String,        -- The previous answer
-                  mem :: String}        -- The calculator's memory
+data Calc = Calc {working :: String,
+                  ans :: String,
+                  mem :: String}
+                  deriving Show
 
-instance Show Calc where
-  show c = "Working: " ++ working c ++ ", Answer: " ++ ans c ++ ", Memory: " ++ mem c
-
-
-data Op = Op {symbol :: String,         -- The operator's symbol
-              precedence :: Int,        -- Its precedence (used in Shunting Yard)
-              associativity :: String}  -- Its associativity (also Shunting Yard)
+data Op = Op {symbol :: String,
+              precedence :: Int,
+              associativity :: String}
 
 testEqns = ["5 + 3 * ( 5 - 9 ) ", "5 + - + "]
 
@@ -37,6 +34,12 @@ ops = [Op {symbol = "^", precedence = 5, associativity = "r"},
        Op {symbol = "(", precedence = 9, associativity = "u"},
        Op {symbol = ")", precedence = 9, associativity = "u"}]
 
+fns :: [String]
+fns = ["ln", "sin", "cos", "tan"]
+
+specials :: [(String, Float)]
+specials = [("pi", pi)]
+
 isOp :: String -> Bool
 isOp x = elem x (map symbol ops)
 
@@ -46,14 +49,8 @@ getOpPrec op = (precedence . head . filter ((==op) . symbol)) ops
 getOpAss :: String -> String
 getOpAss op = (associativity . head . filter ((==op) . symbol)) ops
 
-fns :: [String]
-fns = ["ln", "sin", "cos", "tan"]
-
 isFn :: String -> Bool
 isFn f = elem f fns
-
-specials :: [(String, Float)]
-specials = [("pi", pi)]
 
 isSpecial :: String -> Bool
 isSpecial f = elem f (map fst specials)
@@ -92,7 +89,7 @@ safeEvalRPN = head . foldl foldingFunction []
                     foldingFunction (x:xs)   "sin"        = (safeEval1 sin x):xs
                     foldingFunction (x:xs)   "cos"        = (safeEval1 cos x):xs
                     foldingFunction (x:xs)   "tan"        = (safeEval1 tan x):xs
-                    foldingFunction xs       numberString = (readMaybe numberString):xs
+                    foldingFunction xs       numberString = (safeRead numberString):xs
 
 safeEval2 :: Num a => (a -> a -> a) -> Maybe a -> Maybe a -> Maybe a
 safeEval2 f x y = do x' <- x
@@ -102,13 +99,13 @@ safeEval2 f x y = do x' <- x
 safeEval1 :: Num a => (a -> a) -> Maybe a -> Maybe a
 safeEval1 f x = x >>= \x' -> return $ f x'
 
-readMaybe :: String -> Maybe Float
-readMaybe s = readMaybe' s s
-              where readMaybe' s []       = Just (read s :: Float)
-                    readMaybe' s ('.':[]) = Nothing
-                    readMaybe' s (s':ss') = if s' == '.' || isDigit s'
-                                            then readMaybe' s ss'
-                                            else Nothing
+safeRead :: String -> Maybe Float
+safeRead s = safeRead' s s
+             where safeRead' s []       = Just (read s :: Float)
+                   safeRead' s ('.':[]) = Nothing
+                   safeRead' s (s':ss') = if s' == '.' || isDigit s'
+                                          then safeRead' s ss'
+                                          else Nothing
 
 safeDo :: String -> Maybe Float
 safeDo = safeEvalRPN . parseEqn
@@ -161,15 +158,12 @@ btns = [(newButton "ln",  makeEvent (calcUpdateWorking " ln ( ")),
                                                    else Calc {working = w, ans = tail a, mem = m}
 
 calcUpdateWorking :: String -> Calc -> Calc
-calcUpdateWorking s c -- If the working space is empty and the first entry is an operator, the start of the equation = the current answer value
-                      | (isOp (filter (/=' ') s) && (wc == ""))
+calcUpdateWorking s c | (isOp (filter (/=' ') s) && (wc == ""))
                         = Calc {working = ac ++ s, ans = ac, mem = mc}
-                      -- If the working space contains an error message, write over it
                       | wc == errorMsg
                         = calcUpdateWorking s (Calc {working = "", ans = ac, mem = mc})
-                      -- Else just append to the working space
                       | otherwise
-                        = Calc {working = (wc) ++ s, ans = ac, mem = mc}
+                        = Calc {working = wc ++ s, ans = ac, mem = mc}
                       where wc = working c
                             ac = ans c
                             mc = mem c
