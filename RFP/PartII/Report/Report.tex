@@ -79,7 +79,82 @@ The main issue with this approach is the introduction of an additional entity (a
 
 \section{Task II.2}
 
-\section{Task II.3}
+\subsection{Parsing a String to a Maybe Float}
 
+Firstly I define a couple of data types, \verb|Calc|, and \verb|Op|. These will form the basis of the overall calculator and the shunting-yard algorithm, respectively.
+
+\lstinputlisting[firstline=7, lastline=10]{../Calculator/calculator.hs}
+
+\verb|working| refers to the working space; the string denoting the equation that, upon the user hitting '=', will be evaluated.
+I elected to model my calculator on a scientific model because I find them more intuitive to use than the traditional kind, as well as the fact that it is essentially an example of lazy evaluation; computation only occurs when the answer is demanded, a la Haskell itself.
+\verb|ans| refers to the answer to the previous equation, and is the space where upon evaluation the result of the equation described in \verb|working| will be stored.
+\verb|mem| is the calculator's memory; slightly unnecessary here given the answer recall function afforded by \verb|ans| however any value can be stored here.
+All three take the form of strings; this is mostly such that they can be rendered nicely in Threepenny.
+
+\lstinputlisting[firstline=12,lastline=14]{../Calculator/calculator.hs}
+
+Here the \verb|symbol| element is the symbol of the operator, used for lookup purposes.
+The \verb|precedence| is the precedence of the operator; this follows BODMAS rules and the values are arbitrary.
+\verb|associativity| is used for Shunting-Yard: one of the things that the algorithm checks is the associativity of the operator at the top of the stack, so that gets stored here.
+
+\lstinputlisting[firstline=18, lastline=22]{../Calculator/calculator.hs}
+
+These two are used in the Threepenny section; \verb|errorMsg| gives a consistent message when something errors out, and is used for equality, and \verb|emptyCalc| is used on initialisation and when a user hits the 'CE' button.
+
+\lstinputlisting[firstline=28, lastline=41]{../Calculator/calculator.hs}
+
+Here the lists of operators, functions, and special values are defined; these are defined such that the Shunting-Yard algorithm can detect whether or not a token it encounters is an operator (and if it is the precedence and associativity associated with it), a function, or a special value (currently only pi).
+
+\lstinputlisting[firstline=43, lastline=59]{../Calculator/calculator.hs}
+
+Now some helper functions to check whether or not a token is an operator, and get an operator's precedence or associativity.
+Also a function to check whether or not a token is a function, and whether or not one is a special value and convert that token to its actual value.
+
+\lstinputlisting[firstline=61, lastline=79]{../Calculator/calculator.hs}
+
+Now we define a series of functions that take a string and convert it into Reverse Polish Notation (RPN).
+\verb|parseEqn| is effectively a setup function which takes the string, separates it by the delimiter (in this case spaces), and passes that and an empty tuple through to \verb|parseEqn'|.
+In terms of \verb|parseEqn'|, if it reaches the end of the list of strings it will return the output plus the operator stack.
+If it has tokens to evaluate, it has 4 options: if that token is an operator it will go to another helper function to determine where in the \verb|(output, stack)| tuple it fits.
+This will be discussed later.
+If the token is a function it is cons'ed to the stack, and if it is a value (numeric or special) is is appended to the output.
+\verb|parseEqn''| adds tokens to the stack in accordance with Shunting-Yard rules (\verb|en.wikipedia.org/wiki/Shunting-yard_algorithm#The_algorithm_in_detail|).
+
+\lstinputlisting[firstline=81, lastline=108]{../Calculator/calculator.hs}
+
+Finally for the "evaluating a string" section of the program, a safe evaluator of Reverse Polish Notation.
+\verb|safeEvalRPN| does the overall evaluation of the RPN list of tokens to a Maybe Float.
+\verb|safeEval1| and \verb|2| are the safe evaluators for unary and binary functions respectively, and \verb|safeRead| is a safe reader for \verb|String|s to \verb|Float|s.
+
+\lstinputlisting[firstline=110, lastline=111]{../Calculator/calculator.hs}
+
+Finally \verb|safeDo| composites \verb|safeEvalRPN| and \verb|parseEqn|.
+
+\subsection{Applying this to Threepenny GUI}
+
+\lstinputlisting[firstline=117, lastline=117]{../Calculator/calculator.hs}
+
+The main UI component here is \verb|btns|, which is a list of tuples containing \verb|UI Element|s and functions which take an \verb|Element| and return an \verb|Event|.
+This will be used for showing the buttons, as well as binding them to the \verb|Calc -> Calc| functions.
+The structure of the list is representative of the layout of the page, and \verb|(UI.br, id)| tuples are used for line breaks.
+
+\lstinputlisting[firstline=160, lastline=169]{../Calculator/calculator.hs}
+
+\verb|calcUpdateWorking| updates the working space of the calculator; if the value being added is an operator and the space is currently empty it will perform that operator on the current answer value.
+If the working space is occupied by an error message, it will be overwritten and ignored.
+Otherwise the new token will be appended to the working space.
+
+\lstinputlisting[firstline=171, lastline=173]{../Calculator/calculator.hs}
+
+\verb|calcEval| takes the \verb|Calc| and, using the string evaluator defined above, updates it based on the contents of the working space.
+If the result of evaluating it is \verb|Nothing| it will print an error message to the screen, otherwise it will have the correct value in the answer space and allow the user to input more.
+
+\lstinputlisting[firstline=175, lastline=185]{../Calculator/calculator.hs}
+
+\verb|setup| sets up the FRP elements, drawing the buttons, marrying buttons with the functions they call, and drawing the workspace and answer sections.
+
+\lstinputlisting[firstline=187, lastline=192]{../Calculator/calculator.hs}
+
+Finally, \verb|main| sets up the whole thing ans starts the web server.
 
 \end{document}
