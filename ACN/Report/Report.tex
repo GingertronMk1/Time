@@ -8,7 +8,7 @@
 \date{}
 \documentclass[12pt]{report}
 \usepackage{graphicx}
-\graphicspath{ {Images/} }
+\graphicspath{ {../ONEReports/Try_3_2/Images/} }
 \usepackage{mathtools}
 
 \begin{document}
@@ -64,16 +64,140 @@ The Opportunistic Network Environment (ONE) Simulator is a network simulator bui
 This means that it can simulate network activity, based on a network map and protocols.
 
 \section{Choosing two Opportunistic DTN protocols}
-\subsection{Protocol 1: Distance Routing Effect Algorithm for Mobility (DREAM)}
-\subsection{Protocol 2: Cluster-Based Routing Protocol (CBRP)}
+I have selected two replication-based protocols for my study, in the main because they are both commonly used benchmark protocols.
 
-\section{Designing and experiment setup + explanation of the scenario}
-\subsection{Experiment Setup}
-\subsection{The Scenario}
+\subsection{Protocol 1: Probabilistic Routing Protocol using History of Encounters and Transitivity (Prophet)}
+Prophet is a replication-based protocol that keeps track of which nodes a message has encountered by way of a vector.
+This vector is used to calculate the probability of a message copy finding the destination by being forwarded to a particular node.
+This heuristical approach does mean that a training period is required in order to find the initial probabilities.
+\par
+When a source node forwards a copy of the message, it chooses a subset of possible target nodes.
+These nodes are then ranked based on the calculated probabilities, with the copy being forwarded to the highest-ranked node.\cite{prophetreport1}
+While this is effective, the routing tables grow incredibly quickly as a consquence of the amount of node information needed for the probability calculations, and again, this "training period" means it will take time for the algorithm to become truly effective.
+
+\subsection{Protocol 2: Epidemic}
+Epidemic\cite{epidemicreport} is one of the earlies and most simple replication-based approach to sending messages.
+It utilises the concept of flooding, i.e. it attempts to ensure the message is recieved by sending it to every possible node on the network.
+When two nodes meet they compare what messages they have stored; they then exchange copies that they do not have in common.
+This is repeated across all node pairs on the network, spreading the message through the network like a disease epidemic, hence the name.
+\par
+While this method can achieve low latency and high delivery success rate, it does not take into account (and therefore suffers from) the problem of limited resources that all replication-based schemes suffer from.
+This is to say that a large amount of resources are consumed by the approach, mainly buffer space, an issue often made worse by the fact that redundant copies of messages are often left on the network after a successful delivery.
+
+
+\section{Description of Experiment Setup and Scenario}
+
+The experiment will involve comparing both protocols' performance response to different numbers of nodes and different message sizes.
+The basic scenario is a disaster in the Finnish city of Helsinki; some event has rendered public transport useless and pedestrians and car drivers are messaging each other to determine what has happened.
+The increasing message sizes will represent the move between simple text messages, through photographs and finally video files being shared about their situation.
+Hence there will be a total of 10 message sizes:
+\begin{itemize}
+  \item 500 kilobytes
+  \item 1 megabyte
+  \item 1.5 megabytes
+  \item 2 megabytes
+  \item 2.5 megabytes
+  \item 3 megabyte
+  \item 3.5 megabytes
+  \item 4 megabytes
+  \item 4.5 megabytes
+  \item 5 megabytes
+\end{itemize}
+
+The number of nodes will represent the number of people who either notice or are awake at the time (this can be thought of as simulating different times of day as fewer people will be awake at night), and will range in steps of 10 from 40 to 100, in two groups: people and cars.
+
+These two groups will represent pedestrians who will message one another about the event occuring, and taxicab drivers who will be relaying information about roads to avoid, problem areas, etc.
+In this scenario delivery probability and latency are the key metrics: delivery probability because a message is useless if it does not get to where it needs to go, and latency because a delivered message is useless if it is too late to act upon its contents.
+Additionally to these metrics, there are a number of other interesting metrics we can observe; hop count can be tied to latency to tell us how a differing number of hops required can change the time it will take a message to arrive (it is possible a message can be delivered faster with fewer hops, will this be the case?), and overhead can be used to determine whether or not the transponders in our taxicabs need a large amount of memory to act effectively.
+
+In terms of other settings that differ from ONE's defaults; all nodes are using the high-speed interface, which one can think of as analagous to a fast mobile network or a car-to-car radio system.
+Otherwise the settings are as standard for the simulator.
 
 \section{Performance Evaluation of the chosen protocols}
+\subsection{Buffer Time\textsuperscript{\ref{fig:buffertime}}}
+For all three numbers of hosts the buffer time remains fairly constant for both protocols; with the fewer nodes per group on the network having the lower buffer time.
+This is to be expected: fewer nodes on the map means a longer time searching for a node to connect to and send a message to.
+In all three numbers of nodes, Prophet gets its messages sent on approximately 50 milliseconds faster than Epidemic; this is somewhat surprising given that Prophet has to perform calculations with respect to probabilities before deciding where a message should go, whereas Epidemic forwards without any such computation.
 
-\section{Discussing the pros and cons of Opportunistic Networks WRT the chosen scenario}
+\subsection{Hop Count\textsuperscript{\ref{fig:hopcount}}}
+Again unsurprisingly the hop count is smaller the fewer nodes there are; fewer nodes means fewer possible hops.
+More interesting is the variance in the number of hops an Epidemic packet takes compared to a Prophet one: Prophet's probability computations are showing their worth here as the most hops a packet takes under it is 8 as compared to Epidemic's maximum of 21.
+Indeed this worst case hop number is obtained at low message sizes on the largest number of nodes per group, an understandable outcome which can be attributed to Prophet's "training period" taking longer for such a number of hosts.
+
+\subsection{Latency\textsuperscript{\ref{fig:latency}}}
+In general Epidemic "wins" this category, having lower latency almost across the board than Prophet at all three message sizes.
+An interesting observation here though is that at Prophet's latency decreases drastically as message size increases until 3MB, whereupon it flattens out.
+At all three numbers of nodes per group this latency remains constant, which we can interpret as latency not in fact being related to hop count as a variable.
+This is a somewhat strange observation; one would assume (as I have above) that fewer hops would mean a faster-delivered message.
+Upon further consideration this is not necessarily the case: fewer hops may mean more time waiting to hop, or a more "considered" hop, which would make up the difference in time by choosing a better route for the packet.
+
+\subsection{Overhead\textsuperscript{\ref{fig:overhead}}}
+In all three instances the overhead is inversely proportional to the size of the message, in all three instances flattening out at a similar amount past messages of 4MB, but before then the slope is more pronounced the more nodes are present.
+Initially this result is interesting because Epidemic, by its nature, does not do much in the way of computations, certainly less than Prophet does with its probability calculations and decision-making.
+However in Prophet's case there is a training period in which the probability is calculated, after which there is considerably less computation involved barring the choosing of who to send a message to (but this is relatively simple in reality), however Epidemic nodes compare every time they wish to exchange a message.
+This can be thought of as amortising the overhead, which is to say performing a computationally intensive task once per "cycle" of inputs such that all other operations within that cycle occur substantially quicker compared to a constant series of slightly slower operations.
+
+\subsection{Delivery Probability\textsuperscript{\ref{fig:delivprob}}}
+By and large a message sent using Prophet has a greater chance of reaching its destination than one sent using Epidemic.
+In both cases a smaller message has a greater chance of delivery than a larger one, however with regards to this particular scenario neither can give a delivery success rate above ~30\%.
+Interestingly Prophet's delivery probability demonstrates a considerably shallower, more constant slope than Epidemic's, both displaying a small "spike" at messages of 2.5MB.
+It is unclear as to where this spike comes from, however at 3MB the probability goes down after which it actually increases up to 5MB messages.
+
+\subsection{Conclusion of Comparisons}
+Based on the information gathered I believe that in most cases it is advisable to use Prophet over Epidemic for this situation (unless minimum latency is the absolute goal).
+It performs better in buffer time, hop count, overhead, and delivery probability (which realistically is the end goal of a MANET algorithm: to deliver a message from point A to point B without a structured/constant network).
+Indeed even in the case of latency Prophet, at messages 3MB and above, is consistently only 25\% worse for this metric (even being better at higher message sizes for 50 hosts).
+
+\begin{figure}[ht]
+  \caption{Message size against buffer time for the three numbers of hosts}
+  \centering
+  \includegraphics[width=\textwidth]{buffertimeplot.png}
+  \label{fig:buffertime}
+\end{figure}
+
+\begin{figure}[ht]
+  \caption{Message size against hop count for the three numbers of hosts}
+  \centering
+  \includegraphics[width=\textwidth]{hopcountplot.png}
+  \label{fig:hopcount}
+\end{figure}
+
+\begin{figure}[ht]
+  \caption{Message size against latency for the three numbers of hosts}
+  \centering
+  \includegraphics[width=\textwidth]{latencyplot.png}
+  \label{fig:latency}
+\end{figure}
+
+\begin{figure}[ht]
+  \caption{Message size against overhead for the three numbers of hosts}
+  \centering
+  \includegraphics[width=\textwidth]{overheadplot.png}
+  \label{fig:overhead}
+\end{figure}
+
+\begin{figure}[ht]
+  \caption{Message size against delivery probability for the three numbers of hosts}
+  \centering
+  \includegraphics[width=\textwidth]{delivprobplot.png}
+  \label{fig:delivprob}
+\end{figure}
+
+\if 0
+\begin{figure}[ht]
+  \caption{Message size against number of messages created for the three numbers of hosts}
+  \centering
+  \includegraphics[width=0.5\textwidth]{startedplot.png}
+  \includegraphics[width=0.5\textwidth]{droppedplot.png}
+  \label{fig:startedvsdropped}
+\end{figure}
+
+\fi
+
+%\section{Discussing the pros and cons of Opportunistic Networks WRT the chosen scenario}
+%Opportunistic networks work well in this scenario
+
+
 
 \begin{thebibliography}{0}
   \bibitem{ieeemag}
@@ -82,8 +206,16 @@ This means that it can simulate network activity, based on a network map and pro
     Pelusi, Passarella, Conti
   \bibitem{onewebsite}
     The ONE (ONE Official Website)\\
-    https://akeranen.github.io/the-one/\\
+    \verb|https://akeranen.github.io/the-one|\\
     Accessed 2018-10-08
+  \bibitem{epidemicreport}
+    Epidemic Routing for Partially-Connected Ad Hoc Networks\\
+    Amin Vahdat and David Becker\\
+    2000
+  \bibitem{prophetreport1}
+    Evaluating opportunistic networks in disaster scenarios\\
+    A. Martin-Campillo, J. Crowcroft, E. Yoneki, and R. Marti\\
+    2013
 \end{thebibliography}
 
 \end{document}

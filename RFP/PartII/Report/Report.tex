@@ -1,0 +1,85 @@
+\title{G54RFP Coursework Part II}
+\author{
+  Jack Ellis \\
+  psyje5@nottingham.ac.uk\\
+  4262333
+}
+\date{}
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\graphicspath{ {Images/} }
+\usepackage{mathtools}
+\usepackage {listings}
+\lstset{
+  breakatwhitespace=false,
+  language=Haskell,
+  basicstyle=\ttfamily,
+  showstringspaces=false
+}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Task II.1}
+
+\lstinputlisting[firstline=5,lastline=6]{../Philosophers/Phils.hs}
+
+For clarity, I firstdefined a pair of new types: \verb|Spoon| and \verb|Philosopher|, which map to \verb|TMVar Int| and \verb|String| respectively.
+In my implementation the Philosophers are eating with spoons, in order to avoid confusion between forks (the cutlery) and forks (the making of new threads).
+I then defined 3 functions to initialise, take, and return spoons.
+
+\lstinputlisting[firstline=11,lastline=18]{../Philosophers/Phils.hs}
+
+These are essentially simple maps of the STM Monad's functions to relate them to the \verb|Spoon| type.
+
+\lstinputlisting[firstline=20,lastline=25]{../Philosophers/Phils.hs}
+
+I elected to use lecturers in the School of Computer Science as my philosopher names.
+
+\lstinputlisting[firstline=27,lastline=40]{../Philosophers/Phils.hs}
+
+Now for "running a philosopher".
+This is the infinite process by which they become hungry, get both spoons, eat, return both spoons, think, and become hungry again.
+This requires both spoons to be available, consequently we try to get both the left and right spoons \verb|atomically|, ensuring that the process will halt until both are available.
+The thread is then delayed by a random amount between 1 and \verb|maxDelay| (currently 5) seconds while the philosopher eats, and upon that being completed the spoons are \verb|atomically| returned.
+Another delay of between 1 and \verb|maxDelay| seconds, and the process runs again with the same arguments.
+
+\lstinputlisting[firstline=42,lastline=45]{../Philosophers/Phils.hs}
+
+Before \verb|main| is declared we need a function to make pairs of \verb|Spoon|s, for passing into the \verb|runPhil| function.
+This is relatively trivial.
+
+\lstinputlisting[firstline=47,lastline=56]{../Philosophers/Phils.hs}
+
+Finally, \verb|main|, where everything is put together.
+First we generate a list of spoons equal to the length of the list of philosophers (whose names we print to the screen).
+Then we declare 3 variables:
+\begin{itemize}
+  \item \verb|namedPhils|, which is a list of partially applied \verb|runPhil|s waiting for the \verb|(l,r)| argument.
+  \item \verb|spoonPairs|, which is a list of pairs of \verb|Spoon|s generated from the list of \verb|Spoon|s generated earlier.
+  \item \verb|philosophersWithSpoons| is then the result of zipping \verb|namedPhils| with \verb|spoonPairs|, the list of functions to be forked.
+\end{itemize}
+
+Finally \verb|mapM_| is used to fork all of the \verb|philosophersWithSpoons| processes, taking only their side-effects (namely the printing).
+The \verb|getLine| at the end is used to stop the function, and it \verb|return|s empty.
+\par
+In the \verb|Philosophers| folder containing the source code is a file \verb|output.txt| containing 65 lines of program output; the following is the first 15 lines from that file (not including the list of philosophers and "Press enter to stop" message).
+
+\lstinputlisting[firstline=3,lastline=17]{../Philosophers/output.txt}
+
+\subsection{This approach versus the \textit{Resource Hierarchy Solution}}
+In the \textit{Resource Hierarchy Solution}, the resources (spoons) are given an order of priority, and  of the two required, each "unit of work" (philosopher) will only attempt to access the lower-numbered one first.
+The main issue with this approach is that if the first four philosophers are to pick up their lower spoon, the fifth cannot, and a deadlock occurs.
+The STM approach avoids this; by not enforcing which spoon is picked up first and only requiring that both spoons are picked up at some point before eating can begin it ensures that no such deadlock can occur.
+
+\subsection{This approach versus the \textit{Arbitrator Solution}}
+In the \textit{Arbitrator Solution}, an additional entity is introduced: a waiter who must be asked before any philosopher can pick up a spoon, and who gives permission to one philosopher at a time until that philosopher has picked up both spoons.
+The main issue with this approach is the introduction of an additional entity (and the increased complexity associated with that), and the fact that it can result in reduced parallelism; if one philosopher is eating and a neighbour requests a spoon, no other philosophers can even request their own spoons.
+
+\section{Task II.2}
+
+\section{Task II.3}
+
+
+\end{document}

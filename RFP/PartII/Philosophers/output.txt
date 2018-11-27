@@ -1,0 +1,65 @@
+["Graham Hutton","Steve Bagley","Henrik Nilsson","Thorsten Altenkirch","John Garibaldi"]
+Press enter to stop
+Graham Hutton is hungry
+Graham Hutton has both spoons and is eating
+Steve Bagley is hungry
+Henrik Nilsson is hungry
+Henrik Nilsson has both spoons and is eating
+Thorsten Altenkirch is hungry
+John Garibaldi is hungry
+Henrik Nilsson is done eating and is thinking again
+Thorsten Altenkirch has both spoons and is eating
+Henrik Nilsson is hungry
+Graham Hutton is done eating and is thinking again
+Steve Bagley has both spoons and is eating
+Thorsten Altenkirch is done eating and is thinking again
+John Garibaldi has both spoons and is eating
+John Garibaldi is done eating and is thinking again
+Steve Bagley is done eating and is thinking again
+Henrik Nilsson has both spoons and is eating
+Graham Hutton is hungry
+Graham Hutton has both spoons and is eating
+Thorsten Altenkirch is hungry
+John Garibaldi is hungry
+Graham Hutton is done eating and is thinking again
+John Garibaldi has both spoons and is eating
+Steve Bagley is hungry
+Henrik Nilsson is done eating and is thinking again
+Steve Bagley has both spoons and is eating
+Graham Hutton is hungry
+John Garibaldi is done eating and is thinking again
+Thorsten Altenkirch has both spoons and is eating
+John Garibaldi is hungry
+Thorsten Altenkirch is done eating and is thinking again
+John Garibaldi has both spoons and is eating
+Henrik Nilsson is hungry
+Steve Bagley is done eating and is thinking again
+Henrik Nilsson has both spoons and is eating
+Thorsten Altenkirch is hungry
+Steve Bagley is hungry
+Henrik Nilsson is done eating and is thinking again
+Steve Bagley has both spoons and is eating
+John Garibaldi is done eating and is thinking again
+Thorsten Altenkirch has both spoons and is eating
+Thorsten Altenkirch is done eating and is thinking again
+Steve Bagley is done eating and is thinking again
+Graham Hutton has both spoons and is eating
+Henrik Nilsson is hungry
+Henrik Nilsson has both spoons and is eating
+John Garibaldi is hungry
+Thorsten Altenkirch is hungry
+Graham Hutton is done eating and is thinking again
+Steve Bagley is hungry
+John Garibaldi has both spoons and is eating
+Graham Hutton is hungry
+Henrik Nilsson is done eating and is thinking again
+John Garibaldi is done eating and is thinking again
+Steve Bagley has both spoons and is eating
+Thorsten Altenkirch has both spoons and is eating
+Henrik Nilsson is hungry
+John Garibaldi is hungry
+Steve Bagley is done eating and is thinking again
+Graham Hutton has both spoons and is eating
+Steve Bagley is hungry
+Thorsten Altenkirch is done eating and is thinking again
+Henrik Nilsson has both spoons and is eating

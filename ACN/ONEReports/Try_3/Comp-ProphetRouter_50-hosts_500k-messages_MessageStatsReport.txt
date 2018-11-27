@@ -1,0 +1,20 @@
+Message stats for scenario Comp-ProphetRouter_50-hosts_500k-messages
+sim_time: 43200.1000
+created: 1463
+started: 223670
+relayed: 223668
+aborted: 1
+dropped: 223636
+removed: 0
+delivered: 478
+delivery_prob: 0.3267
+response_prob: 0.0000
+overhead_ratio: 466.9247
+latency_avg: 2996.3663
+latency_med: 2337.9000
+hopcount_avg: 4.6695
+hopcount_med: 4
+buffertime_avg: 179.7889
+buffertime_med: 54.1000
+rtt_avg: NaN
+rtt_med: NaN
