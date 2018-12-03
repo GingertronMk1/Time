@@ -5,8 +5,8 @@ import Data.List (words)
 import Data.Char (isDigit)
 
 data Calc = Calc {working :: String,
-                  ans     :: String,
-                  mem     :: String}
+                  ans     :: Float,
+                  mem     :: Float}
                   deriving Show
 
 data Op = Op {symbol        :: String,
@@ -20,8 +20,8 @@ errorMsg = "Error_invalid_equation"
 
 emptyCalc :: Calc
 emptyCalc = Calc {working = "",
-                  ans = "0",
-                  mem = ""}
+                  ans = 0.0,
+                  mem = 0.0}
 
 -------------------------------------------------------------------------------------------------
 -- MAKING A CALCULATOR THAT WILL TAKE A STRING AND RETURN AN ANSWER, IN THE FORM OF MAYBE A FLOAT
@@ -37,10 +37,10 @@ ops = [Op {symbol = "(", precedence = 6, associativity = "u"},
        Op {symbol = "-", precedence = 1, associativity = "l"}]
 
 fns :: [String]
-fns = ["ln", "sin", "cos", "tan"]
+fns = ["ln", "sin", "cos", "tan", "sqrt"]
 
 specials :: [(String, Float)]
-specials = [("pi", pi)]
+specials = [("pi", pi), ("e", exp 1)]
 
 isOp :: String -> Bool
 isOp x = (elem x . map symbol) ops
@@ -107,6 +107,8 @@ safeEvalRPN = head . foldl foldingFunction []
                       = (safeEval1 cos x):xs
                     foldingFunction (x:xs) "tan"
                       = (safeEval1 tan x):xs
+                    foldingFunction (x:xs) "sqrt"
+                      = (safeEval1 sqrt x):xs
                     foldingFunction xs numberString
                       = (safeRead numberString):xs
 
@@ -135,43 +137,44 @@ safeDo = safeEvalRPN . parseEqn
 -----------------------------------------------------------------------------
 
 btns :: [(UI Element, Element -> Event (Calc -> Calc))]
-btns = [(newButton "ln",  makeEvent (calcUpdateWorking " ln ( ")),
-        (newButton "sin", makeEvent (calcUpdateWorking " sin ( ")),
-        (newButton "cos", makeEvent (calcUpdateWorking " cos ( ")),
-        (newButton "tan", makeEvent (calcUpdateWorking " tan ( ")),
-        (newButton "pi",  makeEvent (calcUpdateWorking " pi ")),
-        (UI.br,           makeEvent id),
-        (newButton "(",   makeEvent (calcUpdateWorking " ( ")),
-        (newButton ")",   makeEvent (calcUpdateWorking " ) ")),
-        (newButton "CE",  makeEvent (\c -> Calc {working = "",
-                                                 ans     = ans c,
-                                                 mem     = mem c})),
-        (newButton "C",   makeEvent (\_ -> emptyCalc)),
-        (newButton "+/-", makeEvent calcNeg),
-        (UI.br,           makeEvent id),
-        (newButton "7",   makeEvent (calcUpdateWorking "7")),
-        (newButton "8",   makeEvent (calcUpdateWorking "8")),
-        (newButton "9",   makeEvent (calcUpdateWorking "9")),
-        (newButton "M+",  makeEvent (memPlus)),
-        (newButton "M-",  makeEvent (memMinus)),
-        (UI.br,           makeEvent id),
-        (newButton "4",   makeEvent (calcUpdateWorking "4")),
-        (newButton "5",   makeEvent (calcUpdateWorking "5")),
-        (newButton "6",   makeEvent (calcUpdateWorking "6")),
-        (newButton "*",   makeEvent (calcUpdateWorking " * ")),
-        (newButton "/",   makeEvent (calcUpdateWorking " / ")),
-        (UI.br,           makeEvent id),
-        (newButton "1",   makeEvent (calcUpdateWorking "1")),
-        (newButton "2",   makeEvent (calcUpdateWorking "2")),
-        (newButton "3",   makeEvent (calcUpdateWorking "3")),
-        (newButton "+",   makeEvent (calcUpdateWorking " + ")),
-        (newButton "-",   makeEvent (calcUpdateWorking " - ")),
-        (UI.br,           makeEvent id),
-        (newButton "0",   makeEvent (calcUpdateWorking "0")),
-        (newButton ".",   makeEvent (calcUpdateWorking ".")),
-        (newButton "Ans", makeEvent calcAddAns),
-        (newButton "=",   makeEvent calcEval)]
-
+btns = [(newButton "ln",    makeEvent (calcUpdateWorking " ln ( ")),
+        (newButton "sin",   makeEvent (calcUpdateWorking " sin ( ")),
+        (newButton "cos",   makeEvent (calcUpdateWorking " cos ( ")),
+        (newButton "tan",   makeEvent (calcUpdateWorking " tan ( ")),
+        (newButton "sqrt",  makeEvent (calcUpdateWorking " sqrt ( ")),
+        (newButton "pi",    makeEvent (calcUpdateWorking " pi ")),
+        (newButton "e",     makeEvent (calcUpdateWorking " e ")),
+        (UI.br,             makeEvent id),
+        (newButton "(",     makeEvent (calcUpdateWorking " ( ")),
+        (newButton ")",     makeEvent (calcUpdateWorking " ) ")),
+        (newButton "CE",    makeEvent (\c -> c {working = ""})),
+        (newButton "C",     makeEvent (\c -> c {working = "", ans = 0.0})),
+        (newButton "+/-",   makeEvent calcNeg),
+        (UI.br,             makeEvent id),
+        (newButton "7",     makeEvent (calcUpdateWorking "7")),
+        (newButton "8",     makeEvent (calcUpdateWorking "8")),
+        (newButton "9",     makeEvent (calcUpdateWorking "9")),
+        (newButton "M+",    makeEvent (memAdd)),
+        (newButton "M",     makeEvent (memGet)),
+        (newButton "MC",    makeEvent (memClear)),
+        (UI.br,             makeEvent id),
+        (newButton "4",     makeEvent (calcUpdateWorking "4")),
+        (newButton "5",     makeEvent (calcUpdateWorking "5")),
+        (newButton "6",     makeEvent (calcUpdateWorking "6")),
+        (newButton "*",     makeEvent (calcUpdateWorking " * ")),
+        (newButton "/",     makeEvent (calcUpdateWorking " / ")),
+        (UI.br,             makeEvent id),
+        (newButton "1",     makeEvent (calcUpdateWorking "1")),
+        (newButton "2",     makeEvent (calcUpdateWorking "2")),
+        (newButton "3",     makeEvent (calcUpdateWorking "3")),
+        (newButton "+",     makeEvent (calcUpdateWorking " + ")),
+        (newButton "-",     makeEvent (calcUpdateWorking " - ")),
+        (UI.br,             makeEvent id),
+        (newButton "0",     makeEvent (calcUpdateWorking "0")),
+        (newButton ".",     makeEvent (calcUpdateWorking ".")),
+        (newButton "Ans",   makeEvent calcAddAns),
+        (newButton "=",     makeEvent calcEval),
+        (newButton "^",     makeEvent (calcUpdateWorking " ^ "))]
 
 newButton :: String -> UI Element
 newButton t = UI.button # set UI.text t
@@ -180,39 +183,27 @@ makeEvent :: a -> Element -> Event a
 makeEvent c e = c <$ UI.click e
 
 calcNeg :: Calc -> Calc
-calcNeg c = let a = ans c
-                w = working c
-                m = mem c
-             in Calc {working = w,
-                      ans = (show . (0-)) (read a :: Float) ,
-                      mem = m}
+calcNeg c = c {ans = ((0-) . ans) c}
 
-memPlus :: Calc -> Calc
-memPlus c = Calc {working = working c,
-                  ans = ans c,
-                  mem = ans c}
+memAdd :: Calc -> Calc
+memAdd c = c {mem = ans c}
 
-memMinus :: Calc -> Calc
-memMinus c = Calc {working = working c ++ " " ++ mem c,
-                   ans = ans c,
-                   mem = mem c}
+memGet :: Calc -> Calc
+memGet c = c {working = working c ++ " " ++ (show . mem) c}
+
+memClear :: Calc -> Calc
+memClear c = c {mem = 0.0}
 
 calcAddAns :: Calc -> Calc
-calcAddAns c = calcUpdateWorking (" " ++ ans c ++ " ") c
+calcAddAns c = calcUpdateWorking (" " ++ (show . ans) c ++ " ") c
 
 calcUpdateWorking :: String -> Calc -> Calc
 calcUpdateWorking s c
   | wc == "" = if elem (filter (/=' ') s) ((map symbol . drop 2) ops)
-               then (calcUpdateWorking s . calcUpdateWorking (ans c)) c
-               else Calc {working = s,
-                          ans     = ac,
-                          mem     = mc}
-  | wc == errorMsg = calcUpdateWorking s $ Calc {working = "",
-                                                 ans     = ac,
-                                                 mem     = mc}
-  | otherwise = Calc {working = wc ++ s,
-                      ans     = ac,
-                      mem     = mc}
+               then (calcUpdateWorking s . calcUpdateWorking ((show . ans) c)) c
+               else c {working = s}
+  | wc == errorMsg = calcUpdateWorking s $ c {working = ""}
+  | otherwise = c {working = wc ++ s}
   where wc = working c
         ac = ans c
         mc = mem c
@@ -220,12 +211,8 @@ calcUpdateWorking s c
 calcEval :: Calc -> Calc
 calcEval c =
   case (safeDo . working) c
-    of Nothing -> Calc {working = errorMsg,
-                        ans = ans c,
-                        mem = mem c}
-       Just n  -> Calc {working = "",
-                        ans = show n,
-                        mem = mem c}
+    of Nothing -> c {working = errorMsg}
+       Just n  -> c {working = "", ans = n}
 
 setup :: Window -> UI ()
 setup window =
@@ -234,7 +221,7 @@ setup window =
      let btnFns = unionList const (zipWith ($) (fmap snd btns) buttons)
      calc <- accumB emptyCalc btnFns
      work <- UI.label # sink UI.text (fmap (filter (/=' ') . working) calc)
-     answer <- UI.label # sink UI.text (fmap ans calc)
+     answer <- UI.label # sink UI.text (fmap (show . ans) calc)
      getBody window #+ [UI.center #+ ([element work,
                                        UI.br,
                                        element answer,
