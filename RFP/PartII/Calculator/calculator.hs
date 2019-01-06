@@ -1,4 +1,4 @@
-module Main where
+--module Main where
 import qualified Graphics.UI.Threepenny       as UI
 import           Graphics.UI.Threepenny.Core
 import Data.List (words)
@@ -214,7 +214,7 @@ calcEval c =
     of Nothing -> c {working = errorMsg}
        Just n  -> c {working = "", ans = n}
 
-setup :: Window -> UI ()
+--setup :: Window -> UI ()
 setup window =
   do return window # set UI.title "Calculator"
      buttons <- (sequence . map fst) btns
@@ -227,11 +227,14 @@ setup window =
                                        element answer,
                                        UI.br]
                                        ++ (map element buttons))]
-     return ()
+     --return ()
+     return calc
      where unionList c (e:[]) = e
            unionList c (e:es) = unionWith c e $ unionList c es
 
+{-
 main :: IO ()
 main =
   do startGUI defaultConfig {jsPort = Just 8023,
                              jsStatic = Just "../wwwroot"} setup
+                             -}
