@@ -1,0 +1,160 @@
+\title{G54RFP Coursework Part III}
+\author{
+  Jack Ellis \\
+  psyje5@nottingham.ac.uk\\
+  4262333
+}
+\date{}
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\graphicspath{ {Images/} }
+\usepackage{mathtools}
+\usepackage {listings}
+\lstset{
+  breakatwhitespace=false
+ ,language=Haskell
+ ,basicstyle=\ttfamily\tiny
+ ,showstringspaces=false
+}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Project Overview}
+
+\textit{Breakout} is a video game published by Atari in 1976, where the player controls a paddle and must, by using this paddle to bat a ball back and forth, destroy a number of bricks arranged in rows at the top of the screen.
+This project aims to create a \textit{Breakout} clone using Haskell and the Threepenny GUI library.
+
+\section{Technical Background}
+
+This project is by and large written in standard Haskell, using Prelude functions.
+The only external library featured is the Threepenny GUI framework.
+This is a GUI framework written in Haskell that uses the web browser as a display.
+A program written with Threepenny is a small web server that:
+
+\begin{itemize}
+  \item Displays the UI as a web page
+  \item Allows the HTML Document Object Model (DOM) to be manipulated
+  \item Handles JavaScript events in Haskell
+\end{itemize}
+
+It works by sending JavaScript code to the client as a Foreign Function Interface.
+
+\par
+
+As well as the above web interface features, Threepenny also provides a framework for handling Functional Reactive Programming (FRP).
+It introduces a type \verb|Event a|, which is a type synonym for \verb|[(Time, a)]|, that captures and represents a stream of events (of type \verb|a|), carrying timestamps.
+\verb|Event| is an instance of \textit{Functor}, but not \textit{Applicative}, mostly because the type for \verb|<*>| would be \verb|Event (a -> b) -> Event a -> Event b|, which makes no sense as event streams in general are not synchronised.
+This type can be combined with another type introduced by Threepenny, the \verb|Behavior a| type.
+This type represents a value that varies with time, and is the type that will encapsulate the "whole value" which changes in an FRP application.
+
+\par
+
+Threepenny provides support for recognition of a number of types of DOM event, including keyboard keypresses and mouse clicks.
+It introduces a new kind of event, the \verb|Timer|, which gives us the ability to have a constantly occurring event.
+This will be used in this project to allow the ball to move continuously.
+The timer constructor takes an \verb|Int| as an argument, this is used to denote the interval (in milliseconds) between ticks.
+Functions can be bound to events using the \verb|<$| and \verb|<$>|, which differ only in that the former feeds the same value into a function where the latter, used in this project for the \verb|keydown| event, feeds in the value returned by the event (in our case the keycode of the key pressed).
+
+\section{Implementation}
+
+I first defined 4 data types and two type synonyms, shown in Figure \ref{fig:datatypes}.
+\verb|Pos| and \verb|Dim|, meaning position and dimension respectively, are simply synonyms for \verb|Double|, and will be used to avoid functions with type signatures like \verb|Double -> Double -> Double -> Double -> Double -> Bool|, which are somewhat confusing and difficult to read.
+The \verb|HitWhere| type will be used in collision detection to determine where on a either the paddle or a brick the ball has hit, in order to make the ball "bounce" appropriately.
+\verb|GameState| is the "state" of the game, be it before/during a level, paused, complete, or the player has died.
+\verb|Block| is the type that will be used for the bricks on screen, containing their position in x and y, the amount the player's score will increase by when the block is broken, a value of type \verb|HitWhere| which will be used to break the block if hit, and the colour the block should be drawn.
+Finally, \verb|Env| is the "whole value" type used in the Reactive part of the code: it contains all relevant information about the game, including the ball's position and velocity in x and y, the paddle's position, and a list containing all of the bricks.
+I then defined various values "globally" - the width and height of the canvas, the number of blocks in x and y, the widths and heights of the blocks and paddle, and the size and initial speed of the ball (in y).
+This I did because various functions later in the program (mostly to do with hit detection and drawing) will make use of these and it makes more sense to me to simply define them as values in their own right.
+If I were to extend the program (for instance incorporating multiple balls or paddles) I would likely define record-style types for both of those things and include their height, width, and initial velocity within those.
+
+\par
+
+Using these I defined an initial list of \verb|Block|s (called \verb|initBlocks|) and an initial \verb|Env| (called \verb|initEnv|), with the ball in the centre of the canvas "aimed" downwards at the paddle.
+The blocks' initial values are generated by a list comprehension, with their colour starting out red and getting darker as their \verb|y| value increases.
+The score value of a block is directly proportional to how far up it is; 100 more points per level up initially, starting at 100.
+At each level the score value of the blocks is equal to the initial value defined here multiplied by the current level, using the \verb|blocksForLevel| function.
+
+\par
+
+To handle keyboard events I defined a function \verb|keyboardHandle|, of type \verb|Char -> Env -> Env|, code for which can be seen in Figure \ref{fig:keyboardhandle}.
+This function can be thought of as a "router" function, given that all it really does is call the correct function depending on the \verb|gameState| of the \verb|Env| passed in as an argument.
+It uses the keycode of the keydown event rather than the character to allow both the arrow keys and 'a' and 'd' keys to be used for moving the paddle.
+
+
+\par
+
+\verb|updateEnv| (Figure \ref{fig:updateenv}) is the most complex function defined here, updating the current \verb|Env| every tick.
+The main part of this is updating the current position of the ball, which requires determining whether or not the ball has hit either a brick or the paddle.
+If it has, the \verb|HitWhere| type is used to determine where in general the ball has hit and bounce it properly off in an elastic collision.
+If the ball has hit a brick it will simply bounce off following the same laws of physics that light does: the angle of incidence (the angle the ball comes in from) equalling the angle of reflection (the angle it goes out from).
+If the ball hits the bat however, its behaviour is slightly different: the ball's angle of reflection depends not on its angle of incidence but where along the paddle it strikes.
+Striking the paddle in the middle will cause the ball to bounce directly upwards, and striking either side of it will cause it to "reflect" further in that direction until, if it could, striking at the extremity would cause it to "reflect" entirely side-to-side.
+As well, the ball will only bounce if it hits the top of the bat; while less "realistic", this would be essentially useless to the player and fewer checks per function call will aid performance.
+I felt this would make the game somewhat more interesting than a direct "reflection", given that such a setup would in fact lead to every game being the same (assuming the same starting conditions).
+The list of \verb|blocks| is then filtered to remove those that have been hit, and the \verb|scoreVal| of those removed bricks is added to the player's score.
+I have not included the source code for this function in this report because I feel it is too large to be helpful.
+
+\par
+
+Within \verb|setup| I created a \verb|timer|, setting the interval of ticks to 10ms, as I felt that 100 times per second is a reasonable rate to be updating frames and the game at.
+I then created an HTML5 Canvas, and a \verb|div| to wrap it in.
+I then bound \verb|keyboardHandle| to any keypress event within the window, and \verb|updateEnv| to each tick of the timer, and - using \verb|unionWith| and \verb|accumB|, bound all of that to \verb|initEnv|.
+After that I created a "status line" to be displayed within the wrapping \verb|div| above the canvas onto which the game will be drawn, which will (depending on the state of the game) show the current level and score, or prompts to go to the next level or resume/restart the game.
+
+\par
+
+Finally I used the \verb|on| function to, every tick of the timer, update the canvas to reflect the current \verb|Env|.
+
+\section{Reflections}
+
+\subsection{What was learned}
+
+Over the course of this project I learned a great deal about the Threepenny suite, as well as using functional programming as a medium of video game development.
+Normally this kind of program would be made in an object-oriented fashion: the paddle, bricks, and ball being separate objects (likely a subclass of a more general object), and the mapping of these concepts to a functional environment has been something of a challenge.
+I believe that an environment variable is the best way of going about this, and Threepenny's timer allows for this.
+In terms of ways the project could be made better, a more general data type for the drawn objects would likely serve to make the code cleaner, in particular a \verb|Rect| type that could encapsulate both the paddle and blocks, and would open the project up to using something like \verb|Data.Lens| to modify values.
+Unfortunately I did not have the time to implement this.
+
+\subsection{Project Topic from a real-world perspective}
+
+I believe that the project topic was a realistic one from a real-world perspective; Haskell-based video games are becoming more popular of late and this example, while not trivial, was simple enough to demonstrate a proof of concept.
+As well as this, the use of an external API is something that is done often in the real world of programming, and the heavy use this project makes of the features of the Threepenny Suite again makes it representative of such a project.
+
+\par
+
+On the other hand, the project only really makes use of the Threepenny Suite, and consequently many real-world Haskell functions (failure states provided by the \verb|Maybe| monad being the main one) do not feature.
+This I feel is a consequence of the nature of the game; failure states are not very varied as a result of the nature of the program, and those that exist are easily accounted for, so the \verb|Maybe| monad is not really required.
+
+\pagebreak
+
+\appendix
+
+\section{Code Excerpts}
+
+\begin{figure}[ht]
+  \caption{The defined data types HitWhere, GameState, Block, and Env, and the type synonyms Pos and Dim.}
+  \lstinputlisting[firstline=4,lastline=38]{../Code/brickbreaker.hs}
+  \label{fig:datatypes}
+\end{figure}
+
+\begin{figure}[ht]
+  \caption{Keyboard handling.}
+  \lstinputlisting[firstline=102, lastline=125]{../Code/brickbreaker.hs}
+  \label{fig:keyboardhandle}
+\end{figure}
+
+\begin{figure}[ht]
+  \caption{Collision detection, both general and applied to a Block.}
+  \lstinputlisting[firstline=127, lastline=141]{../Code/brickbreaker.hs}
+  \label{fig:hitcheck}
+\end{figure}
+
+\begin{figure}[ht]
+  \caption{updateEnv and its helpers: paddleOffset (which calculates how far from the center of the paddle the ball has struck), and splitList (which splits a list into a tuple of values that satisfy the predicate p and those that don't).}
+  \lstinputlisting[firstline=143, lastline=198]{../Code/brickbreaker.hs}
+  \label{fig:updateenv}
+\end{figure}
+
+\end{document}

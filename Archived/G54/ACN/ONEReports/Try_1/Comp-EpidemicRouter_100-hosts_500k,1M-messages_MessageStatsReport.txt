@@ -1,0 +1,20 @@
+Message stats for scenario Comp-EpidemicRouter_100-hosts_500k,1M-messages
+sim_time: 43200.1000
+created: 1459
+started: 325081
+relayed: 182175
+aborted: 142885
+dropped: 180920
+removed: 0
+delivered: 288
+delivery_prob: 0.1974
+response_prob: 0.0000
+overhead_ratio: 631.5521
+latency_avg: 3891.0062
+latency_med: 2981.6000
+hopcount_avg: 8.0104
+hopcount_med: 7
+buffertime_avg: 543.3231
+buffertime_med: 367.2000
+rtt_avg: NaN
+rtt_med: NaN

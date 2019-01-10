@@ -1,0 +1,143 @@
+\title{G54RFP Coursework Part I}
+\author{
+  Jack Ellis \\
+  psyje5@nottingham.ac.uk\\
+  4262333
+}
+\date{}
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\graphicspath{ {Images/} }
+\usepackage{mathtools}
+\usepackage{listings}
+
+\lstset{
+  breakatwhitespace=false,
+  language=Haskell,
+  basicstyle=\ttfamily,
+  showstringspaces=false
+}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Task I.1}
+
+\subsection{Part 1}
+\lstinputlisting[firstline=10, lastline=13]{../Code/MyCode.hs}
+
+Here we begin with a list containing only \verb|1|, to which we cons the merged list containing 2 times itself, 3 times itself, and 5 times itself.
+These additional lists are formed of recursive calls to \verb|hamming|.
+
+\subsection{Part 2}
+
+The following is the execution trace for the first 4 digits of hamming:
+\begin{lstlisting}[basicstyle=\tiny]
+
+  hamming = 1:map (*2) hamming `merge` map (*3) hamming `merge` (*5) hamming
+          = 1:merge (map *2) hamming) (map (*3) hamming `merge` (*5) hamming)
+          = 1:merge (map *2) hamming) (merge (map (*3) hamming)) (map (*5) hamming)
+          = 1:merge (2:map (*2) hamming) (merge (3:map (*3) hamming) (5:map (*5) hamming))
+          = 1:merge (2:map (*2) hamming) (3:merge (map (*3) hamming) (5:map (*5) hamming))
+          = 1:2:merge (map (*2) hamming) (3:merge (map (*3) hamming) (5:map (*5) hamming))
+          = 1:2:merge (4:map (*2) hamming) (3:merge (map (*3) hamming) (5:map (*5) hamming))
+          = 1:2:3:merge (4:map (*2) hamming) (merge (6:map (*3) hamming) (5:map (*5) hamming))
+          = 1:2:3:merge (4:map (*2) hamming) (3:merge (map (*3) hamming) (5:map (*5) hamming))
+          = 1:2:3:merge (4:map (*2) hamming) (5:merge (6:map (*3) hamming) (map (*5) hamming))
+          = 1:2:3:4:merge (map (*2) hamming) (5:merge (6:map (*3) hamming) (map (*5) hamming))
+
+\end{lstlisting}
+
+\section{Task I.2}
+
+\subsection{Part 1}
+\lstinputlisting[firstline=11, lastline=15]{../Code/Sheet.hs}
+
+Here I extended the \verb|Exp| type to include what is shown in the coursework issue sheet.
+
+\lstinputlisting[firstline=18, lastline=19]{../Code/Sheet.hs}
+
+A function to calculate the \verb|mean| of a list was required and not present, so here I defined one.
+
+\lstinputlisting[firstline=25, lastline=30]{../Code/Sheet.hs}
+
+Here I used list comprehensions to obtain the full 2D range of cells described by the function call, map to them their value via an evalCell call, and sum or mean that list of values based upon what was called originally.
+
+\subsection{Part 2}
+
+The problem with the evaluator is that if any cells are empty (i.e. there is no item in the list with their reference), the evaluator fails completely.
+This could be fixed by padding the list with empty (i.e. a payload of \verb|Lit 0|) cells where there is no cell matching a required reference.
+Additionally to this, if the \verb|array| value declared at the start of a \verb|Sheet| declaration does not match the number of cells in the \verb|Sheet|, it again fails.
+This could be solved by removing the bounds call and determining the bounds of a \verb|Sheet| as a first step in evaluating it.
+
+\section{Task I.3}
+
+\lstinputlisting[firstline=65, lastline=68]{../Code/SBRAL.hs}
+
+My implementation of the \verb|drop n| function works in much the same way as the \verb|Prelude| version of drop works on lists; recursive application of \verb|tail| until the counter (specified by \verb|n| and decrementing on each recursive iteration) reaches 0.
+It has the desired time complexity (\textit{O(log n)}), because \verb|tail| runs in constant time, and the function will run a number of times based on the size of the SBRAL, whose size grows in \textit{log n} time.
+
+For testing purposes I extended the derivations of the \verb|Tree| type to include \verb|Eq|, and created a \verb|treeGen| function via iterated applications of \verb|cons 1| to an empty list.
+Hence if \verb|treeGen 255| is called, an Rlist of size 255 is generated.
+
+\lstinputlisting[firstline=77, lastline=78]{../Code/SBRAL.hs}
+
+To test this, the function \verb|treeTest :: Int -> Bool|
+
+\section{Task I.4}
+
+\lstinputlisting[firstline=15, lastline=15]{../Code/MyCode.hs}
+
+Here the data type \verb|Ivl| is defined per the coursework issue sheet.
+
+\lstinputlisting[firstline=17, lastline=37]{../Code/MyCode.hs}
+
+The first step here is defining a series of functions to detect and enforce well-definedness.
+\verb|isWellDef| takes an \verb|Ivl| and returns true if its lower bound is less than or equal to its upper bound, else it returns false.
+With this function, we can create two more: \verb|wellDef1| and \verb|wellDef2|.
+They perform in exactly the same way bar the fact that they deal with functions containing 1 and 2 \verb|Ivl| values respectively.
+If all of the \verb|Ivl|s are well-defined, the function passed into them may be computed and its result returned.
+If any of the \verb|Ivl|s passed as arguments are poorly formed it will return an \verb|error| detailing which \verb|Ivl| it took was poorly formed and halting computation.
+Finally, the function \verb|makeWellDef| takes an \verb|Ivl| and makes it well-defined.
+This is useful for the later functions whose results may be poorly formed by default, in many cases however the result is mathematically guaranteed to be well-formed.
+
+\lstinputlisting[firstline=38, lastline=57]{../Code/MyCode.hs} % num instance
+
+Here the \verb|Num| instance of \verb|Ivl| is defined.
+Addition, subtraction, and multiplication are all defined as per the issue sheet, with checks on well-definedness before the values are computed.
+The results will be well-defined \verb|Ivl|s mathematically; the sum of two lower bounds will be lower than that of two upper bounds, subtracting a large number from a small one will be smaller than subtracting a small one from a large one, and multiplying will follow the same rules of addition.
+\verb|abs| is defined such that if the \verb|Ivl| straddles 0 it will return 0 as the lower bound, and the larger absolute value of the two as the upper bound.
+Otherwise it will return a well-defined \verb|Ivl| with the bounds being the absolute values of the bounds passed to it.
+\verb|signum| returns a well-defined \verb|Ivl| with the \verb|signum| values of both bounds as its bounds.
+The rationale here is that we want to see the \verb|signum| values of the highest and lowest possible values of the \verb|Ivl|.
+Finally, \verb|fromInteger| converts an \verb|Int| value into an \verb|Ivl| with a range of 0, given that the \verb|Int| has no uncertainty or bounds.
+
+\lstinputlisting[firstline=59, lastline=68]{../Code/MyCode.hs} % fractional instance
+
+Here the \verb|Fractional| instance of \verb|Ivl| is defined.
+Division is less trivial to define than the other arithmetic symbols; we must ensure that at no point does division by 0 occur, and ensure well-definedness of the result.
+Hence in my implementation the new lower bound is defined by \verb|l1/u2| to give the smallest possible value, and the new upper is \verb|u1/l2| to give the largest possible value.
+\verb|recip| is the reciprocal function, and will divide 1 by any value given to it.
+Here the \verb|recip| instance for \verb|Ivl| will return a new \verb|Ivl| with the reciprocals of the bounds.
+If (and this is the case for much of the mathematical functions) the input \verb|Ivl| is well-defined, the switching of the reciprocals will mathematically ensure that the new \verb|Ivl| is well-defined, however for the sake of ensuring correctness I have left the \verb|makeWellDef| function in place.
+Finally, \verb|fromRational| works much the same as \verb|fromInteger|, with the same justification.
+
+\lstinputlisting[firstline=70, lastline=71]{../Code/MyCode.hs}  % fromRational
+
+The \verb|(+/-)| operator will construct a well-defined \verb|Ivl| with a symmetric interval around the number given as its first argument of a size given by its second argument.
+\verb|makeWellDef| is used here because it is possible to pass a negative number as the second argument and thus flip the lower and upper bounds of the resulting \verb|Ivl|, leading to a poorly-defined \verb|Ivl|.
+\par
+For every function defined, the function \verb|makeWellDef| ensures well-definedness for the results, a feature I tested using the Haskell library QuickCheck.
+Here I defined an \verb|arbitrary| instance of \verb|Ivl|.
+
+\lstinputlisting[firstline=73, lastline=77]{../Code/MyCode.hs} % Arbitrary Ivls
+
+Using this I defined two functions: both check the well-definedness of a function's results, with one instance for those functions with a single argument, and one for those with multiple.
+
+\lstinputlisting[firstline=79, lastline=85]{../Code/MyCode.hs} % props
+
+Running every function through these (in the form \verb|quickCheck $ prop_wellFormed<N> <f>|, where N is the number of arguments of the function being checked, and f is the function) yielded no failures.
+
+
+\end{document}
