@@ -59,6 +59,8 @@ Functions can be bound to events using the \verb|<$| and \verb|<$>|, which diffe
 
 \section{Implementation}
 
+\subsection{Programming}
+
 I first defined 4 data types and two type synonyms, shown in Figure \ref{fig:datatypes}.
 \verb|Pos| and \verb|Dim|, meaning position and dimension respectively, are simply synonyms for \verb|Double|, and will be used to avoid functions with type signatures like \verb|Double -> Double -> Double -> Double -> Double -> Bool|, which are somewhat confusing and difficult to read.
 The \verb|HitWhere| type will be used in collision detection to determine where on a either the paddle or a brick the ball has hit, in order to make the ball "bounce" appropriately.
@@ -107,6 +109,10 @@ After that I created a "status line" to be displayed within the wrapping \verb|d
 
 Finally I used the \verb|on| function to, every tick of the timer, update the canvas to reflect the current \verb|Env|.
 
+\par
+
+Figures \ref{fig:prestart}-\ref{fig:dead} show the game in the 5 possible values of the \verb|gameState| element of \verb|Env|.
+
 \section{Reflections}
 
 \subsection{What was learned}
@@ -131,7 +137,7 @@ This I feel is a consequence of the nature of the game; failure states are not v
 
 \appendix
 
-\section{Code Excerpts}
+\section{Figures}
 
 \begin{figure}[ht]
   \caption{The defined data types HitWhere, GameState, Block, and Env, and the type synonyms Pos and Dim.}
@@ -157,4 +163,38 @@ This I feel is a consequence of the nature of the game; failure states are not v
   \label{fig:updateenv}
 \end{figure}
 
+\begin{figure}[ht]
+  \centering
+  \caption{The game on a freshly loaded page.}
+  \includegraphics[width=0.5\textwidth]{prestart.png}
+  \label{fig:prestart}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \caption{The game while being played.}
+  \includegraphics[width=0.5\textwidth]{going.png}
+  \label{fig:going}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \caption{The game, paused.}
+  \includegraphics[width=0.5\textwidth]{paused.png}
+  \label{fig:paused}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \caption{The game upon level completion.}
+  \includegraphics[width=0.5\textwidth]{levelcomplete.png}
+  \label{fig:levelcomplete}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \caption{The game on player death, caused by letting the ball hit the bottom of the screen.}
+  \includegraphics[width=0.5\textwidth]{dead.png}
+  \label{fig:dead}
+\end{figure}
 \end{document}
