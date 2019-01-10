@@ -44,10 +44,10 @@ canvHeight :: Dim
 canvHeight = 480.0
 
 blocksX :: Double
-blocksX = 1.0
+blocksX = 16.0
 
 blocksY :: Double
-blocksY = 2.0
+blocksY = 10.0
 
 blockGapX :: Double
 blockGapX = canvWidth / blocksX
