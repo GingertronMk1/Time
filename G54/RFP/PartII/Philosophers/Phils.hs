@@ -40,17 +40,12 @@ runPhil p (l, r)
        threadDelay (delay*1000000)
        runPhil p (l, r)
 
-makePairs :: [a] -> [(a,a)]
-makePairs (x:[])    = []
-makePairs (x:y:[])  = (x,y):[]
-makePairs (x:y:xs)  = (x,y):(makePairs (y:xs))
-
 main :: IO()
 main
   = do spoons <- mapM newSpoon [1..length philNames]
        (putStrLn . show) philNames
        let namedPhils = map runPhil philNames
-           spoonPairs = makePairs ((last spoons):spoons)
+           spoonPairs = zip spoons (last spoons : init spoons)
            philsWithSpoons = zipWith ($) namedPhils spoonPairs
        putStrLn "Press enter to stop"
        mapM_ forkIO philsWithSpoons
