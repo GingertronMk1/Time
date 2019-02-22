@@ -1,0 +1,8 @@
+1. If (temperature is hypothermic) then (urgency is emergency) (1)
+2. If (temperature is normal) then (urgency is none) (1)
+3. If (temperature is hyperthermic) then (urgency is emergency) (1)
+4. If (headache is none) then (urgency is none) (1)
+5. If (headache is mild) then (urgency is some) (1)
+6. If (headache is moderate) then (urgency is medium) (1)
+7. If (headache is distressing) then (urgency is priority) (1)
+8. If (headache is unbearable) then (urgency is emergency) (1)
