@@ -1,0 +1,39 @@
+\title{G54MRT Proposal}
+\author{
+  Jack Ellis \\
+  psyje5@nottingham.ac.uk\\
+  4262333\\\\
+}
+\date{}
+\documentclass[12pt, a4paper]{article}
+
+\begin{document}
+\maketitle
+
+\section{Summary} % an overview of the idea / concept: broadly describe what it is you are intending to do and the motivations for it. You could include a scenario to describe this (perhaps).
+The broad idea of this project is to ensure a user is sitting properly and comfortably at their computer.
+The project will use a combination of light sensors, distance sensors, and accelerometers to detect first whether or not the user is looking at their screen, and second whether or not they are craning their neck to do so in such a way as would lead to long-term damage.
+
+\section{Technologies and sensor data} % detail on the role and use of sensor data in your project, and the technologies you’ll employ.
+
+The project will be in the form of a headband/hat which the user will wear.
+This headgear will have on the front a pair of light sensors arranged vertically and separated by a divider to provide an "above" and "below" light reading. If this "above" reading is markedly greater than the "below" reading we can assume the user is looking at their screen.
+If the user is looking at their screen the distance and angle sensors will be brought into play, alerting the user if they have been looking down for an excessive period of time, or if they are getting too close to the screen.
+If they are looking at the screen for too long, or craning their neck too much, the screen will display a warning telling them to stand up and go for a walk.
+
+\section{Project plan} % a brief explanation of your implementation plan, including details on which aspects of the proposed idea you will build, along with plans for testing that you may perform.
+I plan to implement the project in a command-line capacity, more or less the entire project bar taking control of the users computer and flashing a warning/playing a sound alarm.
+With regard to testing I plan to test it in a dark room initially, ensuring that the basic system works and the thresholds for the head angle and time looking at screen are sensible.
+After this I plan to test it in a lighter room, where the ambient light will be more similar to the light of a computer screen.
+This will be more of a challenge, particularly in terms of determining whether the light threshold should be considered in terms of an absolute difference (for instance +/-20 on the sensor) or a relative one (for instance the "screen-pointing" sensor reading being more than 10\% different to the "rest-of-world-pointing" sensor).
+
+\par
+
+With respect to a development timeline, I first intend to create a "naive" system that assumes the user is looking at their screen; this will likely consist solely of the accelerometer mounted on the back of the users head measuring angle over time, and if the angle is greater than some threshold (TBD) for a given time it will begin to warn the user.
+After this I intend to make use of the light sensors to detect whether or not the user is looking at the screen, and only if that is the case will the accelerometer begin to take readings.
+There is scope here I feel for further tuning: the accelerometer should likely be "zeroed" as the user looks at the screen, and major deviation from that zero will result in a warning.
+
+\section{Skills and competencies} % an explanation of how your particular skills and competencies fit with the proposed project
+As a 4th-year computer science student I feel that my abilities in programming will translate well to implementing this project; the use of control structures and threshold values within the system are concepts with which I am familiar, and I feel that as someone who spends too much time looking at their computer this project is very relevant to me.
+
+\end{document}
