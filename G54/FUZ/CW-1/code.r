@@ -96,7 +96,7 @@ rule2 <- rbind(rule2_1, rule2_2, rule2_3, rule2_4, rule2_5);
 
 fis2 <- addrule(fis2, rule2);
 
-# FIS 1 + FIS 2
+# FIS 3 - A NÄIVE COMBINATION OF FIS 1 + FIS 2
 
 fis3 <- fis
 
