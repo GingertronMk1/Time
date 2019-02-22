@@ -214,7 +214,8 @@ calcEval c =
     of Nothing -> c {working = errorMsg}
        Just n  -> c {working = "", ans = n}
 
---setup :: Window -> UI ()
+{-
+setup :: Window -> UI ()
 setup window =
   do return window # set UI.title "Calculator"
      buttons <- (sequence . map fst) btns
@@ -227,14 +228,23 @@ setup window =
                                        element answer,
                                        UI.br]
                                        ++ (map element buttons))]
-     --return ()
-     return calc
+     return ()
      where unionList c (e:[]) = e
            unionList c (e:es) = unionWith c e $ unionList c es
+           -}
 
-{-
+setup window = return window # set UI.title "Calculator" >>= \_ ->
+               (sequence . map fst) btns >>= \buttons ->
+               let btnFns = unionList const (zipWith ($) (fmap snd btns) buttons)
+                in accumB emptyCalc btnFns >>= \calc ->
+                   UI.label # sink UI.text (fmap (filter (/=' ') . working) calc) >>= \work ->
+                   UI.label # sink UI.text (fmap (show . ans) calc) >>= \answer ->
+                   getBody window #+ [UI.center #+ ([element work,UI.br,element answer,UI.br]++ (map element buttons))] >>= \_ ->
+                   return ()
+               where unionList c (e:[]) = e
+                     unionList c (e:es) = unionWith c e $ unionList c es
+
 main :: IO ()
 main =
   do startGUI defaultConfig {jsPort = Just 8023,
                              jsStatic = Just "../wwwroot"} setup
-                             -}
