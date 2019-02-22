@@ -171,7 +171,7 @@ updateEnv e = case gameState e of Going -> let x = ballX e
                                                      || hitP == InBoth
                                                        then negate dX
                                                      else if hitP == InY
-                                                       then negate $ ballV * sin ((pi/2) * paddleOffset pX x)
+                                                       then negate $ ballV * sin ((pi/3) * paddleOffset pX x)
                                                      else dX
                                                bdy = if y < ballSize
                                                      || elem InY hitB
@@ -179,7 +179,7 @@ updateEnv e = case gameState e of Going -> let x = ballX e
                                                      || hitP == InBoth
                                                        then negate dY
                                                      else if hitP == InY
-                                                       then negate $ abs $ ballV * cos ((pi/2) * paddleOffset pX x)
+                                                       then negate $ abs $ ballV * cos ((pi/3) * paddleOffset pX x)
                                                      else dY
                                                gs = if y > (canvHeight - ballSize)
                                                       then Dead
