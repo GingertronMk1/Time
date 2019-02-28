@@ -1,0 +1,131 @@
+1.  Name              Hospital 
+2.  Type              mamdani 
+3.  Inputs/Outputs    [ 4 2 ] 
+4.  NumInputMFs       [ 10 10 0 0 ] 
+5.  NumOutputMFs      [ 10 0 ] 
+6.  NumRules          
+7.  AndMethod         min 
+8.  OrMethod          max 
+9.  ImpMethod         min 
+10. AggMethod         max 
+11. DefuzzMethod      centroid 
+12. InLabels          temperature
+13. InLabels          headache
+14. InLabels          temperature
+15. InLabels          headache
+16. OutLabels         urgency
+17. OutLabels         urgency
+18. InRange           [ 35 39 ] 
+19. InRange           [ 0 10 ] 
+20. InRange           [ 35 39 ] 
+21. InRange           [ 0 10 ] 
+22. OutRange          [ 0 10 ] 
+23. OutRange          [ 0 10 ] 
+24. InMFLabels        hypothermic
+25. InMFLabels        low
+26. InMFLabels        normal
+27. InMFLabels        high
+28. InMFLabels        hyperthermic
+29. InMFLabels        hypothermic
+30. InMFLabels        low
+31. InMFLabels        normal
+32. InMFLabels        high
+33. InMFLabels        hyperthermic
+34. InMFLabels        none
+35. InMFLabels        mild
+36. InMFLabels        moderate
+37. InMFLabels        distressing
+38. InMFLabels        unbearable
+39. InMFLabels        none
+40. InMFLabels        mild
+41. InMFLabels        moderate
+42. InMFLabels        distressing
+43. InMFLabels        unbearable
+44. InMFLabels        
+45. InMFLabels        
+46. InMFLabels        
+47. InMFLabels        
+48. OutMFLabels	      none
+49. OutMFLabels	      some
+50. OutMFLabels	      medium
+51. OutMFLabels	      priority
+52. OutMFLabels	      emergency
+53. OutMFLabels	      none
+54. OutMFLabels	      some
+55. OutMFLabels	      medium
+56. OutMFLabels	      priority
+57. OutMFLabels	      emergency
+58. OutMFLabels	      
+59. OutMFLabels	      
+60. InMFTypes         gaussmf
+61. InMFTypes         gaussmf
+62. InMFTypes         gaussmf
+63. InMFTypes         gaussmf
+64. InMFTypes         gaussmf
+65. InMFTypes         gaussmf
+66. InMFTypes         gaussmf
+67. InMFTypes         gaussmf
+68. InMFTypes         gaussmf
+69. InMFTypes         gaussmf
+70. InMFTypes         trapmf
+71. InMFTypes         trapmf
+72. InMFTypes         trapmf
+73. InMFTypes         trapmf
+74. InMFTypes         trapmf
+75. InMFTypes         trapmf
+76. InMFTypes         trapmf
+77. InMFTypes         trapmf
+78. InMFTypes         trapmf
+79. InMFTypes         trapmf
+80. InMFTypes         
+81. InMFTypes         
+82. InMFTypes         
+83. InMFTypes         
+84. OutMFTypes 	      gaussmf
+85. OutMFTypes 	      gaussmf
+86. OutMFTypes 	      gaussmf
+87. OutMFTypes 	      gaussmf
+88. OutMFTypes 	      gaussmf
+89. OutMFTypes 	      gaussmf
+90. OutMFTypes 	      gaussmf
+91. OutMFTypes 	      gaussmf
+92. OutMFTypes 	      gaussmf
+93. OutMFTypes 	      gaussmf
+94. OutMFTypes 	      
+95. OutMFTypes 	      
+96. InMFParams        [ 0.5 35 ] 
+97. InMFParams        [ 0.5 36 ] 
+98. InMFParams        [ 0.5 37 ] 
+99. InMFParams        [ 0.5 38 ] 
+100. InMFParams        [ 0.5 39 ] 
+101. InMFParams        [ 0.5 35 ] 
+102. InMFParams        [ 0.5 36 ] 
+103. InMFParams        [ 0.5 37 ] 
+104. InMFParams        [ 0.5 38 ] 
+105. InMFParams        [ 0.5 39 ] 
+106. InMFParams        [ 0 0 2 3 ] 
+107. InMFParams        [ 2 3 4 5 ] 
+108. InMFParams        [ 4 5 6 7 ] 
+109. InMFParams        [ 6 7 8 9 ] 
+110. InMFParams        [ 8 9 10 10 ] 
+111. InMFParams        [ 0 0 2 3 ] 
+112. InMFParams        [ 2 3 4 5 ] 
+113. InMFParams        [ 4 5 6 7 ] 
+114. InMFParams        [ 6 7 8 9 ] 
+115. InMFParams        [ 8 9 10 10 ] 
+116. InMFParams        [ ] 
+117. InMFParams        [ ] 
+118. InMFParams        [ ] 
+119. InMFParams        [ ] 
+120. OutMFParams       [ 2 0 ] 
+121. OutMFParams       [ 1 3.5 ] 
+122. OutMFParams       [ 1 5.5 ] 
+123. OutMFParams       [ 1 7.5 ] 
+124. OutMFParams       [ 1 10 ] 
+125. OutMFParams       [ 2 0 ] 
+126. OutMFParams       [ 1 3.5 ] 
+127. OutMFParams       [ 1 5.5 ] 
+128. OutMFParams       [ 1 7.5 ] 
+129. OutMFParams       [ 1 10 ] 
+130. OutMFParams       [ ] 
+131. OutMFParams       [ ] 

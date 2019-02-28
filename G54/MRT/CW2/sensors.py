@@ -39,7 +39,7 @@ while True:
     # Apply a low-pass filter to this
     leanLo = leanLo * (1.0-constant) + lean * constant
     # Print it
-    print(leanLo)
+    print("raw: ", lean, "\tlowPassed: ", leanLo)
 
 
 

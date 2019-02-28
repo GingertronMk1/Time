@@ -1,0 +1,82 @@
+1.  Name              Hospital 
+2.  Type              mamdani 
+3.  Inputs/Outputs    [ 2 1 ] 
+4.  NumInputMFs       [ 5 5 ] 
+5.  NumOutputMFs      [ 5 ] 
+6.  NumRules          5 
+7.  AndMethod         min 
+8.  OrMethod          max 
+9.  ImpMethod         min 
+10. AggMethod         max 
+11. DefuzzMethod      centroid 
+12. InLabels          temperature
+13. InLabels          headache
+14. OutLabels         urgency
+15. InRange           [ 35 39 ] 
+16. InRange           [ 0 10 ] 
+17. OutRange          [ 0 10 ] 
+18. InMFLabels        hypothermic
+19. InMFLabels        low
+20. InMFLabels        normal
+21. InMFLabels        high
+22. InMFLabels        hyperthermic
+23. InMFLabels        none
+24. InMFLabels        mild
+25. InMFLabels        moderate
+26. InMFLabels        distressing
+27. InMFLabels        unbearable
+28. OutMFLabels	      none
+29. OutMFLabels	      some
+30. OutMFLabels	      medium
+31. OutMFLabels	      priority
+32. OutMFLabels	      emergency
+33. InMFTypes         gaussmf
+34. InMFTypes         gaussmf
+35. InMFTypes         gaussmf
+36. InMFTypes         gaussmf
+37. InMFTypes         gaussmf
+38. InMFTypes         trapmf
+39. InMFTypes         trapmf
+40. InMFTypes         trapmf
+41. InMFTypes         trapmf
+42. InMFTypes         trapmf
+43. OutMFTypes 	      gaussmf
+44. OutMFTypes 	      gaussmf
+45. OutMFTypes 	      gaussmf
+46. OutMFTypes 	      gaussmf
+47. OutMFTypes 	      gaussmf
+48. InMFParams        [ 0.5 35 ] 
+49. InMFParams        [ 0.5 36 ] 
+50. InMFParams        [ 0.5 37 ] 
+51. InMFParams        [ 0.5 38 ] 
+52. InMFParams        [ 0.5 39 ] 
+53. InMFParams        [ 0 0 2 3 ] 
+54. InMFParams        [ 2 3 4 5 ] 
+55. InMFParams        [ 4 5 6 7 ] 
+56. InMFParams        [ 6 7 8 9 ] 
+57. InMFParams        [ 8 9 10 10 ] 
+58. OutMFParams       [ 2 0 ] 
+59. OutMFParams       [ 1 3.5 ] 
+60. OutMFParams       [ 1 5.5 ] 
+61. OutMFParams       [ 1 7.5 ] 
+62. OutMFParams       [ 1 10 ] 
+63. Rule Antecedent   [ 0 1 ] 
+64. Rule Antecedent   [ 0 2 ] 
+65. Rule Antecedent   [ 0 3 ] 
+66. Rule Antecedent   [ 0 4 ] 
+67. Rule Antecedent   [ 0 5 ] 
+68. Rule Consequent   1 
+69. Rule Consequent   2 
+70. Rule Consequent   3 
+71. Rule Consequent   4 
+72. Rule Consequent   5 
+73. Rule Weight       1 
+74. Rule Weight       1 
+75. Rule Weight       1 
+76. Rule Weight       1 
+77. Rule Weight       1 
+78. Rule Connection   1 
+79. Rule Connection   1 
+80. Rule Connection   1 
+81. Rule Connection   1 
+82. Rule Connection   1 
