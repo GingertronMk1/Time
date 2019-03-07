@@ -8,7 +8,7 @@
 8.  OrMethod          max 
 9.  ImpMethod         min 
 10. AggMethod         max 
-11. DefuzzMethod      centroid 
+11. DefuzzMethod      lom 
 12. InLabels          temperature
 13. InLabels          headache
 14. OutLabels         urgency
@@ -61,17 +61,17 @@
 61. OutMFParams       [ 1 7.5 ] 
 62. OutMFParams       [ 1 10 ] 
 63. Rule Antecedent   [ 3 1 ] 
-64. Rule Antecedent   [ 1 5 ] 
-65. Rule Antecedent   [ 5 5 ] 
-66. Rule Antecedent   [ 3 3 ] 
-67. Rule Antecedent   [ 3 2 ] 
-68. Rule Antecedent   [ 3 4 ] 
+64. Rule Antecedent   [ 3 3 ] 
+65. Rule Antecedent   [ 3 2 ] 
+66. Rule Antecedent   [ 3 4 ] 
+67. Rule Antecedent   [ 1 5 ] 
+68. Rule Antecedent   [ 5 5 ] 
 69. Rule Consequent   1 
-70. Rule Consequent   5 
-71. Rule Consequent   5 
-72. Rule Consequent   2 
-73. Rule Consequent   2 
-74. Rule Consequent   3 
+70. Rule Consequent   2 
+71. Rule Consequent   2 
+72. Rule Consequent   3 
+73. Rule Consequent   5 
+74. Rule Consequent   5 
 75. Rule Weight       1 
 76. Rule Weight       1 
 77. Rule Weight       1 
@@ -79,8 +79,8 @@
 79. Rule Weight       1 
 80. Rule Weight       1 
 81. Rule Connection   1 
-82. Rule Connection   2 
-83. Rule Connection   2 
+82. Rule Connection   1 
+83. Rule Connection   1 
 84. Rule Connection   1 
-85. Rule Connection   1 
-86. Rule Connection   1 
+85. Rule Connection   2 
+86. Rule Connection   2 
