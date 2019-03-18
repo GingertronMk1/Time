@@ -1,0 +1,54 @@
+% R-Fuzzy (C) J.M.Garibaldi, 1st Oct 2004 $Revision: 0.1$
+[System]
+Name='Hospital'
+Type='mamdani'
+NumInputs=2
+NumOutputs=1
+NumRules=9
+AndMethod='min'
+OrMethod='max'
+ImpMethod='prod'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='temperature'
+Range=[35 39]
+NumMFs=5
+MF1='hypothermic':'gaussmf',[0.5 35]
+MF2='low':'gaussmf',[0.5 36]
+MF3='normal':'gaussmf',[0.5 37]
+MF4='high':'gaussmf',[0.5 38]
+MF5='hyperthermic':'gaussmf',[0.5 39]
+
+[Input2]
+Name='headache'
+Range=[0 10]
+NumMFs=5
+MF1='none':'gaussmf',[2 0]
+MF2='mild':'gaussmf',[1 4]
+MF3='moderate':'gaussmf',[1 6]
+MF4='severe':'gaussmf',[1 8]
+MF5='worst possible':'gaussmf',[1 10]
+
+[Output1]
+Name='urgency'
+Range=[0 10]
+NumMFs=5
+MF1='none':'gaussmf',[3 0]
+MF2='some':'gaussmf',[1 4]
+MF3='medium':'gaussmf',[1 6]
+MF4='priority':'gaussmf',[1 8]
+MF5='emergency':'gaussmf',[1 10]
+
+[Rules]
+3 1, 1 (1) : 1
+3 3, 2 (0.5) : 1
+3 2, 2 (0.5) : 1
+3 4, 3 (0.5) : 1
+1 5, 5 (1) : 2
+5 5, 5 (1) : 2
+5 0, 5 (1) : 1
+1 0, 5 (1) : 1
+0 5, 5 (1) : 1
+
