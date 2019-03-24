@@ -10,20 +10,20 @@ grove6axis.init6Axis() # Initialise the accelerometer
 constant = 0.05       # The constant to be used in in the low-pass filter
 t = 0                 # Initialise time
 aDiffLo = 0           # Initialise the low-passed value for the difference in light levels
-leanLo = math.pi/2 # Initialise the low-passed value for the lean
+leanLo = math.pi/2    # Initialise the low-passed value for the lean
 
-problemTime = 180 # The number of seconds before there's a problem
-problemAngle = math.pi/10
+problemTime = 20         # The number of seconds before there's a problem
+problemAngle = math.pi/8 # The angle at which there is a problem
 
 def loPass(curr, val):
     const = 0.05
     return val * (1.0 - constant) + curr * constant
 
 while True:
-    # Read from an analog sensor on input 0
+    # Read from an analog sensor on input 0 (this should be the top one)
     a0 = grovepi.analogRead(0)
 
-    # Read from an analog sensor on input 1
+    # Read from an analog sensor on input 1 (this should be the bottom one)
     a1 = grovepi.analogRead(1)
 
     # Calculate the absolute difference between a0 and a1
@@ -34,24 +34,26 @@ while True:
 
     # Read the first value of the 3-tuple returned by getOrientation()
     # This value will be in radians, with flat on its back being 0
-    # pi/3 should be considered a problem angle
     # The 3-axis sensor should be positioned with the cable port on the bottom
-    lean = grove6axis.getOrientation()[2]
+    # Due to prototyping constraints the yaw value is used
+    lean = grove6axis.getOrientation()[1]
 
     # Apply a low-pass filter to this
     leanLo = loPass(lean, leanLo)
+
+    #print("Top sensor: ", a0, ", Bottom sensor: ", a1)
  
     # Output the data
-    if aDiffLo > 200:     # If the difference is more than 200
-        t += 1            # Increase the time by 1
-        if t > problemTime * 10:      # If that time is more than 200 (should be ~20s)
+    if aDiffLo > 200:                                                         # If the difference is more than 200
+        t += 1                                                                # Increase the time by 1
+        if t > problemTime * 10:                                              # If that time is more than 200 (should be ~20s)
             print("For your eye health please look away from the screen now") # Have a go at the user
-        else:               #Otherwise print the value
-            if leanLo > (math.pi/2 - problemAngle):
-                print("Leaning fine")
-            else:
-                print("Leaning too much!")
-            print("raw: ", lean, "\tlowPassed: ", leanLo)
+        else:                                                                 # Else we have a look at how much the user's leaning
+            if abs(leanLo) < problemAngle:                                    # If the LP'd lean value is within bounds...
+                print("Leaning fine: ", math.pi / abs(leanLo), " ", problemAngle)      # All is well
+            else:                                                                      # Otherwise...
+                print("Leaning too much!: ", math.pi / abs(leanLo), " ", problemAngle) # All is wrong
+            print("raw: ", lean, "\tlowPassed: ", leanLo)		      # Either way print the values of lean and lights
             print("Big difference!   Specifically: %4.0f"%(aDiffLo), "\ta0: ", a0, " a1:",a1, " t: ", t)
     else:           # If the difference is small
         t = 0       # Reset the timer, print the values
